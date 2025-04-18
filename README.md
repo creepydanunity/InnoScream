@@ -49,13 +49,15 @@ Visit:
 
 ## 📡 API Routes
 
-Method | Route | Description
-POST | `/scream` | Submit a new anonymous scream
-POST | `/react` | React to a scream (💀, 🔥, 🥲)
-GET | `/top` | Get top N screams of the day + memes
-DELETE | `/delete/{scream_id}` | Admin delete a scream
-GET | `/stats/{user_id}` | Get user's stats and weekly scream graph
-GET | `/stats/weekly` | Get overall community scream graph
+| Method   | Endpoint                    | Description                                      |
+|----------|-----------------------------|--------------------------------------------------|
+| `POST`   | `/scream`                   | Submit a new anonymous scream                   |
+| `POST`   | `/react`                    | React to a scream                               |
+| `GET`    | `/top?n=3`                  | Get top N screams of the day + meme links       |
+| `GET`    | `/stats/{user_id}`          | Get stats for a user (anonymized by user ID)    |
+| `GET`    | `/stats/weekly/{user_id}`   | Weekly scream graph for a user                  |
+| `GET`    | `/stats/weekly`             | Weekly scream graph for all users               |
+| `DELETE` | `/delete/{scream_id}`       | Delete a scream (admin only)                    |
 
 ## 📜 License
 
