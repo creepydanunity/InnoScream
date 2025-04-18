@@ -20,7 +20,7 @@ A Telegram-integrated platform where students can anonymously share their academ
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/innoscream.git
+git clone https://github.com/creepydanunity/innoscream.git
 cd innoscream
 ```
 
