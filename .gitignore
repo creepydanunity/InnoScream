@@ -178,6 +178,3 @@ cython_debug/
 
 # Poetry Lock File
 poetry.lock
-
-# API implementation (diff branch)
-app_fastapi/

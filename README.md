@@ -1,4 +1,4 @@
-# InnoScream – Anonymous Student Scream Platform (Bot)
+# InnoScream – Anonymous Student Scream Platform
 
 A Telegram-integrated platform where students can anonymously share their academic frustrations, support each other with reactions, and get memes + weekly analytics.
 
@@ -7,8 +7,11 @@ A Telegram-integrated platform where students can anonymously share their academ
 ## ⚙️ Tech Stack
 
 - **Bot:** Python 3.11, aiogram (Telegram), httpx, asyncio
+- **Backend:** Python 3.11, FastAPI, SQLAlchemy (Async)
+- **Database:** SQLite (using `aiosqlite`)
 - **External APIs:**  
-  - 📊 [InnoScreamAPI](https://github.com/creepydanunity/InnoScream/tree/api)
+  - 📊 [QuickChart.io](https://quickchart.io/) – Weekly analytics graphs  
+  - 🖼️ [ImgFlip Meme API](https://imgflip.com/api) – Meme generation
 
 ---
 
@@ -19,7 +22,6 @@ A Telegram-integrated platform where students can anonymously share their academ
 ```bash
 git clone https://github.com/creepydanunity/innoscream.git
 cd innoscream
-git checkout bot
 ```
 
 ### 2. Set up virtual environment (recommended via Poetry)
@@ -28,17 +30,23 @@ git checkout bot
 poetry install
 ```
 
-### 3. Create `.env` file in `app_bot/`
-
+### 3.1 Create `.env` file in `app_bot/`
 ```env
 BOT_TOKEN=<TelegramAPI_Token>
 API_URL=<InnoScreamAPI_URL>
 ```
 
+### 3.2 Create `app_fastapi/.env` file
+```env
+DB_FILENAME=innoscream.db
+IMGFLIP_USERNAME=your_imgflip_username
+IMGFLIP_PASSWORD=your_imgflip_password
+```
+
 ## 🚀 Running the Project
-### Start the bot:
+### Via docker-compose:
 ```bash
-poetry run python -m app_bot.main
+TODO: fill
 ```
 
 ## 📡 Telegram Commands
