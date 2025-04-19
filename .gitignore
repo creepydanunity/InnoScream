@@ -178,6 +178,3 @@ cython_debug/
 
 # Poetry Lock File
 poetry.lock
-
-# Bot functionality (Diff branch)
-app_bot/

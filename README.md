@@ -1,11 +1,12 @@
-# InnoScream – Anonymous Student Scream Platform (API)
+# InnoScream – Anonymous Student Scream Platform
 
-An API developed for Telegram-integrated platform where students can anonymously share their academic frustrations, support each other with reactions, and get memes + weekly analytics.
+A Telegram-integrated platform where students can anonymously share their academic frustrations, support each other with reactions, and get memes + weekly analytics.
 
 ---
 
 ## ⚙️ Tech Stack
 
+- **Bot:** Python 3.11, aiogram (Telegram), httpx, asyncio
 - **Backend:** Python 3.11, FastAPI, SQLAlchemy (Async)
 - **Database:** SQLite (using `aiosqlite`)
 - **External APIs:**  
@@ -21,7 +22,6 @@ An API developed for Telegram-integrated platform where students can anonymously
 ```bash
 git clone https://github.com/creepydanunity/innoscream.git
 cd innoscream
-git checkout api
 ```
 
 ### 2. Set up virtual environment (recommended via Poetry)
@@ -30,8 +30,13 @@ git checkout api
 poetry install
 ```
 
-### 3. Create `app_fastapi/.env` file
+### 3.1 Create `.env` file in `app_bot/`
+```env
+BOT_TOKEN=<TelegramAPI_Token>
+API_URL=<InnoScreamAPI_URL>
+```
 
+### 3.2 Create `app_fastapi/.env` file
 ```env
 DB_FILENAME=innoscream.db
 IMGFLIP_USERNAME=your_imgflip_username
@@ -39,25 +44,19 @@ IMGFLIP_PASSWORD=your_imgflip_password
 ```
 
 ## 🚀 Running the Project
-### Start the FastAPI server:
+### Via docker-compose:
 ```bash
-poetry run uvicorn app_fastapi.main:app --reload
+TODO: fill
 ```
-Visit:
-- 📚 API docs (`Swagger UI`): http://localhost:8000/docs
-- 📄 ReDoc: http://localhost:8000/redoc
 
-## 📡 API Routes
+## 📡 Telegram Commands
 
-| Method   | Endpoint                    | Description                                      |
-|----------|-----------------------------|--------------------------------------------------|
-| `POST`   | `/scream`                   | Submit a new anonymous scream                   |
-| `POST`   | `/react`                    | React to a scream                               |
-| `GET`    | `/top?n=3`                  | Get top N screams of the day + meme links       |
-| `GET`    | `/stats/{user_id}`          | Get stats for a user (anonymized by user ID)    |
-| `GET`    | `/stats/weekly/{user_id}`   | Weekly scream graph for a user                  |
-| `GET`    | `/stats/weekly`             | Weekly scream graph for all users               |
-| `DELETE` | `/delete/{scream_id}`       | Delete a scream (admin only)                    |
+| Command                     | Description                                      |
+|-----------------------------|--------------------------------------------------|
+| `/scream`                   | Submit a new anonymous scream                    |
+| `/next`                     | Recieve next unseen scream                       |
+| `/stress`                   | Get overall stress level of the current week     |
+| `/my_stats`                 | Get stats for a user (anonymized by user ID)     |
 
 ## 📜 License
 
