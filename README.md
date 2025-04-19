@@ -1,6 +1,6 @@
-# InnoScream – Anonymous Student Scream Platform
+# InnoScream – Anonymous Student Scream Platform (API)
 
-A Telegram-integrated platform where students can anonymously share their academic frustrations, support each other with reactions, and get memes + weekly analytics — all via an AI-powered backend built with FastAPI.
+An API developed for Telegram-integrated platform where students can anonymously share their academic frustrations, support each other with reactions, and get memes + weekly analytics.
 
 ---
 
