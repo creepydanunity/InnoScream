@@ -172,3 +172,12 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# SQLite DB
+*.db
+
+# Poetry Lock File
+poetry.lock
+
+# Bot functionality (Diff branch)
+app_bot/
