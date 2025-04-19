@@ -1,17 +1,18 @@
 from aiogram import Router, types
 from app_bot.api.api import get_stress_stats, get_user_stats
+from aiogram.filters import Command
 
 
 statsRouter = Router()
 
-@statsRouter.message(commands=["stress"])
+@statsRouter.message(Command("stress"))
 async def handle_stress(msg: types.Message):
     stats = await get_stress_stats()
     await msg.answer(f"This week stress level:\n\n{stats.get("chart_url")}")
     
 
 
-@statsRouter.message(commands=["my_stats"])
+@statsRouter.message(Command("my_stats"))
 async def handle_user_stats(msg: types.Message):
     user_id = str(msg.from_user.id)
 

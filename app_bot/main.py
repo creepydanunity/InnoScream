@@ -2,7 +2,9 @@ import os
 from dotenv import load_dotenv
 import asyncio
 from aiogram import Bot, Dispatcher
-from handlers import reactionRouter, screamRouter, statsRouter
+from app_bot.handlers.reactionHandler import reactionRouter
+from app_bot.handlers.statsHandler import statsRouter
+from app_bot.handlers.screamHandler import screamRouter
 
 
 load_dotenv("app_bot/.env")

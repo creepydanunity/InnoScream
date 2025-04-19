@@ -1,11 +1,12 @@
 from aiogram import Router, types
 from app_bot.api.api import get_next_scream, post_scream
-from keyboards import reaction_keyboard
+from app_bot.keyboards.baseKeyboards import reaction_keyboard
+from aiogram.filters import Command
 
 
 screamRouter = Router()
 
-@screamRouter.message(commands=["scream"])
+@screamRouter.message(Command("scream"))
 async def handle_scream(msg: types.Message):
     user_id = str(msg.from_user.id)
     content = msg.text.replace("/scream", "").strip()
@@ -20,7 +21,7 @@ async def handle_scream(msg: types.Message):
     await msg.answer(f"😤 Scream accepted:\n\n{content}", reply_markup=reaction_keyboard(scream_id))
 
 
-@screamRouter.message(commands=["next"])
+@screamRouter.message(Command("next"))
 async def handle_next(msg: types.Message):
     user_id = str(msg.from_user.id)
     try:
