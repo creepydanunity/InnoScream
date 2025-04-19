@@ -180,4 +180,4 @@ cython_debug/
 poetry.lock
 
 # API implementation (diff branch)
-app_fastapi*
+app_fastapi/
