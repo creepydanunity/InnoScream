@@ -55,8 +55,8 @@ Visit:
 | `POST`   | `/react`                    | React to a scream                               |
 | `GET`    | `/top?n=3`                  | Get top N screams of the day + meme links       |
 | `GET`    | `/stats/{user_id}`          | Get stats for a user (anonymized by user ID)    |
-| `GET`    | `/stats/weekly/{user_id}`   | Weekly scream graph for a user                  |
-| `GET`    | `/stats/weekly`             | Weekly scream graph for all users               |
+| `GET`    | `/stats/weekly/{user_id}`   | Weekly stats + stress graph for a user          |
+| `GET`    | `/stats/weekly`             | Weekly stress graph for all users               |
 | `DELETE` | `/delete/{scream_id}`       | Delete a scream (admin only)                    |
 
 ## 📜 License

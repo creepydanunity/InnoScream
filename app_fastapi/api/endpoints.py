@@ -1,4 +1,5 @@
 from datetime import timedelta
+from app_fastapi.models.user_feed import UserFeedProgress
 from app_fastapi.tools.meme import generate_meme_url
 from app_fastapi.tools.time import get_bounds
 from fastapi import APIRouter, HTTPException, Depends
@@ -10,6 +11,7 @@ from app_fastapi.models.reaction import Reaction
 from sqlalchemy.ext.asyncio import AsyncSession
 from app_fastapi.schemas.responses import (
     CreateScreamResponse,
+    GetScreamResponse,
     ReactionResponse,
     StressStatsResponse,
     TopScreamItem,
@@ -174,3 +176,34 @@ async def delete_scream(scream_id: int, session: AsyncSession = Depends(get_sess
     await session.delete(scream)
     await session.commit()
     return {"status": "deleted"}
+
+
+@router.get("/feed/{user_id}", response_model=GetScreamResponse)
+async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_session)):
+    user_hash = hash_user_id(user_id)
+    today_start, tomorrow = get_bounds()
+
+    progress = await session.get(UserFeedProgress, user_hash)
+    last_seen = progress.last_seen_id if progress else 0
+
+    stmt = (
+        select(Scream)
+        .where(Scream.timestamp >= today_start, Scream.timestamp < tomorrow)
+        .where(Scream.id > last_seen)
+        .order_by(Scream.id)
+        .limit(1)
+    )
+    result = await session.execute(stmt)
+    next_scream = result.scalar()
+
+    if not next_scream:
+        raise HTTPException(status_code=404, detail="😶 Больше нет криков на сегодня")
+    
+    if progress:
+        progress.last_seen_id = next_scream.id
+    else:
+        session.add(UserFeedProgress(user_hash=user_hash, last_seen_id=next_scream.id))
+
+    await session.commit()
+
+    return {"status": "ok", "scream_id": next_scream.id, "content": next_scream.content}
