@@ -8,7 +8,6 @@ An API developed for Telegram-integrated platform where students can anonymously
 
 - **Backend:** Python 3.11, FastAPI, SQLAlchemy (Async)
 - **Database:** SQLite (using `aiosqlite`)
-- **Bot Framework:** aiogram (Telegram)
 - **External APIs:**  
   - 📊 [QuickChart.io](https://quickchart.io/) – Weekly analytics graphs  
   - 🖼️ [ImgFlip Meme API](https://imgflip.com/api) – Meme generation
@@ -22,6 +21,7 @@ An API developed for Telegram-integrated platform where students can anonymously
 ```bash
 git clone https://github.com/creepydanunity/innoscream.git
 cd innoscream
+git checkout api
 ```
 
 ### 2. Set up virtual environment (recommended via Poetry)
@@ -30,7 +30,7 @@ cd innoscream
 poetry install
 ```
 
-### 3. Create `.env` file
+### 3. Create `app_fastapi/.env` file
 
 ```env
 DB_FILENAME=innoscream.db
