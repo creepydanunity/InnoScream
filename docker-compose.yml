@@ -15,9 +15,9 @@ services:
       context: .
       dockerfile: docker/Dockerfile.api
     env_file: ./app_fastapi/.env
-    working_dir: /app/app_fastapi
+    working_dir: /app
     volumes:
-      - ./db:/app/app_fastapi
+      - ./db/innoscream.db:/app/app_fastapi/innoscream.db
     networks:
       - app-network
 

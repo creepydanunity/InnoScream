@@ -21,8 +21,8 @@ async def handle_scream(msg: types.Message):
     await msg.answer(f"😤 Scream accepted:\n\n{content}", reply_markup=reaction_keyboard(scream_id))
 
 
-@screamRouter.message(Command("next"))
-async def handle_next(msg: types.Message):
+@screamRouter.message(Command("feed"))
+async def handle_feed(msg: types.Message):
     user_id = str(msg.from_user.id)
     try:
         scream = await get_next_scream(user_id)

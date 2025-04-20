@@ -45,8 +45,9 @@ IMGFLIP_PASSWORD=your_imgflip_password
 
 ## 🚀 Running the Project
 ### Via docker-compose:
+- In `InnoScream/`
 ```bash
-TODO: fill
+docker-compose up --build
 ```
 
 ## 📡 Telegram Commands
@@ -54,7 +55,7 @@ TODO: fill
 | Command                     | Description                                      |
 |-----------------------------|--------------------------------------------------|
 | `/scream`                   | Submit a new anonymous scream                    |
-| `/next`                     | Recieve next unseen scream                       |
+| `/feed`                     | Recieve next unseen scream                       |
 | `/stress`                   | Get overall stress level of the current week     |
 | `/my_stats`                 | Get stats for a user (anonymized by user ID)     |
 

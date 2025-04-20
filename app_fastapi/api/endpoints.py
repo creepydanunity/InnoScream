@@ -50,7 +50,7 @@ async def react(data: ReactionRequest, session: AsyncSession = Depends(get_sessi
     )
     if exists:
         raise HTTPException(status_code=409, detail="Already reacted")
-
+    
     reaction = Reaction(emoji=data.emoji, scream_id=data.scream_id, user_hash=user_hash)
     session.add(reaction)
     await session.commit()
@@ -64,7 +64,11 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
     stmt = (
         select(Scream.id, Scream.content, func.count(Reaction.id).label("votes"))
         .join(Reaction, Scream.id == Reaction.scream_id)
-        .where(Scream.timestamp >= today_start, Scream.timestamp < tomorrow)
+        .where(
+            Scream.timestamp >= today_start, 
+            Scream.timestamp < tomorrow,
+            Reaction.emoji != "❌"
+            )
         .group_by(Scream.id)
         .order_by(func.count(Reaction.id).desc())
         .limit(n)
@@ -129,12 +133,18 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
         select(func.count(Scream.id)).where(Scream.user_hash == user_hash)
     )
     total_reactions_given = await session.scalar(
-        select(func.count(Reaction.id)).where(Reaction.user_hash == user_hash)
+        select(func.count(Reaction.id)).where(
+            Reaction.user_hash == user_hash,
+            Reaction.emoji != "❌"
+        )
     )
     total_reactions_got = await session.scalar(
         select(func.count(Reaction.id))
         .join(Scream, Scream.id == Reaction.scream_id)
-        .where(Scream.user_hash == user_hash)
+        .where(
+            Scream.user_hash == user_hash,
+            Reaction.emoji != "❌"
+        )
     )
 
     return {
@@ -183,7 +193,7 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
     from app_fastapi.models.reaction import Reaction
 
     user_hash = hash_user_id(user_id)
-
+    
     stmt = (
         select(Scream)
         .outerjoin(Reaction, (Reaction.scream_id == Scream.id) & (Reaction.user_hash == user_hash))
