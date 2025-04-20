@@ -1,7 +1,7 @@
 from aiogram import Router, types
-from app_bot.api.api import get_next_scream, post_scream, get_top_screams
-from app_bot.keyboards.baseKeyboards import reaction_keyboard
+from app_bot.api.api import post_scream, get_top_screams
 from aiogram.filters import Command
+from app_bot.utils import send_next_scream
 
 
 screamRouter = Router()
@@ -12,23 +12,19 @@ async def handle_scream(msg: types.Message):
     content = msg.text.replace("/scream", "").strip()
     
     if not content:
-        await msg.reply("😶 What to you want to scream?")
+        await msg.reply("😶 <i>What do you want to scream?</i>", parse_mode="HTML")
         return
 
     result = await post_scream(content, user_id)
     scream_id = result["scream_id"]
 
-    await msg.answer(f"😤 Scream accepted!")
+    await msg.answer("😤 <b>Your scream has been unleashed into the void!</b>", parse_mode="HTML")
 
 
 @screamRouter.message(Command("feed"))
 async def handle_feed(msg: types.Message):
-    user_id = str(msg.from_user.id)
-    try:
-        scream = await get_next_scream(user_id)
-        await msg.answer(f"🧠 New scream:\n\n{scream['content']}", reply_markup=reaction_keyboard(scream["scream_id"]))
-    except Exception as e:
-        await msg.answer("😴 There is no more screams today.")
+    dummy_msg = await msg.answer("⏳ Loading your scream...")
+    await send_next_scream(str(msg.from_user.id), dummy_msg)
 
 
 @screamRouter.message(Command("top"))
@@ -37,7 +33,7 @@ async def handle_top(msg: types.Message):
         top = await get_top_screams()
         posts = top.get("posts", [])
         if not posts:
-            await msg.answer("😴 No top screams today.")
+            await msg.answer("😴 No top screams today...")
             return
 
         for i, scream in enumerate(posts, start=1):
@@ -47,7 +43,7 @@ async def handle_top(msg: types.Message):
             caption = (
                 f"🔥 <b>Top scream #{i}</b>\n"
                 f"🗯️ <i>{content}</i>\n"
-                f"👍 <b>{votes}</b> votes"
+                f"👍 <b>{votes}</b> {'vote' if votes == 1 else 'votes'}"
             )
 
             if meme_url:
@@ -60,4 +56,4 @@ async def handle_top(msg: types.Message):
                 await msg.answer(caption, parse_mode="HTML")
 
     except Exception as e:
-        await msg.answer("😴 There was an error getting top screams.")
+        await msg.answer("😴 There was an error getting top screams((")
