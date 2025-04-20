@@ -62,7 +62,7 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
     today_start, tomorrow = get_bounds()
 
     stmt = (
-        select(Scream.id, Scream.content, func.count(Reaction.id).label("votes"))
+        select(Scream, func.count(Reaction.id).label("votes"))
         .join(Reaction, Scream.id == Reaction.scream_id)
         .where(
             Scream.timestamp >= today_start, 
@@ -75,18 +75,19 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
     )
 
     result = await session.execute(stmt)
-    top_n = result.scalars().all()
+    top_n = result.all()
 
     if not top_n:
         return {"posts": []}
 
     posts = []
-    for scream in top_n:
+    for scream, votes in top_n:
         if not scream.meme_url:
             try:
-                meme_url = await generate_meme_url(scream.content)
+                meme_url = await generate_meme_url(scream.user_hash[:10], scream.content)
             except HTTPException as e:
-                continue # TODO: Log Error
+                #logger.warning(f"Failed to generate meme for scream {scream.id}: {e.detail}")
+                continue
             scream.meme_url = meme_url
             await session.execute(
                 update(Scream)
@@ -98,12 +99,13 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
             TopScreamItem(
                 id=scream.id,
                 content=scream.content,
-                votes=len(scream.reactions),
+                votes=votes,
                 meme_url=scream.meme_url
             )
         )
 
     return {"posts": posts}
+
 
 
 @router.get("/stats/{user_id}", response_model=UserStatsResponse)

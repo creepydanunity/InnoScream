@@ -35,3 +35,8 @@ async def get_stress_stats():
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/stats/weekly")
         return resp.json()
+    
+async def get_top_screams(n: int = 3):
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"{API_URL}/top")
+        return resp.json()
