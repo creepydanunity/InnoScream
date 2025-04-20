@@ -11,3 +11,8 @@ class ReactionRequest(BaseModel):
     scream_id: int
     emoji: str
     user_id: str
+
+
+class DeleteRequest(BaseModel):
+    scream_id: int
+    user_id: str

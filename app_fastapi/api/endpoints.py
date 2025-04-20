@@ -21,6 +21,7 @@ from app_fastapi.schemas.responses import (
 from app_fastapi.schemas.requests import (
     CreateScreamRequest,
     ReactionRequest,
+    DeleteRequest,
 )
 
 router = APIRouter()
@@ -176,9 +177,35 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
     return {"chart_url": urllib.parse.quote(chart_url, safe=':/?=&')}
 
 
-@router.delete("/delete/{scream_id}", response_model=DeleteResponse)
-async def delete_scream(scream_id: int, session: AsyncSession = Depends(get_session)):
-    scream = await session.get(Scream, scream_id)
+async def admin_middleware(
+    request: Request, session: AsyncSession = Depends(get_session),):
+    body_bytes = await request.body()
+
+    try:
+        json_data = json.loads(body_bytes)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+
+    user_id = json_data.get("user_id")
+
+    user_hash = hash_user_id(user_id)
+
+    result = await session.execute(select(Admin).where(Admin.user_hash == user_hash))
+    admin = result.scalar_one_or_none()
+
+    if admin is None:
+        raise HTTPException(status_code=403, detail="Unauthorized: not an admin")
+
+    async def receive():
+        return {"type": "http.request", "body": body_bytes}
+    request._receive = receive
+
+
+@router.delete("/delete", response_model=DeleteResponse)
+  async def delete_scream(data: DeleteRequest, session: AsyncSession = Depends(get_session),  
+  _: None = Depends(admin_middleware)):
+    scream = await session.get(Scream, data.scream_id)
+
     if not scream:
         raise HTTPException(status_code=404, detail="Scream not found")
 
