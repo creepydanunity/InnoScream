@@ -18,7 +18,7 @@ async def handle_scream(msg: types.Message):
     result = await post_scream(content, user_id)
     scream_id = result["scream_id"]
 
-    await msg.answer(f"😤 Scream accepted:\n\n{content}", reply_markup=reaction_keyboard(scream_id))
+    await msg.answer(f"😤 Scream accepted!")
 
 
 @screamRouter.message(Command("feed"))

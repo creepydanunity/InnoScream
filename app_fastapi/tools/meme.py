@@ -30,8 +30,9 @@ async def generate_meme_url(user:str, content: str) -> str:
                 "template_id": random.choice(IMGFLIP_TEMPLATE_IDS),
                 "username": IMGFLIP_USERNAME,
                 "password": IMGFLIP_PASSWORD,
-                "text0": f"{user.capitalize()[:5]}:",
+                "text0": f"{user}:",
                 "text1": ' '.join((content[:30]).split()[:-1]) + "..." if len(content) > 30 else content,
+                "max_font_size": 18,
             },
         )
         response_json = response.json()
