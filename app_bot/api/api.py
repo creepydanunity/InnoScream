@@ -10,6 +10,11 @@ async def post_scream(content: str, user_id: str):
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{API_URL}/scream", json={"content": content, "user_id": user_id})
         return resp.json()
+    
+async def delete_scream(scream_id: int):
+    async with httpx.AsyncClient() as client:
+        resp = await client.delete(f"{API_URL}/delete/{scream_id}")
+        return resp.json()
 
 async def react_to_scream(scream_id: int, emoji: str, user_id: str):
     async with httpx.AsyncClient() as client:
