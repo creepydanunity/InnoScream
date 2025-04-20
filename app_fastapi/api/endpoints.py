@@ -1,7 +1,10 @@
 from datetime import timedelta
+import json
+
+from app_fastapi.models.admin import Admin
 from app_fastapi.tools.meme import generate_meme_url
 from app_fastapi.tools.time import get_bounds, get_week_start
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from sqlalchemy import func, select, update
 from app_fastapi.initializers.engine import get_session
 from app_fastapi.tools.crypt import hash_user_id
@@ -177,8 +180,7 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
     return {"chart_url": urllib.parse.quote(chart_url, safe=':/?=&')}
 
 
-async def admin_middleware(
-    request: Request, session: AsyncSession = Depends(get_session),):
+async def admin_middleware(request: Request, session: AsyncSession = Depends(get_session),):
     body_bytes = await request.body()
 
     try:
@@ -202,8 +204,7 @@ async def admin_middleware(
 
 
 @router.delete("/delete", response_model=DeleteResponse)
-  async def delete_scream(data: DeleteRequest, session: AsyncSession = Depends(get_session),  
-  _: None = Depends(admin_middleware)):
+async def delete_scream(data: DeleteRequest, session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
     scream = await session.get(Scream, data.scream_id)
 
     if not scream:

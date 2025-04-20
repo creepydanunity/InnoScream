@@ -12,4 +12,4 @@ class Admin(Base):
     user_hash: Mapped[str] = mapped_column(String, nullable=False)
     
     def __repr__(self):
-        return f"<Scream(id={self.id}, content={self.content[:15]}..., user={self.user_hash})>"
+        return f"<Admin(id={self.id}, user={self.user_hash})>"
