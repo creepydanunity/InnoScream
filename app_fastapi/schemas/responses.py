@@ -35,3 +35,8 @@ class DeleteResponse(BaseModel):
 
 class StressStatsResponse(BaseModel):
     chart_url: str
+
+
+class ScreamResponse(BaseModel):
+    scream_id: int
+    content: str

@@ -30,7 +30,7 @@ cd innoscream
 poetry install
 ```
 
-### 3.1 Create `.env` file in `app_bot/`
+### 3.1 Create `app_bot/.env` file
 ```env
 BOT_TOKEN=<TelegramAPI_Token>
 API_URL=<InnoScreamAPI_URL>

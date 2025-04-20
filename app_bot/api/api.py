@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 import httpx
 
 
-load_dotenv("app_bot/.env")
 API_URL = os.getenv("API_URL")
 
 
@@ -24,6 +23,7 @@ async def react_to_scream(scream_id: int, emoji: str, user_id: str):
 async def get_next_scream(user_id: str):
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/feed/{user_id}")
+        resp.raise_for_status()
         return resp.json()
 
 async def get_user_stats(user_id: str):

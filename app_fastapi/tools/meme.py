@@ -1,11 +1,8 @@
 from http.client import HTTPException
 import os
 import random
-from dotenv import load_dotenv
 import httpx
 
-
-load_dotenv()
 
 IMGFLIP_API_URL = "https://api.imgflip.com/caption_image"
 IMGFLIP_TEMPLATE_IDS = ["181913649", "87743020", "112126428", "217743513", "124822590", "222403160", "131087935", 

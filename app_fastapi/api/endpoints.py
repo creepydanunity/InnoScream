@@ -1,6 +1,6 @@
 from datetime import timedelta
 from app_fastapi.tools.meme import generate_meme_url
-from app_fastapi.tools.time import get_bounds
+from app_fastapi.tools.time import get_bounds, get_week_start
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy import func, select, update
 from app_fastapi.initializers.engine import get_session
@@ -16,6 +16,7 @@ from app_fastapi.schemas.responses import (
     TopScreamsResponse,
     UserStatsResponse,
     DeleteResponse,
+    ScreamResponse,
 )
 from app_fastapi.schemas.requests import (
     CreateScreamRequest,
@@ -174,3 +175,34 @@ async def delete_scream(scream_id: int, session: AsyncSession = Depends(get_sess
     await session.delete(scream)
     await session.commit()
     return {"status": "deleted"}
+
+
+@router.get("/feed/{user_id}", response_model=ScreamResponse)
+async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_session)):
+    from app_fastapi.models.scream import Scream
+    from app_fastapi.models.reaction import Reaction
+
+    user_hash = hash_user_id(user_id)
+
+    stmt = (
+        select(Scream)
+        .outerjoin(Reaction, (Reaction.scream_id == Scream.id) & (Reaction.user_hash == user_hash))
+        .where(
+            Scream.user_hash != user_hash,
+            Reaction.id.is_(None),
+            Scream.timestamp >= get_week_start()
+        )
+        .order_by(Scream.timestamp.asc())
+        .limit(1)
+    )
+
+    result = await session.execute(stmt)
+    scream = result.scalar_one_or_none()
+
+    if not scream:
+        raise HTTPException(status_code=404, detail="No more screams")
+
+    return {
+        "scream_id": scream.id,
+        "content": scream.content
+    }

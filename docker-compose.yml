@@ -1,0 +1,26 @@
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.bot
+    env_file: ./app_bot/.env
+    working_dir: /app/app_bot
+    networks:
+      - app-network
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    env_file: ./app_fastapi/.env
+    working_dir: /app/app_fastapi
+    volumes:
+      - ./db:/app/app_fastapi
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
