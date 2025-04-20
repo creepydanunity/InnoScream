@@ -18,6 +18,8 @@ services:
     working_dir: /app
     volumes:
       - ./db/innoscream.db:/app/app_fastapi/innoscream.db
+    ports:
+      - "8000:8000"
     networks:
       - app-network
 
