@@ -1,4 +1,4 @@
-from http.client import HTTPException
+from fastapi import HTTPException
 import os
 import random
 import httpx
@@ -30,11 +30,12 @@ async def generate_meme_url(user:str, content: str) -> str:
                 "template_id": random.choice(IMGFLIP_TEMPLATE_IDS),
                 "username": IMGFLIP_USERNAME,
                 "password": IMGFLIP_PASSWORD,
-                "text0": f"{user.capitalize()} screaming:",
+                "text0": f"{user.capitalize()[:5]}:",
                 "text1": ' '.join((content[:30]).split()[:-1]) + "..." if len(content) > 30 else content,
             },
         )
         response_json = response.json()
         if not response_json.get("success"):
-            raise HTTPException(status_code=500, detail="Meme generation failed")
+            error = response_json.get("error", "Unknown error")
+            raise HTTPException(status_code=500, detail=f"Meme generation failed: {error}")
         return response_json["data"]["url"]
