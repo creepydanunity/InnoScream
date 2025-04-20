@@ -1,10 +1,8 @@
 from datetime import timedelta
-import json
 
-from app_fastapi.models.admin import Admin
 from app_fastapi.tools.meme import generate_meme_url
 from app_fastapi.tools.time import get_bounds, get_week_start
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy import func, select, update
 from app_fastapi.initializers.engine import get_session
 from app_fastapi.tools.crypt import hash_user_id
@@ -26,6 +24,7 @@ from app_fastapi.schemas.requests import (
     ReactionRequest,
     DeleteRequest,
 )
+from app_fastapi.middlewares.admin import admin_middleware
 
 router = APIRouter()
 
@@ -178,29 +177,6 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
     labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
     chart_url = f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}"
     return {"chart_url": urllib.parse.quote(chart_url, safe=':/?=&')}
-
-
-async def admin_middleware(request: Request, session: AsyncSession = Depends(get_session),):
-    body_bytes = await request.body()
-
-    try:
-        json_data = json.loads(body_bytes)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid JSON")
-
-    user_id = json_data.get("user_id")
-
-    user_hash = hash_user_id(user_id)
-
-    result = await session.execute(select(Admin).where(Admin.user_hash == user_hash))
-    admin = result.scalar_one_or_none()
-
-    if admin is None:
-        raise HTTPException(status_code=403, detail="Unauthorized: not an admin")
-
-    async def receive():
-        return {"type": "http.request", "body": body_bytes}
-    request._receive = receive
 
 
 @router.delete("/delete", response_model=DeleteResponse)
