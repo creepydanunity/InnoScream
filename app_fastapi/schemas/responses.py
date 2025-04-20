@@ -1,0 +1,37 @@
+from pydantic import BaseModel
+from typing import List
+
+
+class CreateScreamResponse(BaseModel):
+    status: str
+    scream_id: int
+
+
+class ReactionResponse(BaseModel):
+    status: str
+
+
+class TopScreamItem(BaseModel):
+    id: int
+    content: str
+    votes: int
+    meme_url: str
+
+
+class TopScreamsResponse(BaseModel):
+    posts: List[TopScreamItem]
+
+
+class UserStatsResponse(BaseModel):
+    screams_posted: int
+    reactions_given: int
+    reactions_got: int
+    chart_url: str
+
+
+class DeleteResponse(BaseModel):
+    status: str
+
+
+class StressStatsResponse(BaseModel):
+    chart_url: str
