@@ -3,12 +3,23 @@ from dotenv import load_dotenv
 import httpx
 
 
-API_URL = os.getenv("API_URL")
+API_URL = os.getenv("API_URL")  
 
 
 async def post_scream(content: str, user_id: str):
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{API_URL}/scream", json={"content": content, "user_id": user_id})
+        return resp.json()
+
+async def create_admin(user_id: str, user_id_to_admin: str):
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(f"{API_URL}/create_admin", json={"user_id_to_admin": user_id_to_admin, "user_id": user_id})
+        resp.raise_for_status()
+        return resp.json()
+
+async def get_my_id(user_id: str):
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(f"{API_URL}/my_id", json={"user_id": user_id})
         return resp.json()
     
 async def delete_scream(scream_id: int, user_id: str):

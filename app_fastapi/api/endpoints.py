@@ -8,6 +8,7 @@ from app_fastapi.initializers.engine import get_session
 from app_fastapi.tools.crypt import hash_user_id
 from app_fastapi.models.scream import Scream
 from app_fastapi.models.reaction import Reaction
+from app_fastapi.models.admin import Admin
 from sqlalchemy.ext.asyncio import AsyncSession
 from app_fastapi.schemas.responses import (
     CreateScreamResponse,
@@ -18,11 +19,15 @@ from app_fastapi.schemas.responses import (
     UserStatsResponse,
     DeleteResponse,
     ScreamResponse,
+    CreateAdminResponse,
+    GetMyIdResponse
 )
 from app_fastapi.schemas.requests import (
     CreateScreamRequest,
     ReactionRequest,
     DeleteRequest,
+    CreateAdminRequest,
+    GetIdRequest
 )
 from app_fastapi.middlewares.admin import admin_middleware
 
@@ -179,8 +184,32 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
     return {"chart_url": urllib.parse.quote(chart_url, safe=':/?=&')}
 
 
+@router.post("/create_admin", response_model=CreateAdminResponse)
+async def create_admin(
+    data: CreateAdminRequest,
+    session: AsyncSession = Depends(get_session),  
+    _: None = Depends(admin_middleware)
+):
+    user_to_admin_hash = hash_user_id(data.user_id_to_admin)
+
+    result = await session.execute(select(Admin).where(Admin.user_hash == user_to_admin_hash))
+    existing_admin = result.scalar_one_or_none()
+    if existing_admin:
+        return {"status": "already_admin"}
+
+    admin = Admin(user_hash=user_to_admin_hash)
+    session.add(admin)
+    await session.commit()
+
+    return {"status": "ok"}
+
+
 @router.delete("/delete", response_model=DeleteResponse)
-async def delete_scream(data: DeleteRequest, session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
+async def delete_scream(
+    data: DeleteRequest, 
+    session: AsyncSession = Depends(get_session),  
+    _: None = Depends(admin_middleware)
+):
     scream = await session.get(Scream, data.scream_id)
 
     if not scream:
@@ -189,6 +218,16 @@ async def delete_scream(data: DeleteRequest, session: AsyncSession = Depends(get
     await session.delete(scream)
     await session.commit()
     return {"status": "deleted"}
+
+
+@router.post("/my_id", response_model=GetMyIdResponse)
+async def get_my_id(data: GetIdRequest):
+    user_id = data.user_id
+
+    if not user_id:
+        raise HTTPException(status_code=400, detail="Missing user_id")
+
+    return {"user_id": user_id}
 
 
 @router.get("/feed/{user_id}", response_model=ScreamResponse)

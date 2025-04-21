@@ -41,6 +41,7 @@ API_URL=<InnoScreamAPI_URL>
 DB_FILENAME=innoscream.db
 IMGFLIP_USERNAME=your_imgflip_username
 IMGFLIP_PASSWORD=your_imgflip_password
+DEFAULT_ADMIN_ID=your_telegram_id
 ```
 
 ## 🚀 Running the Project
