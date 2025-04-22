@@ -22,8 +22,11 @@ from app_fastapi.schemas.requests import (
     CreateScreamRequest,
     ReactionRequest,
 )
+import logging
+
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/scream", response_model=CreateScreamResponse)
