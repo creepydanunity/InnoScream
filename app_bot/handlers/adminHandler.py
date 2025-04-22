@@ -1,6 +1,7 @@
+import httpx
 from aiogram import Router, types, F
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
-from app_bot.api.api import get_next_scream, delete_scream
+from app_bot.api.api import create_admin, get_next_scream, delete_scream
 from app_bot.keyboards.baseKeyboards import reaction_keyboard
 from aiogram.filters import Command
 
@@ -16,6 +17,34 @@ inline_kb = InlineKeyboardMarkup(
         ]
     )
 
+@adminRouter.message(Command("create_admin"))
+async def handle_create_admin(msg: types.Message):
+    args = msg.text.split()
+
+    if len(args) != 2:
+        await msg.answer("Usage: /create_admin <user_id>")
+        return
+
+    user_id_to_admin = args[1]
+    user_id = str(msg.from_user.id) 
+
+    try:
+        result = await create_admin(user_id, user_id_to_admin)
+
+        if result.get("status") == "ok":
+            await msg.answer(f"User {user_id_to_admin} is now an admin!")
+        elif result.get("status") == "already_admin":
+            await msg.answer("This user is already an admin.")
+        else:
+            await msg.answer("Something went wrong.")
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 403:
+            await msg.answer("You do not have permission — only admins can perform this action.")
+        else:
+            await msg.answer("Server error occurred.")
+    except Exception as e:
+        await msg.answer("Failed to assign admin rights.")
+        
 @adminRouter.message(Command("delete"))
 async def handle_delete(msg: types.Message):
     await msg.answer("SCREAM", reply_markup=inline_kb)
