@@ -1,10 +1,20 @@
+import os
 import asyncio
+from dotenv import load_dotenv
 
 from fastapi import FastAPI
 import uvicorn
 
 from app_fastapi.initializers.migration import init_db
 from app_fastapi.api import endpoints
+
+from app_fastapi.initializers.engine import engine, get_session
+from app_fastapi.models.base import Base
+from app_fastapi.models.admin import Admin
+from app_fastapi.tools.crypt import hash_user_id
+from sqlalchemy import select
+
+load_dotenv()
 
 
 app = FastAPI(
@@ -18,6 +28,23 @@ app = FastAPI(
 async def startup():
     await init_db()
 
+    async for session in get_session():
+        user_id = os.getenv("DEFAULT_ADMIN_ID")
+        if not user_id:
+            print("DEFAULT_ADMIN_ID not found in .env")
+            return
+
+        user_hash = hash_user_id(user_id)
+
+        result = await session.execute(select(Admin).where(Admin.user_hash == user_hash))
+        admin_exists = result.scalar_one_or_none()
+
+        if admin_exists is None:
+            session.add(Admin(user_hash=user_hash))
+            await session.commit()
+            print(f"Default admin {user_id} was added.")
+        else:
+            print(f"Admin {user_id} already exists.")
 
 app.include_router(endpoints.router)
 

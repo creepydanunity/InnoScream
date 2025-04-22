@@ -7,6 +7,14 @@ class CreateScreamResponse(BaseModel):
     scream_id: int
 
 
+class CreateAdminResponse(BaseModel):
+    status: str
+
+
+class GetMyIdResponse(BaseModel):
+    user_id: str
+
+
 class ReactionResponse(BaseModel):
     status: str
 
