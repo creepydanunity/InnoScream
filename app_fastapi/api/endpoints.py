@@ -148,12 +148,34 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             Reaction.emoji != "❌"
         )
     )
+    reaction_counts = await session.execute(
+        select(Reaction.emoji, func.count())
+        .join(Scream, Scream.id == Reaction.scream_id)
+        .where(
+            Scream.user_hash == user_hash,
+            Reaction.emoji != "❌"
+        )
+        .group_by(Reaction.emoji)
+    )
+    emoji_data = reaction_counts.all()
+    
+    reaction_chart_url = None
+    if emoji_data:
+        labels = [emoji for emoji, _ in emoji_data]
+        values = [count for _, count in emoji_data]
+    else:
+        labels = ["No reactions"]
+        values = [1]
+
+    chart = f"https://quickchart.io/chart?c={{type:'pie',data:{{labels:{labels},datasets:[{{data:{values}}}]}}}}"
+    reaction_chart_url = urllib.parse.quote(chart, safe=':/?=&')
 
     return {
         "screams_posted": total_posts,
         "reactions_given": total_reactions_given,
         "reactions_got": total_reactions_got,
-        "chart_url": urllib.parse.quote(chart_url, safe=':/?=&')
+        "chart_url": urllib.parse.quote(chart_url, safe=':/?=&'),
+        "reaction_chart_url": reaction_chart_url
     }
 
 
