@@ -1,8 +1,11 @@
+import httpx
 from aiogram import Router, types, F
 from aiogram.types import CallbackQuery
 from app_bot.FSM.admin import AdminScreamReview
 from app_bot.api.api import confirm_scream, delete_scream, get_all_screams_for_admin
 from app_bot.keyboards.adminKeyboards import deletion_keyboard_setup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from app_bot.api.api import create_admin, get_next_scream, delete_scream
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
@@ -35,15 +38,33 @@ async def process_callback_button_back(callback_query: CallbackQuery, state: FSM
     scream_index = (data["index"] - 1) % len(data["screams"])
     screams = data["screams"]
 
-    data["index"] = scream_index
-    current = screams[scream_index]
+@adminRouter.message(Command("create_admin"))
+async def handle_create_admin(msg: types.Message):
+    args = msg.text.split()
 
-    await state.update_data(screams=screams, index=scream_index)
+    if len(args) != 2:
+        await msg.answer("Usage: /create_admin <user_id>")
+        return
 
-    await callback_query.message.edit_text(
-        text=f"🧠 Scream {scream_index + 1} out of {len(screams)}:\n\n📌Scream_id: {current['scream_id']}\n\n📝Content:\n{current['content']}",
-        reply_markup=deletion_keyboard_setup()
-    )
+    user_id_to_admin = args[1]
+    user_id = str(msg.from_user.id) 
+
+    try:
+        result = await create_admin(user_id, user_id_to_admin)
+
+        if result.get("status") == "ok":
+            await msg.answer(f"User {user_id_to_admin} is now an admin!")
+        elif result.get("status") == "already_admin":
+            await msg.answer("This user is already an admin.")
+        else:
+            await msg.answer("Something went wrong.")
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 403:
+            await msg.answer("You do not have permission — only admins can perform this action.")
+        else:
+            await msg.answer("Server error occurred.")
+    except Exception as e:
+        await msg.answer("Failed to assign admin rights.")
 
 @adminRouter.callback_query(F.data.startswith('button_delete'))
 async def process_callback_button_delete(callback_query: CallbackQuery, state: FSMContext):

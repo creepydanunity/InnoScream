@@ -41,7 +41,7 @@ API_URL=<InnoScreamAPI_URL> (default: http://api:8000)
 DB_FILENAME=your_sqlite_db_name (default: innoscream.db)
 IMGFLIP_API_USERNAME=your_imgflip_username
 IMGFLIP_API_PASSWORD=your_imgflip_password
-DEFAULT_ADMIN_ID=your_tg_id
+DEFAULT_ADMIN_ID=your_telegram_id
 ```
 
 ## 🚀 Running the Project

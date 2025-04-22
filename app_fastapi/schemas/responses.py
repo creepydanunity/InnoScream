@@ -7,6 +7,14 @@ class CreateScreamResponse(BaseModel):
     scream_id: int
 
 
+class CreateAdminResponse(BaseModel):
+    status: str
+
+
+class GetMyIdResponse(BaseModel):
+    user_id: str
+
+
 class ReactionResponse(BaseModel):
     status: str
 
@@ -27,6 +35,7 @@ class UserStatsResponse(BaseModel):
     reactions_given: int
     reactions_got: int
     chart_url: str
+    reaction_chart_url: str
 
 
 class DeleteResponse(BaseModel):
