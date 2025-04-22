@@ -1,3 +1,4 @@
+from typing import List
 from datetime import timedelta
 
 from app_fastapi.tools.meme import generate_meme_url
@@ -26,6 +27,7 @@ from app_fastapi.schemas.requests import (
     CreateScreamRequest,
     ReactionRequest,
     DeleteRequest,
+    UserRequest,
     CreateAdminRequest,
     GetIdRequest
 )
@@ -231,7 +233,7 @@ async def create_admin(
     return {"status": "ok"}
 
 
-@router.delete("/delete", response_model=DeleteResponse)
+@router.delete("/delete", response_model=DeleteResponse, dependencies=[Depends(admin_middleware)])
 async def delete_scream(
     data: DeleteRequest, 
     session: AsyncSession = Depends(get_session),  
@@ -286,3 +288,41 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
         "scream_id": scream.id,
         "content": scream.content
     }
+
+@router.post("/screams/admin", response_model=List[ScreamResponse], dependencies=[Depends(admin_middleware)])
+async def get_screams_admin(data: UserRequest, session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
+    from app_fastapi.models.scream import Scream
+    
+    stmt = (
+        select(Scream)
+        .where(
+            Scream.timestamp >= get_week_start(), 
+            Scream.moderated == False
+        )
+        .order_by(Scream.timestamp.asc())
+    )
+
+    result = await session.execute(stmt)
+    screams = result.scalars().all()
+
+    if not screams:
+        raise HTTPException(status_code=404, detail="No screams found")
+
+    return [
+        {
+            "scream_id": scream.id,
+            "content": scream.content
+        }
+        for scream in screams
+    ]
+
+@router.post("/confirm", dependencies=[Depends(admin_middleware)])
+async def confirm_scream(data: DeleteRequest, session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
+    scream = await session.get(Scream, data.scream_id)
+
+    if not scream:
+        raise HTTPException(status_code=404, detail="Scream not found")
+
+    scream.moderated = True
+    await session.commit()
+    return {"status": "confirmed"}

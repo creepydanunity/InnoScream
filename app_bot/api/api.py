@@ -27,6 +27,12 @@ async def delete_scream(scream_id: int, user_id: str):
         resp = await client.delete(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
         resp.raise_for_status()
         return resp.json()
+    
+async def confirm_scream(scream_id: int, user_id: str):
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(f"{API_URL}/confirm", json={"scream_id": scream_id, "user_id": user_id})
+        resp.raise_for_status()
+        return resp.json()
 
 async def react_to_scream(scream_id: int, emoji: str, user_id: str):
     async with httpx.AsyncClient() as client:
@@ -42,6 +48,14 @@ async def get_next_scream(user_id: str):
         resp = await client.get(f"{API_URL}/feed/{user_id}")
         resp.raise_for_status()
         return resp.json()
+    
+async def get_all_screams_for_admin(user_id: str):
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(f"{API_URL}/screams/admin", json={
+            "user_id": user_id
+        })
+        resp.raise_for_status()
+        return resp.json()
 
 async def get_user_stats(user_id: str):
     async with httpx.AsyncClient() as client:
@@ -53,7 +67,7 @@ async def get_stress_stats():
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/stats/weekly")
         return resp.json()
-    
+
 async def get_top_screams(n: int = 3):
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/top")

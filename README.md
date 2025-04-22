@@ -33,14 +33,14 @@ poetry install
 ### 3.1 Create `app_bot/.env` file
 ```env
 BOT_TOKEN=<TelegramAPI_Token>
-API_URL=<InnoScreamAPI_URL>
+API_URL=<InnoScreamAPI_URL> (default: http://api:8000)
 ```
 
 ### 3.2 Create `app_fastapi/.env` file
 ```env
-DB_FILENAME=innoscream.db
-IMGFLIP_USERNAME=your_imgflip_username
-IMGFLIP_PASSWORD=your_imgflip_password
+DB_FILENAME=your_sqlite_db_name (default: innoscream.db)
+IMGFLIP_API_USERNAME=your_imgflip_username
+IMGFLIP_API_PASSWORD=your_imgflip_password
 DEFAULT_ADMIN_ID=your_telegram_id
 ```
 
@@ -53,12 +53,15 @@ docker-compose up --build
 
 ## 📡 Telegram Commands
 
-| Command                     | Description                                      |
-|-----------------------------|--------------------------------------------------|
-| `/scream`                   | Submit a new anonymous scream                    |
-| `/feed`                     | Recieve next unseen scream                       |
-| `/stress`                   | Get overall stress level of the current week     |
-| `/my_stats`                 | Get stats for a user (anonymized by user ID)     |
+| Command                     | Description                                       |
+|-----------------------------|---------------------------------------------------|
+| `/scream`                   | Submit a new anonymous scream                     |
+| `/feed`                     | Recieve next unseen scream                        |
+| `/stress`                   | Get overall stress level of the current week      |
+| `/my_stats`                 | Get stats for a user (anonymized by user ID)      |
+| `/delete`                   | Open scream moderation panel                      |
+| `/my_id`                    | Get your telegram_id (for testing purposes)       |
+| `/create_admin`             | Add user as admin (telegram_id as param required) |
 
 ## 📜 License
 
