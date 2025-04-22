@@ -1,4 +1,6 @@
 from datetime import timedelta
+import json
+from app_fastapi.tools.graph import generate_graph_url
 from app_fastapi.tools.meme import generate_meme_url
 from app_fastapi.tools.time import get_bounds, get_week_start
 from fastapi import APIRouter, HTTPException, Depends
@@ -129,8 +131,27 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             daily_counts[index] += 1
 
     labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
-    chart_url = f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}"
 
+    config = {
+        "type": "bar",
+        "data": {
+            "labels": labels,
+            "datasets": [{
+                "label": "Screams",
+                "data": daily_counts
+            }]
+        }
+    }
+
+    postdata = {
+        'chart': json.dumps(config),
+        'width': 500,
+        'height': 300,
+        'backgroundColor': 'transparent',
+    }
+
+    chart_url = await generate_graph_url(postdata)
+    
     total_posts = await session.scalar(
         select(func.count(Scream.id)).where(Scream.user_hash == user_hash)
     )
@@ -153,7 +174,7 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
         "screams_posted": total_posts,
         "reactions_given": total_reactions_given,
         "reactions_got": total_reactions_got,
-        "chart_url": urllib.parse.quote(chart_url, safe=':/?=&')
+        "chart_url": chart_url,
     }
 
 
@@ -174,7 +195,7 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
             daily_counts[index] += 1
 
     labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
-    chart_url = f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}"
+    chart_url = f"https://quickchart.io/chart/create?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}"
     return {"chart_url": urllib.parse.quote(chart_url, safe=':/?=&')}
 
 
