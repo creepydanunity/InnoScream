@@ -16,3 +16,6 @@ class ReactionRequest(BaseModel):
 class DeleteRequest(BaseModel):
     scream_id: int
     user_id: str
+
+class UserRequest(BaseModel):
+    user_id: str

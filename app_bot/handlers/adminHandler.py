@@ -1,9 +1,8 @@
 from aiogram import Router, types, F
 from aiogram.types import CallbackQuery
 from app_bot.FSM.admin import AdminScreamReview
-from app_bot.api.api import confirm_scream, get_next_scream, delete_scream, get_all_screams_for_admin
+from app_bot.api.api import confirm_scream, delete_scream, get_all_screams_for_admin
 from app_bot.keyboards.adminKeyboards import deletion_keyboard_setup
-from app_bot.keyboards.baseKeyboards import reaction_keyboard
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
@@ -12,7 +11,7 @@ adminRouter = Router()
 
 @adminRouter.message(Command("delete"))
 async def handle_delete(msg: types.Message, state: FSMContext):
-    screams = await get_all_screams_for_admin()
+    screams = await get_all_screams_for_admin(str(msg.from_user.id))
 
     if not screams:
         await msg.answer("😴 No screams available.")
@@ -38,6 +37,8 @@ async def process_callback_button_back(callback_query: CallbackQuery, state: FSM
 
     data["index"] = scream_index
     current = screams[scream_index]
+
+    await state.update_data(screams=screams, index=scream_index)
 
     await callback_query.message.edit_text(
         text=f"🧠 Scream {scream_index + 1} out of {len(screams)}:\n\n📌Scream_id: {current['scream_id']}\n\n📝Content:\n{current['content']}",
@@ -117,6 +118,8 @@ async def process_callback_button_next(callback_query: CallbackQuery, state: FSM
     data["index"] = scream_index
     current = screams[scream_index]
 
+    await state.update_data(screams=screams, index=scream_index)
+    
     await callback_query.message.edit_text(
         text=f"🧠 Scream {scream_index + 1} out of {len(screams)}:\n\n📌Scream_id: {current['scream_id']}\n\n📝Content:\n{current['content']}",
         reply_markup=deletion_keyboard_setup()

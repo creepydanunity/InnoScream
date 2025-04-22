@@ -24,6 +24,7 @@ from app_fastapi.schemas.requests import (
     CreateScreamRequest,
     ReactionRequest,
     DeleteRequest,
+    UserRequest,
 )
 from app_fastapi.middlewares.admin import admin_middleware
 
@@ -180,7 +181,7 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
     return {"chart_url": urllib.parse.quote(chart_url, safe=':/?=&')}
 
 
-@router.delete("/delete", response_model=DeleteResponse)
+@router.delete("/delete", response_model=DeleteResponse, dependencies=[Depends(admin_middleware)])
 async def delete_scream(data: DeleteRequest, session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
     scream = await session.get(Scream, data.scream_id)
 
@@ -222,8 +223,8 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
         "content": scream.content
     }
 
-@router.get("/screams/admin", response_model=List[ScreamResponse])
-async def get_screams_admin(session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
+@router.post("/screams/admin", response_model=List[ScreamResponse], dependencies=[Depends(admin_middleware)])
+async def get_screams_admin(data: UserRequest, session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
     from app_fastapi.models.scream import Scream
     
     stmt = (

@@ -13,7 +13,7 @@ async def post_scream(content: str, user_id: str):
     
 async def delete_scream(scream_id: int, user_id: str):
     async with httpx.AsyncClient() as client:
-        resp = await client.post(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
+        resp = await client.delete(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
         resp.raise_for_status()
         return resp.json()
     
@@ -38,9 +38,11 @@ async def get_next_scream(user_id: str):
         resp.raise_for_status()
         return resp.json()
     
-async def get_all_screams_for_admin():
+async def get_all_screams_for_admin(user_id: str):
     async with httpx.AsyncClient() as client:
-        resp = await client.get(f"{API_URL}/screams/admin")
+        resp = await client.post(f"{API_URL}/screams/admin", json={
+            "user_id": user_id
+        })
         resp.raise_for_status()
         return resp.json()
 
