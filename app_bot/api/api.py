@@ -46,9 +46,15 @@ async def get_next_scream(user_id: str):
 async def get_user_stats(user_id: str):
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/stats/{user_id}")
+        resp.raise_for_status()
         return resp.json()
 
 async def get_stress_stats():
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/stats/weekly")
+        return resp.json()
+    
+async def get_top_screams(n: int = 3):
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(f"{API_URL}/top")
         return resp.json()

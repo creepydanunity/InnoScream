@@ -35,6 +35,7 @@ class UserStatsResponse(BaseModel):
     reactions_given: int
     reactions_got: int
     chart_url: str
+    reaction_chart_url: str
 
 
 class DeleteResponse(BaseModel):
