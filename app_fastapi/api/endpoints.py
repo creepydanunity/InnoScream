@@ -1,6 +1,4 @@
 from datetime import timedelta
-import json
-from app_fastapi.tools.graph import generate_graph_url
 from app_fastapi.tools.meme import generate_meme_url
 from app_fastapi.tools.time import get_bounds, get_week_start
 from fastapi import APIRouter, HTTPException, Depends
@@ -131,26 +129,7 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             daily_counts[index] += 1
 
     labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
-
-    config = {
-        "type": "bar",
-        "data": {
-            "labels": labels,
-            "datasets": [{
-                "label": "Screams",
-                "data": daily_counts
-            }]
-        }
-    }
-
-    postdata = {
-        'chart': json.dumps(config),
-        'width': 500,
-        'height': 300,
-        'backgroundColor': 'transparent',
-    }
-
-    chart_url = await generate_graph_url(postdata)
+    chart_url = urllib.parse.quote(f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}", safe=':/?=&')
     
     total_posts = await session.scalar(
         select(func.count(Scream.id)).where(Scream.user_hash == user_hash)
