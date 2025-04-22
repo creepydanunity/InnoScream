@@ -223,12 +223,15 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
     }
 
 @router.get("/screams/admin", response_model=List[ScreamResponse])
-async def get_next_scream(session: AsyncSession = Depends(get_session)):
+async def get_screams_admin(session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
     from app_fastapi.models.scream import Scream
     
     stmt = (
         select(Scream)
-        .where(Scream.timestamp >= get_week_start())
+        .where(
+            Scream.timestamp >= get_week_start(), 
+            Scream.moderated == False
+        )
         .order_by(Scream.timestamp.asc())
     )
 
@@ -245,3 +248,14 @@ async def get_next_scream(session: AsyncSession = Depends(get_session)):
         }
         for scream in screams
     ]
+
+@router.post("/confirm", dependencies=[Depends(admin_middleware)])
+async def confirm_scream(data: DeleteRequest, session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
+    scream = await session.get(Scream, data.scream_id)
+
+    if not scream:
+        raise HTTPException(status_code=404, detail="Scream not found")
+
+    scream.moderated = True
+    await session.commit()
+    return {"status": "confirmed"}

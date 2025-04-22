@@ -16,6 +16,12 @@ async def delete_scream(scream_id: int, user_id: str):
         resp = await client.post(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
         resp.raise_for_status()
         return resp.json()
+    
+async def confirm_scream(scream_id: int, user_id: str):
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(f"{API_URL}/confirm", json={"scream_id": scream_id, "user_id": user_id})
+        resp.raise_for_status()
+        return resp.json()
 
 async def react_to_scream(scream_id: int, emoji: str, user_id: str):
     async with httpx.AsyncClient() as client:

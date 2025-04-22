@@ -15,6 +15,6 @@ def get_bounds(days=1, addition=True):
         )
 
 def get_week_start():
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     week_start = now - timedelta(days=now.weekday())
     return week_start.replace(hour=0, minute=0, second=0, microsecond=0)
