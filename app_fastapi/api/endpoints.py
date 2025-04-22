@@ -87,9 +87,9 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
     for scream, votes in top_n:
         if not scream.meme_url:
             try:
-                meme_url = await generate_meme_url(scream.user_hash[:10], scream.content)
+                meme_url = await generate_meme_url(scream.user_hash[:5], scream.content)
             except HTTPException as e:
-                logger.warning(f"Failed to generate meme for scream {scream.id}: {e.detail}")
+                #logger.warning(f"Failed to generate meme for scream {scream.id}: {e.detail}")
                 continue
             scream.meme_url = meme_url
             await session.execute(
@@ -108,6 +108,7 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
         )
 
     return {"posts": posts}
+
 
 
 @router.get("/stats/{user_id}", response_model=UserStatsResponse)
@@ -131,8 +132,8 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             daily_counts[index] += 1
 
     labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
-    chart_url = f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}"
-
+    chart_url = urllib.parse.quote(f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}", safe=':/?=&')
+    
     total_posts = await session.scalar(
         select(func.count(Scream.id)).where(Scream.user_hash == user_hash)
     )
@@ -150,12 +151,34 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             Reaction.emoji != "❌"
         )
     )
+    reaction_counts = await session.execute(
+        select(Reaction.emoji, func.count())
+        .join(Scream, Scream.id == Reaction.scream_id)
+        .where(
+            Scream.user_hash == user_hash,
+            Reaction.emoji != "❌"
+        )
+        .group_by(Reaction.emoji)
+    )
+    emoji_data = reaction_counts.all()
+    
+    reaction_chart_url = None
+    if emoji_data:
+        labels = [emoji for emoji, _ in emoji_data]
+        values = [count for _, count in emoji_data]
+    else:
+        labels = ["No reactions"]
+        values = [1]
+
+    chart = f"https://quickchart.io/chart?c={{type:'pie',data:{{labels:{labels},datasets:[{{data:{values}}}]}}}}"
+    reaction_chart_url = urllib.parse.quote(chart, safe=':/?=&')
 
     return {
         "screams_posted": total_posts,
         "reactions_given": total_reactions_given,
         "reactions_got": total_reactions_got,
-        "chart_url": urllib.parse.quote(chart_url, safe=':/?=&')
+        "chart_url": chart_url,
+        "reaction_chart_url": reaction_chart_url
     }
 
 
@@ -176,7 +199,7 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
             daily_counts[index] += 1
 
     labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
-    chart_url = f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}"
+    chart_url = f"https://quickchart.io/chart/create?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}"
     return {"chart_url": urllib.parse.quote(chart_url, safe=':/?=&')}
 
 
