@@ -1,3 +1,4 @@
+from typing import List
 from datetime import timedelta
 
 from app_fastapi.tools.meme import generate_meme_url
@@ -220,3 +221,27 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
         "scream_id": scream.id,
         "content": scream.content
     }
+
+@router.get("/screams/admin", response_model=List[ScreamResponse])
+async def get_next_scream(session: AsyncSession = Depends(get_session)):
+    from app_fastapi.models.scream import Scream
+    
+    stmt = (
+        select(Scream)
+        .where(Scream.timestamp >= get_week_start())
+        .order_by(Scream.timestamp.asc())
+    )
+
+    result = await session.execute(stmt)
+    screams = result.scalars().all()
+
+    if not screams:
+        raise HTTPException(status_code=404, detail="No screams found")
+
+    return [
+        {
+            "scream_id": scream.id,
+            "content": scream.content
+        }
+        for scream in screams
+    ]
