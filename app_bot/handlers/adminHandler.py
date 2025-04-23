@@ -14,7 +14,15 @@ adminRouter = Router()
 
 @adminRouter.message(Command("delete"))
 async def handle_delete(msg: types.Message, state: FSMContext):
-    screams = await get_all_screams_for_admin(str(msg.from_user.id))
+    screams = []
+    try:
+        screams = await get_all_screams_for_admin(str(msg.from_user.id))
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            await msg.answer("🎉 All screams are already reviewed.")
+        elif e.response.status_code == 403:
+            await msg.answer("You do not have permission — only admins can perform this action.")
+        return
 
     if not screams:
         await msg.answer("😴 No screams available.")
@@ -37,6 +45,16 @@ async def process_callback_button_back(callback_query: CallbackQuery, state: FSM
     data = await state.get_data()
     scream_index = (data["index"] - 1) % len(data["screams"])
     screams = data["screams"]
+
+    data["index"] = scream_index
+    current = screams[scream_index]
+
+    await state.update_data(screams=screams, index=scream_index)
+    
+    await callback_query.message.edit_text(
+        text=f"🧠 Scream {scream_index + 1} out of {len(screams)}:\n\n📌Scream_id: {current['scream_id']}\n\n📝Content:\n{current['content']}",
+        reply_markup=deletion_keyboard_setup()
+    )
 
 @adminRouter.message(Command("create_admin"))
 async def handle_create_admin(msg: types.Message):

@@ -16,7 +16,7 @@ async def handle_stress(msg: types.Message):
     )
 
 
-@statsRouter.message(Command("my_stats"))
+@statsRouter.message(Command("stats"))
 async def handle_user_stats(msg: types.Message):
     user_id = str(msg.from_user.id)
     stats = await get_user_stats(user_id)

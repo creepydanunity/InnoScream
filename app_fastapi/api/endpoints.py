@@ -124,9 +124,11 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
 @router.get("/stats/{user_id}", response_model=UserStatsResponse)
 async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_session)):
     import urllib.parse
-    
+    from datetime import datetime, timezone, timedelta
+
     user_hash = hash_user_id(user_id)
-    _, week_ago = get_bounds(days=6, addition=False)
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    week_ago = today - timedelta(days=6)
 
     daily_counts = [0] * 7
     stmt = (
@@ -137,6 +139,7 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
     timestamps = result.scalars().all()
 
     for ts in timestamps:
+        ts = ts.astimezone(timezone.utc)
         index = (ts.date() - week_ago.date()).days
         if 0 <= index < 7:
             daily_counts[index] += 1
@@ -192,25 +195,32 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
     }
 
 
-@router.get("/stats/weekly", response_model=StressStatsResponse)
+@router.get("/stress", response_model=StressStatsResponse)
 async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_session)):
     import urllib.parse
+    from datetime import datetime, timezone, timedelta
 
-    _, week_ago = get_bounds(days=6, addition=False)
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    week_ago = today - timedelta(days=6)
 
     daily_counts = [0] * 7
     stmt = select(Scream.timestamp).where(Scream.timestamp >= week_ago)
+
     result = await session.execute(stmt)
     timestamps = result.scalars().all()
 
     for ts in timestamps:
+        ts = ts.astimezone(timezone.utc)
         index = (ts.date() - week_ago.date()).days
         if 0 <= index < 7:
             daily_counts[index] += 1
 
     labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
-    chart_url = f"https://quickchart.io/chart/create?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}"
-    return {"chart_url": urllib.parse.quote(chart_url, safe=':/?=&')}
+
+    chart_url = urllib.parse.quote(f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}", safe=':/?=&')
+
+    
+    return {"chart_url": chart_url}
 
 
 @router.post("/create_admin", response_model=CreateAdminResponse)
@@ -233,7 +243,7 @@ async def create_admin(
     return {"status": "ok"}
 
 
-@router.delete("/delete", response_model=DeleteResponse, dependencies=[Depends(admin_middleware)])
+@router.post("/delete", response_model=DeleteResponse, dependencies=[Depends(admin_middleware)])
 async def delete_scream(
     data: DeleteRequest, 
     session: AsyncSession = Depends(get_session),  
