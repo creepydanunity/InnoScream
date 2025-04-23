@@ -97,7 +97,7 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
     for scream, votes in top_n:
         if not scream.meme_url:
             try:
-                meme_url = await generate_meme_url(scream.user_hash[:5], scream.content)
+                meme_url = await generate_meme_url(scream.content)
             except HTTPException as e:
                 #logger.warning(f"Failed to generate meme for scream {scream.id}: {e.detail}")
                 continue

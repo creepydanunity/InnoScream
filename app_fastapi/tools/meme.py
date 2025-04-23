@@ -22,16 +22,18 @@ IMGFLIP_USERNAME = os.getenv("IMGFLIP_API_USERNAME")
 IMGFLIP_PASSWORD = os.getenv("IMGFLIP_API_PASSWORD")
 
 
-async def generate_meme_url(user:str, content: str) -> str:
+async def generate_meme_url(content: str) -> str:
     async with httpx.AsyncClient() as client:
+        content = content.replace(",.! ", "").strip().split()
+        part_1, part_2 = content[:len(content)//2], content[len(content)//2:]
         response = await client.post(
             IMGFLIP_API_URL,
             data={
                 "template_id": random.choice(IMGFLIP_TEMPLATE_IDS),
                 "username": IMGFLIP_USERNAME,
                 "password": IMGFLIP_PASSWORD,
-                "text0": f"{user}:",
-                "text1": ' '.join((content[:30]).split()[:-1]) + "..." if len(content) > 30 else content,
+                "text0": (' '.join(part_1[:6])) + "..." if len(part_1) > 6 else part_1,
+                "text1": (' '.join(part_2[:6])) + "..." if len(part_2) > 6 else part_2,
                 "max_font_size": 18,
             },
         )
