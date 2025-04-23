@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from app_fastapi.models.base import Base
+from .base import Base
 
 class UserFeedProgress(Base):
     __tablename__ = "user_feed_progress"

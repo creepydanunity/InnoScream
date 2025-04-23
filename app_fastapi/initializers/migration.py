@@ -1,5 +1,5 @@
 from app_fastapi.initializers.engine import engine
-from app_fastapi.models.base import Base
+from app_fastapi.models import Base
 
 
 async def init_db():

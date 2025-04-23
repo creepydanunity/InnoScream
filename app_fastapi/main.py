@@ -45,6 +45,8 @@ async def startup():
             print(f"Default admin {user_id} was added.")
         else:
             print(f"Admin {user_id} already exists.")
+    
+    # TODO: Coroutine for archivation call
 
 app.include_router(endpoints.router)
 

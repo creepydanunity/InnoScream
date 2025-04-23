@@ -1,5 +1,5 @@
 from typing import Optional
-from app_fastapi.models.base import Base
+from .base import Base
 from sqlalchemy import String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime, timezone

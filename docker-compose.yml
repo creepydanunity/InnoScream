@@ -17,7 +17,7 @@ services:
     env_file: ./app_fastapi/.env
     working_dir: /app
     volumes:
-      - ./db:/app/app_fastapi/innoscream.db
+      - ./db:/app/app_fastapi/db
     ports:
       - "8000:8000"
     networks:
