@@ -2,7 +2,7 @@ from aiogram import Router, types
 from app_bot.api.api import post_scream, get_top_screams
 from aiogram.filters import Command
 from app_bot.utils import send_next_scream
-
+from app_bot.logger import logger
 
 screamRouter = Router()
 
@@ -12,30 +12,40 @@ async def handle_scream(msg: types.Message):
     content = msg.text.replace("/scream", "").strip()
     
     if not content:
+        logger.warning(f"Empty scream from user {user_id}")
         await msg.reply("😶 <i>What do you want to scream?</i>", parse_mode="HTML")
         return
 
-    result = await post_scream(content, user_id)
-    scream_id = result["scream_id"]
-
-    await msg.answer("😤 <b>Your scream has been unleashed into the void!</b>", parse_mode="HTML")
-
+    try:
+        logger.info(f"Processing scream from user {user_id}")
+        result = await post_scream(content, user_id)
+        scream_id = result["scream_id"]
+        logger.info(f"Scream {scream_id} posted by user {user_id}")
+        await msg.answer("😤 <b>Your scream has been unleashed into the void!</b>", parse_mode="HTML")
+    except Exception as e:
+        logger.error(f"Failed to post scream: {str(e)}", exc_info=True)
+        await msg.answer("❌ Failed to post your scream")
 
 @screamRouter.message(Command("feed"))
 async def handle_feed(msg: types.Message):
+    user_id = str(msg.from_user.id)
+    logger.info(f"User {user_id} requested feed")
     dummy_msg = await msg.answer("⏳ Loading your scream...")
-    await send_next_scream(str(msg.from_user.id), dummy_msg)
-
+    await send_next_scream(user_id, dummy_msg)
 
 @screamRouter.message(Command("top"))
 async def handle_top(msg: types.Message):
     try:
+        logger.info("Processing top screams request")
         top = await get_top_screams()
         posts = top.get("posts", [])
+        
         if not posts:
+            logger.info("No top screams available")
             await msg.answer("😴 No top screams today...")
             return
 
+        logger.debug(f"Showing {len(posts)} top screams")
         for i, scream in enumerate(posts, start=1):
             content = scream["content"]
             votes = scream["votes"]
@@ -56,4 +66,5 @@ async def handle_top(msg: types.Message):
                 await msg.answer(caption, parse_mode="HTML")
 
     except Exception as e:
+        logger.error(f"Failed to get top screams: {str(e)}", exc_info=True)
         await msg.answer("😴 There was an error getting top screams((")

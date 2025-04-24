@@ -5,26 +5,43 @@ from app_fastapi.models.admin import Admin
 from app_fastapi.tools.crypt import hash_user_id
 from fastapi import Request, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+import logging
 
+logger = logging.getLogger("app_fastapi")
 
-async def admin_middleware(request: Request, session: AsyncSession = Depends(get_session),):
-    body_bytes = await request.body()
-
+async def admin_middleware(request: Request, session: AsyncSession = Depends(get_session)):
     try:
-        json_data = json.loads(body_bytes)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid JSON")
+        logger.debug("Admin middleware processing request")
+        body_bytes = await request.body()
 
-    user_id = json_data.get("user_id")
+        try:
+            json_data = json.loads(body_bytes)
+        except Exception as e:
+            logger.warning(f"Invalid JSON in request: {str(e)}")
+            raise HTTPException(status_code=400, detail="Invalid JSON")
 
-    user_hash = hash_user_id(user_id)
+        user_id = json_data.get("user_id")
+        if not user_id:
+            logger.warning("Missing user_id in request")
+            raise HTTPException(status_code=400, detail="Missing user_id")
 
-    result = await session.execute(select(Admin).where(Admin.user_hash == user_hash))
-    admin = result.scalar_one_or_none()
+        logger.debug(f"Checking admin rights for user: {user_id[:5]}...")
+        user_hash = hash_user_id(user_id)
 
-    if admin is None:
-        raise HTTPException(status_code=403, detail="Unauthorized: not an admin")
+        result = await session.execute(select(Admin).where(Admin.user_hash == user_hash))
+        admin = result.scalar_one_or_none()
 
-    async def receive():
-        return {"type": "http.request", "body": body_bytes}
-    request._receive = receive
+        if admin is None:
+            logger.warning(f"Unauthorized admin access attempt by user: {user_id[:5]}...")
+            raise HTTPException(status_code=403, detail="Unauthorized: not an admin")
+
+        logger.debug(f"Admin access granted for user: {user_id[:5]}...")
+        
+        async def receive():
+            return {"type": "http.request", "body": body_bytes}
+        request._receive = receive
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Admin middleware error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
