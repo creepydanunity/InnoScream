@@ -8,10 +8,26 @@ class CreateScreamResponse(BaseModel):
 
 
 class CreateAdminResponse(BaseModel):
+
+    """
+    Response model for admin creation request.
+
+    Attributes:
+        status (str): Status of the operation ("ok", "already_admin").
+    """
+
     status: str
 
 
 class GetMyIdResponse(BaseModel):
+
+    """
+    Response model for returning the current user's ID.
+
+    Attributes:
+        user_id (str): ID of the user.
+    """
+
     user_id: str
 
 
@@ -39,6 +55,14 @@ class UserStatsResponse(BaseModel):
 
 
 class DeleteResponse(BaseModel):
+
+    """
+    Response model returned after a scream is deleted.
+
+    Attributes:
+        status (str): Status of the operation ("deleted").
+    """
+
     status: str
 
 
