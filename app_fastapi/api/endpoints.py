@@ -229,6 +229,23 @@ async def create_admin(
     session: AsyncSession = Depends(get_session),  
     _: None = Depends(admin_middleware)
 ):
+
+    """
+    Assigns admin privileges to a specified user.
+
+    This endpoint can only be accessed by an existing admin (validated via middleware).
+    If the specified user is already an admin, returns status "already_admin".
+    Otherwise, adds the user to the admin table and returns status "ok".
+
+    Args:
+        data (CreateAdminRequest): Contains the ID of the requester and ID of the user to be promoted.
+        session (AsyncSession): Database session, injected via dependency.
+        _ (None): Result of admin_middleware; ensures the requester is admin.
+
+    Returns:
+        CreateAdminResponse: A response object with status "ok" or "already_admin".
+    """
+
     user_to_admin_hash = hash_user_id(data.user_id_to_admin)
 
     result = await session.execute(select(Admin).where(Admin.user_hash == user_to_admin_hash))
@@ -249,6 +266,24 @@ async def delete_scream(
     session: AsyncSession = Depends(get_session),  
     _: None = Depends(admin_middleware)
 ):
+
+    """
+    Deletes a scream by its ID. 
+
+    This endpoint can only be accessed by users with admin privileges, 
+    which are verified by the `admin_middleware`. If the scream with the 
+    specified ID does not exist, a 404 error is returned.
+
+    Args:
+        data (DeleteRequest): Contains the ID of the scream to be deleted and 
+            the user ID of the requester.
+        session (AsyncSession): Database session provided via dependency injection.
+        _ (None): Result of admin_middleware; ensures the requester is admin.
+
+    Returns:
+        DeleteResponse: A response object with status "deleted".
+    """
+
     scream = await session.get(Scream, data.scream_id)
 
     if not scream:
@@ -261,6 +296,19 @@ async def delete_scream(
 
 @router.post("/my_id", response_model=GetMyIdResponse)
 async def get_my_id(data: GetIdRequest):
+
+    """
+    Returns the user ID.
+
+    This endpoint simply echoes back the user ID sent by the client. 
+
+    Args:
+        data (GetIdRequest): Contains the user ID to return.
+
+    Returns:
+        GetMyIdResponse: A response object with the provided user ID.
+    """
+
     user_id = data.user_id
 
     if not user_id:
