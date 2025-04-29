@@ -156,6 +156,16 @@ async def get_user_stats(user_id: str):
 
 
 async def get_stress_stats():
+    """
+    Fetch the collective weekly stress statistics from the backend API.
+
+    Returns:
+        dict: A JSON object containing the URL to the generated stress chart.
+
+    Raises:
+        httpx.HTTPStatusError: If the backend API responds with an error status.
+    """
+
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/stress")
         resp.raise_for_status()

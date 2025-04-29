@@ -237,6 +237,22 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
 
 @router.get("/stress", response_model=StressStatsResponse)
 async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_session)):
+    """
+    Generate a weekly stress graph showing the number of screams posted each day.
+
+    Args:
+        session (AsyncSession, optional): Database session dependency.
+
+    Returns:
+        dict: A dictionary containing:
+            - chart_url (str): A URL to a bar chart visualizing the daily scream counts over the past 7 days.
+
+    Behavior:
+        - Counts all screams posted in the last 7 days (UTC time).
+        - Aggregates the daily totals.
+        - Creates a bar chart using QuickChart.io and returns the chart URL.
+    """
+
     import urllib.parse
     from datetime import datetime, timezone, timedelta
 
@@ -376,7 +392,7 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
         - Retrieves the next scream from this week that the user has not reacted to.
         - Excludes the user's own screams.
     """
-    
+
     from app_fastapi.models.scream import Scream
     from app_fastapi.models.reaction import Reaction
 

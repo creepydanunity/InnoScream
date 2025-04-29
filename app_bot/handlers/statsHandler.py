@@ -5,10 +5,21 @@ from aiogram.filters import Command
 
 statsRouter = Router()
 
+
 @statsRouter.message(Command("stress"))
 async def handle_stress(msg: types.Message):
-    stats = await get_stress_stats()
+    """
+    Handle the /stress command to display a collective stress chart.
 
+    Args:
+        msg (types.Message): Incoming Telegram message containing the /stress command.
+
+    Behavior:
+        - Fetches the weekly scream statistics from the backend.
+        - Sends a bar chart image showing the number of screams per day over the past week.
+    """
+
+    stats = await get_stress_stats()
     await msg.answer_photo(
         photo=stats.get("chart_url"),
         caption="📉 <b>This week's collective stress level</b>",
