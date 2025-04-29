@@ -50,6 +50,9 @@ class TopScreamsResponse(BaseModel):
         logger.debug(f"TopScreamsResponse representation: posts_count={len(self.posts)}")
         return f"<TopScreamsResponse(posts={len(self.posts)})>"
 
+class ArchivedWeeksResponse(BaseModel):
+    weeks: List[int]
+
 class UserStatsResponse(BaseModel):
     screams_posted: int
     reactions_given: int

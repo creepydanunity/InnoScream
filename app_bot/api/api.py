@@ -137,3 +137,58 @@ async def get_top_screams(n: int = 3):
     except Exception as e:
         logger.error(f"Failed to get top screams: {str(e)}", exc_info=True)
         raise
+
+async def get_history():
+    try:
+        logger.debug("Fetching available historical weeks")
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(f"{API_URL}/history")
+            resp.raise_for_status()
+            data = resp.json()
+            return data.get("weeks", [])
+    except Exception as e:
+        logger.error(f"Failed to get history: {str(e)}", exc_info=True)
+        raise
+
+async def get_historical_week(week_id: str):
+    try:
+        logger.debug(f"Fetching historical week {week_id}")
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(f"{API_URL}/history/{week_id}")
+            resp.raise_for_status()
+            data = resp.json()
+            
+            # Берем топ 3 крика из полученных данных
+            top_three = data.get("posts", [])[:3]
+            logger.info(f"Retrieved {len(top_three)} screams for week {week_id}")
+            return top_three
+            
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            logger.warning(f"Week {week_id} not found")
+            raise ValueError("Week not found in archive")
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get historical week: {str(e)}", exc_info=True)
+        raise
+
+async def archive_current_week(week_id: str, user_id: str):
+    try:
+        logger.debug(f"Archiving week as {week_id}")
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{API_URL}/history/{week_id}",
+                json={"user_id": user_id}
+            )
+            resp.raise_for_status()
+            logger.info(f"Week {week_id} archived successfully")
+            return resp.json()
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 409:
+            logger.warning(f"Week {week_id} already exists")
+            raise ValueError("Week already archived") from e
+        raise
+    except Exception as e:
+        logger.error(f"Failed to archive week: {str(e)}", exc_info=True)
+        raise
+

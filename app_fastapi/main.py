@@ -1,5 +1,6 @@
 import os
 import asyncio
+from app_fastapi.tools import archive_top
 from dotenv import load_dotenv
 from fastapi import FastAPI
 import uvicorn
@@ -11,6 +12,7 @@ from app_fastapi.initializers.engine import engine, get_session
 from app_fastapi.models.admin import Admin
 from app_fastapi.tools.crypt import hash_user_id
 from sqlalchemy import select
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 logger = logging.getLogger("app_fastapi")
 
@@ -51,11 +53,26 @@ async def startup():
             else:
                 logger.info(f"Admin {user_id[:5]}... already exists")
         
-        # TODO: Coroutine for archivation call
+        # Настройка планировщика
+        scheduler = AsyncIOScheduler()
+        scheduler.add_job(
+            archive_top,
+            'cron',
+            day_of_week='sun', 
+            hour=23,
+            minute=59,
+            timezone='UTC'
+        )
+        scheduler.start()
+        logger.info("Scheduler started")
+        
         logger.info("Application startup completed successfully")
     except Exception as e:
         logger.critical(f"Application startup failed: {str(e)}", exc_info=True)
         raise
+    finally:
+        if 'scheduler' in locals() and scheduler.running:
+            scheduler.shutdown()
 
 app.include_router(endpoints.router)
 
@@ -68,7 +85,7 @@ if __name__ == "__main__":
             host="0.0.0.0", 
             port=8000, 
             reload=True,
-            log_config=None  # Disable default uvicorn logging
+            log_config=None  
         )
     except KeyboardInterrupt:
         logger.info("Application stopped by keyboard interrupt")

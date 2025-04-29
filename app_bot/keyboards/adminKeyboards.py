@@ -14,3 +14,15 @@ def deletion_keyboard_setup() -> InlineKeyboardMarkup:
     
 
     return deletion_kb.adjust(4, 1).as_markup()
+
+
+def history_keyboard(weeks: list) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    for week in weeks:
+        year, week_num = week.split('-')
+        builder.add(InlineKeyboardButton(
+            text=f"🗓 {week_num}-{year}",
+            callback_data=f"week_{week}"
+        ))
+    builder.adjust(2)
+    return builder.as_markup()

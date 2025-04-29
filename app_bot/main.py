@@ -7,6 +7,7 @@ from app_bot.handlers.screamHandler import screamRouter
 from app_bot.handlers.adminHandler import adminRouter
 from app_bot.handlers.getIdHandler import idRouter
 from app_bot.handlers.startHandler import startRouter
+from app_bot.handlers.historyHandler import historyRouter
 from app_bot.logger import logger
 
 async def main():
@@ -15,6 +16,7 @@ async def main():
         bot = Bot(token=os.getenv("BOT_TOKEN"))
         dp = Dispatcher()
         
+        dp.include_router(historyRouter)
         dp.include_router(reactionRouter)
         dp.include_router(screamRouter)
         dp.include_router(statsRouter)
@@ -23,8 +25,11 @@ async def main():
         dp.include_router(startRouter)
         logger.info("All routers included")
 
+        
+
         logger.info("Starting polling")
         await dp.start_polling(bot, polling_timeout=120, skip_updates=False)
+        
     except Exception as e:
         logger.critical(f"Bot failed to start: {str(e)}", exc_info=True)
         raise

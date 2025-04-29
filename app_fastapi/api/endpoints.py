@@ -1,7 +1,8 @@
 from typing import List
 from datetime import timedelta
+from app_fastapi.models.archive import Archive
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select, update, distinct
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 import urllib.parse
@@ -15,6 +16,7 @@ from app_fastapi.models.reaction import Reaction
 from app_fastapi.models.admin import Admin
 from app_fastapi.middlewares.admin import admin_middleware
 from app_fastapi.schemas.responses import (
+    ArchivedWeeksResponse,
     CreateScreamResponse,
     ReactionResponse,
     StressStatsResponse,
@@ -414,4 +416,110 @@ async def confirm_scream(
         raise
     except Exception as e:
         logger.error(f"Failed to confirm scream: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@router.get("/history", response_model=ArchivedWeeksResponse)
+async def get_history(session: AsyncSession = Depends(get_session)):
+    try:        
+        stmt = select(distinct(Archive.week_id)).order_by(Archive.week_id.desc())
+        result = await session.execute(stmt)
+        weeks = result.scalars().all()
+
+        if not weeks:
+            logger.info(f"No archived tops found")
+            raise HTTPException(status_code=404, detail="No archives")
+
+        return {
+            "weeks": weeks
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to load archives: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+@router.get("/history/{week_id}", response_model=TopScreamsResponse)
+async def get_historical_week(week_id: str, session: AsyncSession = Depends(get_session)):
+    try:
+        logger.info(f"Getting historical week: {week_id}")
+        
+        stmt = select(Archive).where(Archive.week_id == week_id).order_by(Archive.votes.desc())
+        result = await session.execute(stmt)
+        archives = result.scalars().all()
+
+        if not archives:
+            logger.warning(f"Archive not found for week: {week_id}")
+            raise HTTPException(status_code=404, detail="Week not found in archive")
+
+        posts = [
+            TopScreamItem(
+                id=arc.scream_id,
+                content=arc.content,
+                votes=arc.votes,
+                meme_url=arc.meme_url
+            )
+            for arc in archives
+        ]
+
+        logger.info(f"Returned {len(posts)} screams for week {week_id}")
+        return {"posts": posts}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get historical week: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.post("/history/{week_id}", dependencies=[Depends(admin_middleware)])
+async def archive_current_week(
+    week_id: str,
+    session: AsyncSession = Depends(get_session),  
+    _: None = Depends(admin_middleware)
+):
+    try:
+        logger.info(f"Archiving week as {week_id}")
+        
+        existing = await session.scalar(select(Archive).where(Archive.week_id == week_id).limit(1))
+        if existing:
+            logger.warning(f"Week {week_id} already archived")
+            raise HTTPException(status_code=409, detail="Week already exists")
+
+        week_start = get_week_start()
+        week_end = week_start + timedelta(days=7)
+
+        stmt = (
+            select(Scream, func.count(Reaction.id).label("votes"))
+            .join(Reaction, Scream.id == Reaction.scream_id)
+            .where(
+                Scream.timestamp >= week_start,
+                Scream.timestamp < week_end,
+                Reaction.emoji != "❌"
+            )
+            .group_by(Scream.id)
+            .order_by(func.count(Reaction.id).desc())
+        )
+
+        result = await session.execute(stmt)
+        top_screams = result.all()
+
+        for scream, votes in top_screams:
+            archive = Archive(
+                week_id=week_id,
+                scream_id=scream.id,
+                content=scream.content,
+                meme_url=scream.meme_url,
+                votes=votes
+            )
+            session.add(archive)
+        
+        await session.commit()
+        logger.info(f"Week {week_id} archived with {len(top_screams)} screams")
+        return {"status": "archived", "count": len(top_screams)}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to archive week: {str(e)}", exc_info=True)
+        await session.rollback()
         raise HTTPException(status_code=500, detail="Internal server error")
