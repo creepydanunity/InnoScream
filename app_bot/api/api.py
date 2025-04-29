@@ -111,6 +111,15 @@ async def get_stress_stats():
         return resp.json()
 
 async def get_top_screams(n: int = 3):
+    """
+    Fetch the top screams from the backend API.
+
+    Args:
+        n (int, optional): The number of top screams to request. Defaults to 3.
+
+    Returns:
+        dict: The JSON response from the API containing the top screams.
+    """
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/top")
         return resp.json()

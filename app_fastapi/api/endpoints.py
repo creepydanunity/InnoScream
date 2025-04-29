@@ -72,6 +72,23 @@ async def react(data: ReactionRequest, session: AsyncSession = Depends(get_sessi
 
 @router.get("/top", response_model=TopScreamsResponse)
 async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_session)):
+    """
+    Retrieve the top N screams based on the number of positive reactions.
+
+    Args:
+        n (int, optional): The number of top screams to retrieve. Defaults to 3.
+        session (AsyncSession, optional): Database session dependency.
+
+    Returns:
+        dict: A dictionary with a list of top screams, each containing the scream ID,
+              content, vote count, and meme URL. If no screams are found, returns an
+              empty list under "posts".
+
+    Notes:
+        - This endpoint returns a JSON response.
+        - Meme URLs are generated asynchronously and saved back into the database.
+    """
+
     today_start, tomorrow = get_bounds()
 
     stmt = (

@@ -29,6 +29,18 @@ async def handle_feed(msg: types.Message):
 
 @screamRouter.message(Command("top"))
 async def handle_top(msg: types.Message):
+    """
+    Handle the /top command to display today's top screams.
+
+    Args:
+        msg (types.Message): Incoming Telegram message containing the /top command.
+
+    Behavior:
+        - Fetches the top screams from the backend.
+        - Sends each top scream to the chat with its content, vote count, and meme image (if available).
+        - If there are no top screams, informs the user.
+        - If an error occurs, notifies the user about the failure.
+    """
     try:
         top = await get_top_screams()
         posts = top.get("posts", [])

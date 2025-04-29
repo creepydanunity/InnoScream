@@ -23,6 +23,24 @@ IMGFLIP_PASSWORD = os.getenv("IMGFLIP_API_PASSWORD")
 
 
 async def generate_meme_url(content: str) -> str:
+    """
+    Generate a meme URL by sending a request to the Imgflip API using the provided content.
+
+    Args:
+        content (str): The text content to split and use for meme generation.
+
+    Returns:
+        str: URL of the generated meme image.
+
+    Raises:
+        HTTPException: If the meme generation request fails or returns an error.
+
+    Behavior:
+        - Splits the input content into two halves for the top and bottom meme text.
+        - Randomly selects a meme template ID from predefined options.
+        - Posts a request to the Imgflip API to generate the meme.
+        - Extracts and returns the meme image URL on success.
+    """
     async with httpx.AsyncClient() as client:
         content = content.replace(",.! ", "").strip().split()
         part_1, part_2 = content[:len(content)//2], content[len(content)//2:]
