@@ -359,6 +359,24 @@ async def get_my_id(data: GetIdRequest):
 
 @router.get("/feed/{user_id}", response_model=ScreamResponse)
 async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_session)):
+    """
+    Retrieve the next unseen scream for a given user from the current week's feed.
+
+    Args:
+        user_id (str): The external user ID used to determine reaction history.
+        session (AsyncSession, optional): Database session dependency.
+
+    Returns:
+        dict: A dictionary containing:
+            - scream_id (str): The ID of the next scream.
+            - content (str): The content of the scream.
+
+    Behavior:
+        - Hashes the `user_id` to compare against stored data.
+        - Retrieves the next scream from this week that the user has not reacted to.
+        - Excludes the user's own screams.
+    """
+    
     from app_fastapi.models.scream import Scream
     from app_fastapi.models.reaction import Reaction
 
@@ -387,6 +405,7 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
         "content": scream.content
     }
 
+
 @router.post("/screams/admin", response_model=List[ScreamResponse], dependencies=[Depends(admin_middleware)])
 async def get_screams_admin(data: UserRequest, session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):
     from app_fastapi.models.scream import Scream
@@ -413,6 +432,7 @@ async def get_screams_admin(data: UserRequest, session: AsyncSession = Depends(g
         }
         for scream in screams
     ]
+
 
 @router.post("/confirm", dependencies=[Depends(admin_middleware)])
 async def confirm_scream(data: DeleteRequest, session: AsyncSession = Depends(get_session),  _: None = Depends(admin_middleware)):

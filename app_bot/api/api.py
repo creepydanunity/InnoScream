@@ -81,6 +81,22 @@ async def confirm_scream(scream_id: int, user_id: str):
 
 
 async def react_to_scream(scream_id: int, emoji: str, user_id: str):
+    """
+    Send a reaction to a scream on behalf of a user.
+
+    Args:
+        scream_id (int): The ID of the scream to react to.
+        emoji (str): The emoji representing the user's reaction.
+        user_id (str): The external user ID of the reacting user.
+
+    Returns:
+        dict: The JSON response from the backend.
+
+    Behavior:
+        - Sends a POST request to the `/react` endpoint with the scream ID, emoji, and user ID.
+        - Returns the parsed JSON response from the backend API.
+    """
+
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{API_URL}/react", json={
             "scream_id": scream_id,
@@ -91,6 +107,19 @@ async def react_to_scream(scream_id: int, emoji: str, user_id: str):
 
 
 async def get_next_scream(user_id: str):
+    """
+    Fetch the next unseen scream for the given user from the backend API.
+
+    Args:
+        user_id (str): The external user ID.
+
+    Returns:
+        dict: A JSON object containing the next scream's ID and content.
+
+    Raises:
+        httpx.HTTPStatusError: If the backend API returns an error.
+    """
+
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/feed/{user_id}")
         resp.raise_for_status()

@@ -23,6 +23,18 @@ async def handle_scream(msg: types.Message):
 
 @screamRouter.message(Command("feed"))
 async def handle_feed(msg: types.Message):
+    """
+    Handle the /feed command to display the next unseen scream to the user.
+
+    Args:
+        msg (types.Message): Incoming Telegram message containing the /feed command.
+
+    Behavior:
+        - Sends a temporary loading message to the user.
+        - Delegates the actual scream retrieval and delivery to `send_next_scream()`,
+          passing the user's Telegram ID and the loading message for context.
+    """
+    
     dummy_msg = await msg.answer("⏳ Loading your scream...")
     await send_next_scream(str(msg.from_user.id), dummy_msg)
 
