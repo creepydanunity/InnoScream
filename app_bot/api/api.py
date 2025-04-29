@@ -11,6 +11,7 @@ async def post_scream(content: str, user_id: str):
         resp = await client.post(f"{API_URL}/scream", json={"content": content, "user_id": user_id})
         return resp.json()
 
+
 async def create_admin(user_id: str, user_id_to_admin: str):
 
     """
@@ -32,6 +33,7 @@ async def create_admin(user_id: str, user_id_to_admin: str):
         resp.raise_for_status()
         return resp.json()
 
+
 async def get_my_id(user_id: str):
 
     """
@@ -47,7 +49,8 @@ async def get_my_id(user_id: str):
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{API_URL}/my_id", json={"user_id": user_id})
         return resp.json()
-    
+
+
 async def delete_scream(scream_id: int, user_id: str):
 
     """
@@ -68,12 +71,14 @@ async def delete_scream(scream_id: int, user_id: str):
         resp = await client.post(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
         resp.raise_for_status()
         return resp.json()
-    
+
+  
 async def confirm_scream(scream_id: int, user_id: str):
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{API_URL}/confirm", json={"scream_id": scream_id, "user_id": user_id})
         resp.raise_for_status()
         return resp.json()
+
 
 async def react_to_scream(scream_id: int, emoji: str, user_id: str):
     async with httpx.AsyncClient() as client:
@@ -84,12 +89,14 @@ async def react_to_scream(scream_id: int, emoji: str, user_id: str):
         })
         return resp.json()
 
+
 async def get_next_scream(user_id: str):
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/feed/{user_id}")
         resp.raise_for_status()
         return resp.json()
-    
+
+
 async def get_all_screams_for_admin(user_id: str):
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{API_URL}/screams/admin", json={
@@ -98,17 +105,33 @@ async def get_all_screams_for_admin(user_id: str):
         resp.raise_for_status()
         return resp.json()
 
+
 async def get_user_stats(user_id: str):
+    """
+    Fetch user scream statistics from the backend API.
+
+    Args:
+        user_id (str): The external user ID.
+
+    Returns:
+        dict: A JSON object containing the user's scream and reaction statistics.
+
+    Raises:
+        httpx.HTTPStatusError: If the backend API responds with an error status.
+    """
+
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/stats/{user_id}")
         resp.raise_for_status()
         return resp.json()
+
 
 async def get_stress_stats():
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/stress")
         resp.raise_for_status()
         return resp.json()
+
 
 async def get_top_screams(n: int = 3):
     """

@@ -18,6 +18,20 @@ async def handle_stress(msg: types.Message):
 
 @statsRouter.message(Command("stats"))
 async def handle_user_stats(msg: types.Message):
+    """
+    Handle the /stats command to display a user's scream activity statistics.
+
+    Args:
+        msg (types.Message): Incoming Telegram message containing the /stats command.
+
+    Behavior:
+        - Retrieves the user's statistics from the backend API.
+        - Sends a message summarizing the user's total screams, reactions given, and reactions received.
+        - Sends two charts:
+            - A bar chart showing daily scream activity over the past week.
+            - A pie chart showing the distribution of reactions received.
+    """
+
     user_id = str(msg.from_user.id)
     stats = await get_user_stats(user_id)
 

@@ -140,6 +140,29 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
 
 @router.get("/stats/{user_id}", response_model=UserStatsResponse)
 async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_session)):
+    """
+    Retrieve statistics for a specific user, including post and reaction counts and activity charts.
+
+    Args:
+        user_id (str): The external user ID (to be hashed internally).
+        session (AsyncSession, optional): Database session dependency.
+
+    Returns:
+        dict: A dictionary containing:
+            - screams_posted (int): Total number of screams posted by the user.
+            - reactions_given (int): Total number of reactions the user has given.
+            - reactions_got (int): Total number of reactions received on the user's screams.
+            - chart_url (str): URL to a bar chart showing daily post counts over the past 7 days.
+            - reaction_chart_url (str): URL to a pie chart showing distribution of received reaction emojis.
+
+    Behavior:
+        - Hashes the `user_id` to match internal database storage.
+        - Computes the number of posts made each day in the last 7 days.
+        - Generates a QuickChart URL for a bar chart of daily posts.
+        - Computes total number of screams, reactions given, and reactions received.
+        - Generates a QuickChart URL for a pie chart of received reactions.
+    """
+
     import urllib.parse
     from datetime import datetime, timezone, timedelta
 
