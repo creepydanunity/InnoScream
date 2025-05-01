@@ -9,6 +9,7 @@ from app_fastapi.initializers.migration import init_db
 from app_fastapi.api import endpoints
 
 from app_fastapi.initializers.engine import get_session
+
 from app_fastapi.models.admin import Admin
 from app_fastapi.tools.crypt import hash_user_id
 from sqlalchemy import select
