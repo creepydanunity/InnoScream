@@ -14,9 +14,12 @@ from app_fastapi.models.admin import Admin
 from app_fastapi.tools.crypt import hash_user_id
 from sqlalchemy import select
 
+
+# Load environment variables from .env file
 load_dotenv()
 
 
+# Create FastAPI instance
 app = FastAPI(
     title="InnoScream API",
     version="1.0.0",
@@ -26,6 +29,18 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
+
+    """
+    Startup event handler for initializing the database and checking for the default admin.
+
+    This function:
+    - Initializes the database by calling init_db().
+    - Retrieves the `DEFAULT_ADMIN_ID` from environment variables.
+    - Hashes the `DEFAULT_ADMIN_ID` using hash_user_id().
+    - Checks if an admin with the corresponding user hash already exists in the database.
+    - If no admin exists, a new default admin is added to the database.
+    """
+
     await init_db()
 
     async for session in get_session():
@@ -50,5 +65,14 @@ app.include_router(endpoints.router)
 
 
 if __name__ == "__main__":
+
+    """
+    Main entry point for running the FastAPI app.
+
+    This function:
+    - Initializes the database migration.
+    - Runs the FastAPI app with uvicorn on host 0.0.0.0 and port 8000.
+    """
+
     asyncio.run(init_db())
     uvicorn.run("app_fastapi.main:app", host="0.0.0.0", port=8000, reload=True)
