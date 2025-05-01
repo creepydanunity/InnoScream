@@ -2,7 +2,9 @@ from fastapi import HTTPException
 import os
 import random
 import httpx
+import logging
 
+logger = logging.getLogger("app_fastapi.tools")
 
 IMGFLIP_API_URL = "https://api.imgflip.com/caption_image"
 IMGFLIP_TEMPLATE_IDS = ["181913649", "87743020", "112126428", "217743513", "124822590", "222403160", "131087935", 
@@ -41,22 +43,30 @@ async def generate_meme_url(content: str) -> str:
         - Posts a request to the Imgflip API to generate the meme.
         - Extracts and returns the meme image URL on success.
     """
-    async with httpx.AsyncClient() as client:
-        content = content.replace(",.! ", "").strip().split()
-        part_1, part_2 = content[:len(content)//2], content[len(content)//2:]
-        response = await client.post(
-            IMGFLIP_API_URL,
-            data={
-                "template_id": random.choice(IMGFLIP_TEMPLATE_IDS),
-                "username": IMGFLIP_USERNAME,
-                "password": IMGFLIP_PASSWORD,
-                "text0": (' '.join(part_1[:6])) + "..." if len(part_1) > 6 else part_1,
-                "text1": (' '.join(part_2[:6])) + "..." if len(part_2) > 6 else part_2,
-                "max_font_size": 18,
-            },
-        )
-        response_json = response.json()
-        if not response_json.get("success"):
-            error = response_json.get("error", "Unknown error")
-            raise HTTPException(status_code=500, detail=f"Meme generation failed: {error}")
-        return response_json["data"]["url"]
+    try:
+        logger.debug(f"Generating meme for user: {user[:5]}..., content: {content[:20]}...")
+
+        async with httpx.AsyncClient() as client:
+            content = content.replace(",.! ", "").strip().split()
+            part_1, part_2 = content[:len(content)//2], content[len(content)//2:]
+            response = await client.post(
+                IMGFLIP_API_URL,
+                data={
+                    "template_id": random.choice(IMGFLIP_TEMPLATE_IDS),
+                    "username": IMGFLIP_USERNAME,
+                    "password": IMGFLIP_PASSWORD,
+                    "text0": (' '.join(part_1[:6])) + "..." if len(part_1) > 6 else part_1,
+                    "text1": (' '.join(part_2[:6])) + "..." if len(part_2) > 6 else part_2,
+                    "max_font_size": 18,
+                },
+            )
+            response_json = response.json()
+            if not response_json.get("success"):
+                error = response_json.get("error", "Unknown error")
+                raise HTTPException(status_code=500, detail=f"Meme generation failed: {error}")
+            return response_json["data"]["url"]
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to generate meme: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to generate meme")
