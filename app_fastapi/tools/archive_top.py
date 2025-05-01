@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy import select, func
 from app_fastapi.models.scream import Scream
 from app_fastapi.models.archive import Archive
@@ -9,7 +9,7 @@ logger = logging.getLogger("app_fastapi")
 
 async def archive_top(session):
     try:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         year, week_num, _ = now.isocalendar()
         week_id = f"{year}-{week_num:02d}"
         

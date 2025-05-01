@@ -158,7 +158,6 @@ async def get_historical_week(week_id: str):
             resp.raise_for_status()
             data = resp.json()
             
-            # Берем топ 3 крика из полученных данных
             top_three = data.get("posts", [])[:3]
             logger.info(f"Retrieved {len(top_three)} screams for week {week_id}")
             return top_three

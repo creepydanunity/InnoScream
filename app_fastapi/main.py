@@ -29,11 +29,9 @@ async def startup():
     try:
         logger.info("Starting application initialization")
         
-        # Initialize database
         await init_db()
         logger.info("Database initialized successfully")
 
-        # Create default admin if not exists
         async for session in get_session():
             user_id = os.getenv("DEFAULT_ADMIN_ID")
             if not user_id:
@@ -53,7 +51,6 @@ async def startup():
             else:
                 logger.info(f"Admin {user_id[:5]}... already exists")
         
-        # Настройка планировщика
         scheduler = AsyncIOScheduler()
         scheduler.add_job(
             archive_top,
