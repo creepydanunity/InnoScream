@@ -14,36 +14,36 @@ async def handle_history(msg: types.Message):
     try:
         weeks = await get_history()
         if not weeks:
-            await msg.answer("Архив пока пуст")
+            await msg.answer("Archive is empty")
             return
             
         await msg.answer(
-            "📆 Выберите неделю:",
+            "📆 Choose a week:",
             reply_markup=history_keyboard(weeks)
         )
     except Exception as e:
         logger.error(f"History error: {str(e)}", exc_info=True)
-        await msg.answer("❌ Ошибка загрузки архива")
+        await msg.answer("❌ Error loading history")
 
 @historyRouter.callback_query(F.data.startswith("week_"))
 async def handle_week_selection(callback: CallbackQuery):
     try:
         week_id = callback.data.split("_")[1]
-        await callback.answer("⏳ Загружаем топ недели...")
+        await callback.answer("⏳ Loading weekly top...")
         
         week_data = await get_historical_week(week_id)
         top_screams = week_data.get("posts", [])[:3]
 
         if not top_screams:
-            await callback.message.answer(f"🚫 Нет данных за неделю {week_id}")
+            await callback.message.answer(f"🚫 No data for the week {week_id}")
             return
 
         response = [
             f"🏆 Топ-3 за неделю {week_id}:",
             *[
                 f"{i}. {scream['content']}\n"
-                f"❤️ Голосов: {scream['votes']}\n"
-                f"🔗 Мем: {scream['meme_url'] if scream['meme_url'] else 'нет'}"
+                f"❤️ Reactions: {scream['votes']}\n"
+                f"🔗 Meme: {scream['meme_url'] if scream['meme_url'] else 'нет'}"
                 for i, scream in enumerate(top_screams, 1)
             ]
         ]
@@ -55,5 +55,5 @@ async def handle_week_selection(callback: CallbackQuery):
 
     except Exception as e:
         logger.error(f"Week selection error: {str(e)}", exc_info=True)
-        await callback.message.answer("❌ Ошибка загрузки данных недели")
+        await callback.message.answer("❌ Error loading week data")
         await callback.answer()
