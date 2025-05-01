@@ -90,6 +90,23 @@ async def react(data: ReactionRequest, session: AsyncSession = Depends(get_sessi
 
 @router.get("/top", response_model=TopScreamsResponse)
 async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_session)):
+    """
+    Retrieve the top N screams based on the number of positive reactions.
+
+    Args:
+        n (int, optional): The number of top screams to retrieve. Defaults to 3.
+        session (AsyncSession, optional): Database session dependency.
+
+    Returns:
+        dict: A dictionary with a list of top screams, each containing the scream ID,
+              content, vote count, and meme URL. If no screams are found, returns an
+              empty list under "posts".
+
+    Notes:
+        - This endpoint returns a JSON response.
+        - Meme URLs are generated asynchronously and saved back into the database.
+    """
+
     try:
         logger.debug(f"Fetching top {n} screams")
         today_start, tomorrow = get_bounds()
@@ -118,7 +135,7 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
         for scream, votes in top_n:
             if not scream.meme_url:
                 try:
-                    meme_url = await generate_meme_url(scream.user_hash[:5], scream.content)
+                    meme_url = await generate_meme_url(scream.content)
                     scream.meme_url = meme_url
                     await session.execute(
                         update(Scream)
@@ -148,12 +165,41 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
 
 @router.get("/stats/{user_id}", response_model=UserStatsResponse)
 async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_session)):
+    """
+    Retrieve statistics for a specific user, including post and reaction counts and activity charts.
+
+    Args:
+        user_id (str): The external user ID (to be hashed internally).
+        session (AsyncSession, optional): Database session dependency.
+
+    Returns:
+        dict: A dictionary containing:
+            - screams_posted (int): Total number of screams posted by the user.
+            - reactions_given (int): Total number of reactions the user has given.
+            - reactions_got (int): Total number of reactions received on the user's screams.
+            - chart_url (str): URL to a bar chart showing daily post counts over the past 7 days.
+            - reaction_chart_url (str): URL to a pie chart showing distribution of received reaction emojis.
+
+    Behavior:
+        - Hashes the `user_id` to match internal database storage.
+        - Computes the number of posts made each day in the last 7 days.
+        - Generates a QuickChart URL for a bar chart of daily posts.
+        - Computes total number of screams, reactions given, and reactions received.
+        - Generates a QuickChart URL for a pie chart of received reactions.
+    """
+
+    import urllib.parse
+    from datetime import datetime, timezone, timedelta
+
+    user_hash = hash_user_id(user_id)
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    week_ago = today - timedelta(days=6)
+    
     try:
         logger.debug(f"Getting stats for user: {user_id[:5]}...")
         user_hash = hash_user_id(user_id)
         _, week_ago = get_bounds(days=6, addition=False)
 
-        # Get daily scream counts
         daily_counts = [0] * 7
         stmt = (
             select(Scream.timestamp)
@@ -163,6 +209,7 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
         timestamps = result.scalars().all()
 
         for ts in timestamps:
+            ts = ts.astimezone(timezone.utc)
             index = (ts.date() - week_ago.date()).days
             if 0 <= index < 7:
                 daily_counts[index] += 1
@@ -173,7 +220,6 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             safe=':/?=&'
         )
         
-        # Get total stats
         total_posts = await session.scalar(
             select(func.count(Scream.id)).where(Scream.user_hash == user_hash)
         )
@@ -192,7 +238,6 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             )
         )
         
-        # Get reaction stats
         reaction_counts = await session.execute(
             select(Reaction.emoji, func.count())
             .join(Scream, Scream.id == Reaction.scream_id)
@@ -204,7 +249,6 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
         )
         emoji_data = reaction_counts.all()
         
-        # Generate reaction chart
         if emoji_data:
             labels = [emoji for emoji, _ in emoji_data]
             values = [count for _, count in emoji_data]
@@ -227,30 +271,50 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
         logger.error(f"Failed to get user stats: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.get("/stats/weekly", response_model=StressStatsResponse)
+
+@router.get("/stress", response_model=StressStatsResponse)
 async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_session)):
-    try:
-        logger.debug("Getting weekly stress stats")
-        _, week_ago = get_bounds(days=6, addition=False)
+    """
+    Generate a weekly stress graph showing the number of screams posted each day.
 
-        daily_counts = [0] * 7
-        stmt = select(Scream.timestamp).where(Scream.timestamp >= week_ago)
-        result = await session.execute(stmt)
-        timestamps = result.scalars().all()
+    Args:
+        session (AsyncSession, optional): Database session dependency.
 
-        for ts in timestamps:
-            index = (ts.date() - week_ago.date()).days
-            if 0 <= index < 7:
-                daily_counts[index] += 1
+    Returns:
+        dict: A dictionary containing:
+            - chart_url (str): A URL to a bar chart visualizing the daily scream counts over the past 7 days.
 
-        labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
-        chart_url = f"https://quickchart.io/chart/create?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}"
-        
-        logger.info("Successfully retrieved weekly stress stats")
-        return {"chart_url": urllib.parse.quote(chart_url, safe=':/?=&')}
-    except Exception as e:
-        logger.error(f"Failed to get weekly stress stats: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+    Behavior:
+        - Counts all screams posted in the last 7 days (UTC time).
+        - Aggregates the daily totals.
+        - Creates a bar chart using QuickChart.io and returns the chart URL.
+    """
+
+    import urllib.parse
+    from datetime import datetime, timezone, timedelta
+
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    week_ago = today - timedelta(days=6)
+
+    daily_counts = [0] * 7
+    stmt = select(Scream.timestamp).where(Scream.timestamp >= week_ago)
+
+    result = await session.execute(stmt)
+    timestamps = result.scalars().all()
+
+    for ts in timestamps:
+        ts = ts.astimezone(timezone.utc)
+        index = (ts.date() - week_ago.date()).days
+        if 0 <= index < 7:
+            daily_counts[index] += 1
+
+    labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
+
+    chart_url = urllib.parse.quote(f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}", safe=':/?=&')
+
+    
+    return {"chart_url": chart_url}
+
 
 @router.post("/create_admin", response_model=CreateAdminResponse)
 async def create_admin(
@@ -258,34 +322,66 @@ async def create_admin(
     session: AsyncSession = Depends(get_session),  
     _: None = Depends(admin_middleware)
 ):
-    try:
-        logger.info(f"Creating admin for user: {data.user_id_to_admin[:5]}...")
-        user_to_admin_hash = hash_user_id(data.user_id_to_admin)
 
-        result = await session.execute(select(Admin).where(Admin.user_hash == user_to_admin_hash))
-        existing_admin = result.scalar_one_or_none()
-        if existing_admin:
-            logger.warning(f"User already admin: {data.user_id_to_admin[:5]}...")
-            return {"status": "already_admin"}
+    """
+    Assigns admin privileges to a specified user.
 
-        admin = Admin(user_hash=user_to_admin_hash)
-        session.add(admin)
-        await session.commit()
-        
-        logger.info(f"Successfully created admin: {data.user_id_to_admin[:5]}...")
-        return {"status": "ok"}
-    except Exception as e:
-        logger.error(f"Failed to create admin: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+    This endpoint can only be accessed by an existing admin (validated via middleware).
+    If the specified user is already an admin, returns status "already_admin".
+    Otherwise, adds the user to the admin table and returns status "ok".
 
-@router.delete("/delete", response_model=DeleteResponse, dependencies=[Depends(admin_middleware)])
+    Args:
+        data (CreateAdminRequest): Contains the ID of the requester and ID of the user to be promoted.
+        session (AsyncSession): Database session, injected via dependency.
+        _ (None): Result of admin_middleware; ensures the requester is admin.
+
+    Returns:
+        CreateAdminResponse: A response object with status "ok" or "already_admin".
+    """
+
+    user_to_admin_hash = hash_user_id(data.user_id_to_admin)
+
+    result = await session.execute(select(Admin).where(Admin.user_hash == user_to_admin_hash))
+    existing_admin = result.scalar_one_or_none()
+    if existing_admin:
+        logger.warning(f"User already admin: {data.user_id_to_admin[:5]}...")
+        return {"status": "already_admin"}
+
+    admin = Admin(user_hash=user_to_admin_hash)
+    session.add(admin)
+    await session.commit()
+    
+    logger.info(f"Successfully created admin: {data.user_id_to_admin[:5]}...")
+    return {"status": "ok"}
+
+
+@router.post("/delete", response_model=DeleteResponse, dependencies=[Depends(admin_middleware)])
 async def delete_scream(
     data: DeleteRequest, 
     session: AsyncSession = Depends(get_session),  
     _: None = Depends(admin_middleware)
 ):
+
+    """
+    Deletes a scream by its ID. 
+
+    This endpoint can only be accessed by users with admin privileges, 
+    which are verified by the `admin_middleware`. If the scream with the 
+    specified ID does not exist, a 404 error is returned.
+
+    Args:
+        data (DeleteRequest): Contains the ID of the scream to be deleted and 
+            the user ID of the requester.
+        session (AsyncSession): Database session provided via dependency injection.
+        _ (None): Result of admin_middleware; ensures the requester is admin.
+
+    Returns:
+        DeleteResponse: A response object with status "deleted".
+    """
+
     try:
         logger.info(f"Deleting scream: {data.scream_id}")
+
         scream = await session.get(Scream, data.scream_id)
 
         if not scream:
@@ -305,9 +401,25 @@ async def delete_scream(
 
 @router.post("/my_id", response_model=GetMyIdResponse)
 async def get_my_id(data: GetIdRequest):
+
+    """
+    Returns the user ID.
+
+    This endpoint simply echoes back the user ID sent by the client. 
+
+    Args:
+        data (GetIdRequest): Contains the user ID to return.
+
+    Returns:
+        GetMyIdResponse: A response object with the provided user ID.
+    """
+
+    user_id = data.user_id
+
     try:
         logger.debug(f"Getting user ID for: {data.user_id[:5]}...")
-        if not data.user_id:
+
+        if not user_id:
             logger.warning("Missing user_id in request")
             raise HTTPException(status_code=400, detail="Missing user_id")
 
@@ -321,6 +433,27 @@ async def get_my_id(data: GetIdRequest):
 
 @router.get("/feed/{user_id}", response_model=ScreamResponse)
 async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_session)):
+    """
+    Retrieve the next unseen scream for a given user from the current week's feed.
+
+    Args:
+        user_id (str): The external user ID used to determine reaction history.
+        session (AsyncSession, optional): Database session dependency.
+
+    Returns:
+        dict: A dictionary containing:
+            - scream_id (str): The ID of the next scream.
+            - content (str): The content of the scream.
+
+    Behavior:
+        - Hashes the `user_id` to compare against stored data.
+        - Retrieves the next scream from this week that the user has not reacted to.
+        - Excludes the user's own screams.
+    """
+
+    from app_fastapi.models.scream import Scream
+    from app_fastapi.models.reaction import Reaction
+
     try:
         logger.debug(f"Getting next scream for user: {user_id[:5]}...")
         user_hash = hash_user_id(user_id)
@@ -349,11 +482,13 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
             "scream_id": scream.id,
             "content": scream.content
         }
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Failed to get next scream: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
+
 
 @router.post("/screams/admin", response_model=List[ScreamResponse], dependencies=[Depends(admin_middleware)])
 async def get_screams_admin(
@@ -391,7 +526,8 @@ async def get_screams_admin(
         raise
     except Exception as e:
         logger.error(f"Failed to get screams for admin: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail="Internal server error!")
+
 
 @router.post("/confirm", dependencies=[Depends(admin_middleware)])
 async def confirm_scream(

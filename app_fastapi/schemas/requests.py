@@ -5,6 +5,15 @@ import logging
 logger = logging.getLogger("app_fastapi.schemas")
 
 class CreateScreamRequest(BaseModel):
+
+    """
+    Request model for creating a new scream.
+
+    Attributes:
+        content (str): Text of the scream, limited to 1–280 characters.
+        user_id (str): ID of the user creating the scream.
+    """
+
     content: Annotated[str, constr(min_length=1, max_length=280)]
     user_id: str
 
@@ -13,6 +22,15 @@ class CreateScreamRequest(BaseModel):
         return f"<CreateScreamRequest(user={self.user_id[:5]}...)>"
 
 class CreateAdminRequest(BaseModel):
+
+    """
+    Request model for promoting a user to admin.
+
+    Attributes:
+        user_id_to_admin (str): ID of the user to be granted admin rights.
+        user_id (str): ID of the requester.
+    """
+
     user_id_to_admin: str
     user_id: str
 
@@ -21,6 +39,14 @@ class CreateAdminRequest(BaseModel):
         return f"<CreateAdminRequest(from={self.user_id[:5]}..., to={self.user_id_to_admin[:5]}...)>"
 
 class GetIdRequest(BaseModel):
+
+    """
+    Request model for retrieving the current user's ID.
+
+    Attributes:
+        user_id (str): ID of the user.
+    """
+
     user_id: str
 
     def __repr__(self):
@@ -28,6 +54,16 @@ class GetIdRequest(BaseModel):
         return f"<GetIdRequest(user={self.user_id[:5]}...)>"
 
 class ReactionRequest(BaseModel):
+
+    """
+    Request model for reacting to a scream.
+
+    Attributes:
+        scream_id (int): ID of the scream to react to.
+        emoji (str): Emoji reaction.
+        user_id (str): ID of the user reacting.
+    """
+
     scream_id: int
     emoji: str
     user_id: str
@@ -37,6 +73,15 @@ class ReactionRequest(BaseModel):
         return f"<ReactionRequest(user={self.user_id[:5]}..., scream={self.scream_id}, emoji={self.emoji})>"
 
 class DeleteRequest(BaseModel):
+
+    """
+    Request model for deleting a scream.
+
+    Attributes:
+        scream_id (int): ID of the scream to delete.
+        user_id (str): ID of the requester.
+    """
+
     scream_id: int
     user_id: str
 
@@ -45,6 +90,14 @@ class DeleteRequest(BaseModel):
         return f"<DeleteRequest(user={self.user_id[:5]}..., scream={self.scream_id})>"
 
 class UserRequest(BaseModel):
+
+    """
+    Simple request model containing a user ID.
+
+    Attributes:
+        user_id (str): ID of the user.
+    """
+
     user_id: str
 
     def __repr__(self):

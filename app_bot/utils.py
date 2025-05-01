@@ -4,6 +4,19 @@ from app_bot.keyboards.baseKeyboards import reaction_keyboard
 from app_bot.logger import logger
 
 async def send_next_scream(user_id: str, message: types.Message):
+    """
+    Edit a message to display the next unseen scream for the user.
+
+    Args:
+        user_id (str): The Telegram user's ID.
+        message (types.Message): The Telegram message to edit with the next scream content.
+
+    Behavior:
+        - Retrieves the next unseen scream via the backend API.
+        - Edits the given message to display the scream content with inline reaction buttons.
+        - If no screams are available or an error occurs, shows a fallback message.
+    """
+
     try:
         logger.debug(f"Sending next scream for user {user_id}")
         scream = await get_next_scream(user_id)

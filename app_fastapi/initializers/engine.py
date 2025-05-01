@@ -6,9 +6,7 @@ import logging
 
 logger = logging.getLogger("app_fastapi")
 
-databaseUrl = "sqlite+aiosqlite:///./" + getenv("DB_FILENAME")
-logger.debug(f"Database URL: {databaseUrl}")
-
+databaseUrl = "sqlite+aiosqlite:///" + getenv("DB_FILENAME")
 engine = create_async_engine(databaseUrl, echo=True)
 asyncSession = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 

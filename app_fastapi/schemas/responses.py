@@ -13,6 +13,14 @@ class CreateScreamResponse(BaseModel):
         return f"<CreateScreamResponse(status={self.status}, scream_id={self.scream_id})>"
 
 class CreateAdminResponse(BaseModel):
+
+    """
+    Response model for admin creation request.
+
+    Attributes:
+        status (str): Status of the operation ("ok", "already_admin").
+    """
+
     status: str
 
     def __repr__(self):
@@ -20,6 +28,14 @@ class CreateAdminResponse(BaseModel):
         return f"<CreateAdminResponse(status={self.status})>"
 
 class GetMyIdResponse(BaseModel):
+
+    """
+    Response model for returning the current user's ID.
+
+    Attributes:
+        user_id (str): ID of the user.
+    """
+
     user_id: str
 
     def __repr__(self):
@@ -65,6 +81,14 @@ class UserStatsResponse(BaseModel):
         return f"<UserStatsResponse(screams={self.screams_posted}, reactions={self.reactions_got})>"
 
 class DeleteResponse(BaseModel):
+
+    """
+    Response model returned after a scream is deleted.
+
+    Attributes:
+        status (str): Status of the operation ("deleted").
+    """
+
     status: str
 
     def __repr__(self):

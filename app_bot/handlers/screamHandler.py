@@ -28,6 +28,18 @@ async def handle_scream(msg: types.Message):
 
 @screamRouter.message(Command("feed"))
 async def handle_feed(msg: types.Message):
+    """
+    Handle the /feed command to display the next unseen scream to the user.
+
+    Args:
+        msg (types.Message): Incoming Telegram message containing the /feed command.
+
+    Behavior:
+        - Sends a temporary loading message to the user.
+        - Delegates the actual scream retrieval and delivery to `send_next_scream()`,
+          passing the user's Telegram ID and the loading message for context.
+    """
+    
     user_id = str(msg.from_user.id)
     logger.info(f"User {user_id} requested feed")
     dummy_msg = await msg.answer("⏳ Loading your scream...")
@@ -35,6 +47,18 @@ async def handle_feed(msg: types.Message):
 
 @screamRouter.message(Command("top"))
 async def handle_top(msg: types.Message):
+    """
+    Handle the /top command to display today's top screams.
+
+    Args:
+        msg (types.Message): Incoming Telegram message containing the /top command.
+
+    Behavior:
+        - Fetches the top screams from the backend.
+        - Sends each top scream to the chat with its content, vote count, and meme image (if available).
+        - If there are no top screams, informs the user.
+        - If an error occurs, notifies the user about the failure.
+    """
     try:
         logger.info("Processing top screams request")
         top = await get_top_screams()

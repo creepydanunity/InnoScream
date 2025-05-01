@@ -9,9 +9,24 @@ import logging
 
 logger = logging.getLogger("app_fastapi")
 
-async def admin_middleware(request: Request, session: AsyncSession = Depends(get_session)):
+async def admin_middleware(request: Request, session: AsyncSession = Depends(get_session),):
+
+    """
+    Checks if the requesting user is an admin.
+
+    Parses the request body to extract `user_id`, hashes it, and verifies 
+    its presence in the Admin table. Raises 403 if the user is not an admin.
+    Also restores the request body for reuse after reading.
+
+    Args:
+        request (Request): Incoming HTTP request.
+        session (AsyncSession): Async DB session.
+
+    Raises:
+        HTTPException: 400 for invalid JSON, 403 for unauthorized access.
+    """
+
     try:
-        logger.debug("Admin middleware processing request")
         body_bytes = await request.body()
 
         try:

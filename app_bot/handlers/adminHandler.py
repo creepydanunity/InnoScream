@@ -14,15 +14,25 @@ adminRouter = Router()
 
 @adminRouter.message(Command("delete"))
 async def handle_delete(msg: types.Message, state: FSMContext):
+    screams = []
+    try:
+        screams = await get_all_screams_for_admin(str(msg.from_user.id))
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            await msg.answer("🎉 All screams are already reviewed.")
+        elif e.response.status_code == 403:
+            await msg.answer("You do not have permission — only admins can perform this action.")
+        return
+
     try:
         user_id = str(msg.from_user.id)
-        logger.info(f"Admin {user_id} started moderation session")
-        screams = await get_all_screams_for_admin(user_id)
-
+        
         if not screams:
             logger.info("No screams available for moderation")
             await msg.answer("😴 No screams available.")
             return
+        
+        logger.info(f"Admin {user_id} started moderation session")
 
         scream_index = 0
         await state.update_data(screams=screams, index=scream_index)
@@ -41,22 +51,19 @@ async def handle_delete(msg: types.Message, state: FSMContext):
 
 @adminRouter.callback_query(F.data.startswith('button_back'))
 async def process_callback_button_back(callback_query: CallbackQuery, state: FSMContext):
-    try:
-        data = await state.get_data()
-        scream_index = (data["index"] - 1) % len(data["screams"])
-        screams = data["screams"]
-        current = screams[scream_index]
-        
-        await state.update_data(index=scream_index)
-        logger.debug(f"Admin navigating to previous scream {current['scream_id']}")
+    data = await state.get_data()
+    scream_index = (data["index"] - 1) % len(data["screams"])
+    screams = data["screams"]
 
-        await callback_query.message.edit_text(
-            text=f"🧠 Scream {scream_index + 1} out of {len(screams)}:\n\n📌Scream_id: {current['scream_id']}\n\n📝Content:\n{current['content']}",
-            reply_markup=deletion_keyboard_setup()
-        )
-    except Exception as e:
-        logger.error(f"Failed to navigate back: {str(e)}", exc_info=True)
-        await callback_query.answer("❌ Navigation error")
+    data["index"] = scream_index
+    current = screams[scream_index]
+
+    await state.update_data(screams=screams, index=scream_index)
+    
+    await callback_query.message.edit_text(
+        text=f"🧠 Scream {scream_index + 1} out of {len(screams)}:\n\n📌Scream_id: {current['scream_id']}\n\n📝Content:\n{current['content']}",
+        reply_markup=deletion_keyboard_setup()
+    )
 
 @adminRouter.message(Command("create_admin"))
 async def handle_create_admin(msg: types.Message):

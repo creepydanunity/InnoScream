@@ -8,7 +8,8 @@ import logging
 
 from app_fastapi.initializers.migration import init_db
 from app_fastapi.api import endpoints
-from app_fastapi.initializers.engine import engine, get_session
+
+from app_fastapi.initializers.engine import get_session
 from app_fastapi.models.admin import Admin
 from app_fastapi.tools.crypt import hash_user_id
 from sqlalchemy import select
@@ -26,6 +27,18 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
+
+    """
+    Startup event handler for initializing the database and checking for the default admin.
+
+    This function:
+    - Initializes the database by calling init_db().
+    - Retrieves the `DEFAULT_ADMIN_ID` from environment variables.
+    - Hashes the `DEFAULT_ADMIN_ID` using hash_user_id().
+    - Checks if an admin with the corresponding user hash already exists in the database.
+    - If no admin exists, a new default admin is added to the database.
+    """
+
     try:
         logger.info("Starting application initialization")
         
@@ -74,6 +87,15 @@ async def startup():
 app.include_router(endpoints.router)
 
 if __name__ == "__main__":
+
+    """
+    Main entry point for running the FastAPI app.
+
+    This function:
+    - Initializes the database migration.
+    - Runs the FastAPI app with uvicorn on host 0.0.0.0 and port 8000.
+    """
+
     try:
         logger.info("Starting application")
         asyncio.run(init_db())

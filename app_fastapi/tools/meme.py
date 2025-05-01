@@ -23,35 +23,48 @@ IMGFLIP_TEMPLATE_IDS = ["181913649", "87743020", "112126428", "217743513", "1248
 IMGFLIP_USERNAME = os.getenv("IMGFLIP_API_USERNAME")
 IMGFLIP_PASSWORD = os.getenv("IMGFLIP_API_PASSWORD")
 
-async def generate_meme_url(user: str, content: str) -> str:
+
+async def generate_meme_url(content: str) -> str:
+    """
+    Generate a meme URL by sending a request to the Imgflip API using the provided content.
+
+    Args:
+        content (str): The text content to split and use for meme generation.
+
+    Returns:
+        str: URL of the generated meme image.
+
+    Raises:
+        HTTPException: If the meme generation request fails or returns an error.
+
+    Behavior:
+        - Splits the input content into two halves for the top and bottom meme text.
+        - Randomly selects a meme template ID from predefined options.
+        - Posts a request to the Imgflip API to generate the meme.
+        - Extracts and returns the meme image URL on success.
+    """
     try:
         logger.debug(f"Generating meme for user: {user[:5]}..., content: {content[:20]}...")
-        
-        template_id = random.choice(IMGFLIP_TEMPLATE_IDS)
-        logger.debug(f"Selected template ID: {template_id}")
 
         async with httpx.AsyncClient() as client:
+            content = content.replace(",.! ", "").strip().split()
+            part_1, part_2 = content[:len(content)//2], content[len(content)//2:]
             response = await client.post(
                 IMGFLIP_API_URL,
                 data={
-                    "template_id": template_id,
+                    "template_id": random.choice(IMGFLIP_TEMPLATE_IDS),
                     "username": IMGFLIP_USERNAME,
-                    "password": "***" if IMGFLIP_PASSWORD else None,
-                    "text0": f"{user}:",
-                    "text1": ' '.join((content[:30]).split()[:-1]) + "..." if len(content) > 30 else content,
+                    "password": IMGFLIP_PASSWORD,
+                    "text0": (' '.join(part_1[:6])) + "..." if len(part_1) > 6 else part_1,
+                    "text1": (' '.join(part_2[:6])) + "..." if len(part_2) > 6 else part_2,
                     "max_font_size": 18,
                 },
             )
             response_json = response.json()
-            
             if not response_json.get("success"):
                 error = response_json.get("error", "Unknown error")
-                logger.error(f"Meme generation failed: {error}")
                 raise HTTPException(status_code=500, detail=f"Meme generation failed: {error}")
-            
-            url = response_json["data"]["url"]
-            logger.info(f"Meme generated successfully: {url[:50]}...")
-            return url
+            return response_json["data"]["url"]
     except HTTPException:
         raise
     except Exception as e:
