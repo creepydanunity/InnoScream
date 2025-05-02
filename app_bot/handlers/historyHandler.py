@@ -33,7 +33,7 @@ async def handle_history(msg: types.Message):
     try:
         weeks = await get_history()
         if not weeks:
-            await msg.answer("Archive is empty")
+            await msg.answer("❌ There is no archived tops yet")
             return
             
         await msg.answer(

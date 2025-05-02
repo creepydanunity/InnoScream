@@ -628,10 +628,6 @@ async def get_history(session: AsyncSession = Depends(get_session)):
         result = await session.execute(stmt)
         weeks = result.scalars().all()
 
-        if not weeks:
-            logger.info(f"No archived tops found")
-            raise HTTPException(status_code=404, detail="No archives")
-
         return {
             "weeks": weeks
         }
