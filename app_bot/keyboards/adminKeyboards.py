@@ -17,7 +17,6 @@ def deletion_keyboard_setup() -> InlineKeyboardMarkup:
         ➡️ - Navigate to the next scream.
         🚪 Exit - Exit moderation mode.
     """
-
     deletion_kb = InlineKeyboardBuilder()
 
     deletion_kb.add(
@@ -45,7 +44,6 @@ def history_keyboard(weeks: list) -> InlineKeyboardMarkup:
     Buttons:
         🗓 WW-YYYY — where WW is the week number and YYYY is the year.
     """
-
     builder = InlineKeyboardBuilder()
     for week in weeks:
         year, week_num = week.split('-')

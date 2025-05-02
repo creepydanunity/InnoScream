@@ -26,6 +26,7 @@ class Archive(Base):
         __repr__(): Returns a string representation of the Archive object, including
                     its unique identifier and scream_id for future usage.
     """
+
     __tablename__ = "archives"
 
     id: Mapped[int] = mapped_column(primary_key=True)

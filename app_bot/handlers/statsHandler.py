@@ -22,7 +22,6 @@ async def handle_stress(msg: types.Message):
         - Fetches the weekly scream statistics from the backend.
         - Sends a bar chart image showing the number of screams per day over the past week.
     """
-
     try:
         user_id = str(msg.from_user.id)
         logger.info(f"User {user_id} requested stress stats")
@@ -35,6 +34,7 @@ async def handle_stress(msg: types.Message):
     except Exception as e:
         logger.error(f"Failed to get stress stats: {str(e)}", exc_info=True)
         await msg.answer("❌ Failed to load stress stats")
+
 
 @statsRouter.message(Command("stats"))
 async def handle_user_stats(msg: types.Message):
@@ -51,7 +51,6 @@ async def handle_user_stats(msg: types.Message):
             - A bar chart showing daily scream activity over the past week.
             - A pie chart showing the distribution of reactions received.
     """
-
     user_id = str(msg.from_user.id)
     try:
         logger.info(f"User {user_id} requested stats")

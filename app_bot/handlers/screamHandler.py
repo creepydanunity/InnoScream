@@ -24,7 +24,6 @@ async def handle_scream(msg: types.Message):
         - Sends the scream to the backend API using `post_scream()`.
         - Notifies the user of success or failure.
     """
-    
     user_id = str(msg.from_user.id)
     content = msg.text.replace("/scream", "").strip()
     
@@ -56,7 +55,6 @@ async def handle_feed(msg: types.Message):
         - Delegates the actual scream retrieval and delivery to `send_next_scream()`,
           passing the user's Telegram ID and the loading message for context.
     """
-    
     user_id = str(msg.from_user.id)
     logger.info(f"User {user_id} requested feed")
     dummy_msg = await msg.answer("⏳ Loading your scream...")

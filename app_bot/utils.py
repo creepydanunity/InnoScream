@@ -20,7 +20,6 @@ async def send_next_scream(user_id: str, message: types.Message):
         - Edits the given message to display the scream content with inline reaction buttons.
         - If no screams are available or an error occurs, shows a fallback message.
     """
-
     try:
         logger.debug(f"Sending next scream for user {user_id}")
         scream = await get_next_scream(user_id)

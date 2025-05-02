@@ -21,6 +21,7 @@ class UserFeedProgress(Base):
     Methods:
         __repr__(): Return a debug representation showing feed progress.
     """
+
     __tablename__ = "user_feed_progress"
 
     user_hash = Column(String, primary_key=True)

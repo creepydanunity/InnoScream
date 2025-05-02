@@ -24,7 +24,6 @@ async def post_scream(content: str, user_id: str):
     Raises:
         Exception: On request failure or server error.
     """
-
     try:
         logger.debug(f"Posting scream from user {user_id}")
         async with httpx.AsyncClient() as client:
@@ -36,9 +35,8 @@ async def post_scream(content: str, user_id: str):
         raise
 
 async def create_admin(user_id: str, user_id_to_admin: str):
-
     """
-    Creates an admin user by sending a POST request to the API.
+    Create an admin user by sending a POST request to the API.
 
     Args:
         user_id (str): The user ID making the request.
@@ -50,7 +48,6 @@ async def create_admin(user_id: str, user_id_to_admin: str):
     Raises:
         httpx.HTTPStatusError: If the API responds with a non-2xx status code.
     """
-
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{API_URL}/create_admin", json={"user_id_to_admin": user_id_to_admin, "user_id": user_id})
         resp.raise_for_status()
@@ -68,9 +65,8 @@ async def create_admin(user_id: str, user_id_to_admin: str):
 
 
 async def get_my_id(user_id: str):
-
     """
-    Retrieves the user ID from the API for a given user.
+    Retrieve the user ID from the API for a given user.
 
     Args:
         user_id (str): The user ID to query.
@@ -78,7 +74,6 @@ async def get_my_id(user_id: str):
     Returns:
         dict: The response JSON from the API containing user ID.
     """
-
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{API_URL}/my_id", json={"user_id": user_id})
         return resp.json()
@@ -93,11 +88,11 @@ async def get_my_id(user_id: str):
     except Exception as e:
         logger.error(f"Failed to get ID: {str(e)}", exc_info=True)
         raise
-    
-async def delete_scream(scream_id: int, user_id: str):
 
+
+async def delete_scream(scream_id: int, user_id: str):
     """
-    Deletes a specific scream by its ID by sending a POST request to the API.
+    Delete a specific scream by its ID by sending a POST request to the API.
 
     Args:
         scream_id (int): The ID of the scream to be deleted.
@@ -109,7 +104,6 @@ async def delete_scream(scream_id: int, user_id: str):
     Raises:
         httpx.HTTPStatusError: If the API responds with a non-2xx status code.
     """
-
     async with httpx.AsyncClient() as client:
         resp = await client.post(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
         resp.raise_for_status()
@@ -126,7 +120,8 @@ async def delete_scream(scream_id: int, user_id: str):
     except Exception as e:
         logger.error(f"Scream deletion failed: {str(e)}", exc_info=True)
         raise
-    
+
+
 async def confirm_scream(scream_id: int, user_id: str):
     """
     Confirm a scream as reviewed.
@@ -141,7 +136,6 @@ async def confirm_scream(scream_id: int, user_id: str):
     Raises:
         Exception: On failure to complete the request.
     """
-
     try:
         logger.debug(f"Confirming scream {scream_id} by user {user_id}")
         async with httpx.AsyncClient() as client:
@@ -152,6 +146,7 @@ async def confirm_scream(scream_id: int, user_id: str):
     except Exception as e:
         logger.error(f"Scream confirmation failed: {str(e)}", exc_info=True)
         raise
+
 
 async def react_to_scream(scream_id: int, emoji: str, user_id: str):
     """
@@ -183,6 +178,7 @@ async def react_to_scream(scream_id: int, emoji: str, user_id: str):
         logger.error(f"Reaction failed: {str(e)}", exc_info=True)
         raise
 
+
 async def get_next_scream(user_id: str):
     """
     Fetch the next unseen scream for the given user from the backend API.
@@ -196,12 +192,10 @@ async def get_next_scream(user_id: str):
     Raises:
         httpx.HTTPStatusError: If the backend API returns an error.
     """
-
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/feed/{user_id}")
         resp.raise_for_status()
         return resp.json()
-
 
     try:
         logger.debug(f"Getting next scream for user {user_id}")
@@ -213,7 +207,8 @@ async def get_next_scream(user_id: str):
     except Exception as e:
         logger.error(f"Failed to get scream: {str(e)}", exc_info=True)
         raise
-    
+
+   
 async def get_all_screams_for_admin(user_id: str):
     """
     Retrieve all unmoderated screams for the admin.
@@ -227,7 +222,6 @@ async def get_all_screams_for_admin(user_id: str):
     Raises:
         Exception: On failure to fetch data.
     """
-
     try:
         logger.debug(f"Getting all screams for admin {user_id}")
         async with httpx.AsyncClient() as client:
@@ -240,6 +234,7 @@ async def get_all_screams_for_admin(user_id: str):
     except Exception as e:
         logger.error(f"Failed to get admin screams: {str(e)}", exc_info=True)
         raise
+
 
 async def get_user_stats(user_id: str):
     """
@@ -254,7 +249,6 @@ async def get_user_stats(user_id: str):
     Raises:
         httpx.HTTPStatusError: If the backend API responds with an error status.
     """
-
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/stats/{user_id}")
         resp.raise_for_status()
@@ -281,7 +275,6 @@ async def get_stress_stats():
     Raises:
         httpx.HTTPStatusError: If the backend API responds with an error status.
     """
-
     async with httpx.AsyncClient() as client:
         resp = await client.get(f"{API_URL}/stress")
         resp.raise_for_status()
@@ -320,6 +313,7 @@ async def get_top_screams(n: int = 3):
         logger.error(f"Failed to get top screams: {str(e)}", exc_info=True)
         raise
 
+
 async def get_history():
     """
     Retrieve the list of archived week identifiers.
@@ -330,7 +324,6 @@ async def get_history():
     Raises:
         Exception: On API or connection error.
     """
-
     try:
         logger.debug("Fetching available historical weeks")
         async with httpx.AsyncClient() as client:
@@ -341,6 +334,7 @@ async def get_history():
     except Exception as e:
         logger.error(f"Failed to get history: {str(e)}", exc_info=True)
         raise
+
 
 async def get_historical_week(week_id: str):
     """
@@ -356,7 +350,6 @@ async def get_historical_week(week_id: str):
         ValueError: If the archive for the given week doesn't exist.
         Exception: For all other failures.
     """
-
     try:
         logger.debug(f"Fetching historical week {week_id}")
         async with httpx.AsyncClient() as client:
@@ -377,6 +370,7 @@ async def get_historical_week(week_id: str):
         logger.error(f"Failed to get historical week: {str(e)}", exc_info=True)
         raise
 
+
 async def archive_current_week(week_id: str, user_id: str):
     """
     Archive the current week's top screams.
@@ -392,7 +386,6 @@ async def archive_current_week(week_id: str, user_id: str):
         ValueError: If the archive already exists.
         Exception: On failure to store archive.
     """
-    
     try:
         logger.debug(f"Archiving week as {week_id}")
         async with httpx.AsyncClient() as client:
@@ -411,4 +404,3 @@ async def archive_current_week(week_id: str, user_id: str):
     except Exception as e:
         logger.error(f"Failed to archive week: {str(e)}", exc_info=True)
         raise
-

@@ -35,9 +35,7 @@ def archive_top_job():
                    the exception is logged and re-raised.
     """
     async def _inner():
-        """
-        Scheduler wrapper that fetches an AsyncSession and runs the async archive_top logic.
-        """
+        """Scheduler wrapper that fetches an AsyncSession and runs the async archive_top logic."""
         async with asyncSession() as session:
             try:
                 now = datetime.now(timezone.utc)

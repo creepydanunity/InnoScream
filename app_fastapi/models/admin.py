@@ -12,7 +12,6 @@ from .base import Base
 logger = logging.getLogger("app_fastapi.models")
 
 class Admin(Base):
-
     """
     Represents an administrative user in the system.
 

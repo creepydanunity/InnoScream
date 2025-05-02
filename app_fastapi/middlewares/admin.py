@@ -16,9 +16,8 @@ from app_fastapi.tools.crypt import hash_user_id
 logger = logging.getLogger("app_fastapi")
 
 async def admin_middleware(request: Request, session: AsyncSession = Depends(get_session),):
-
     """
-    Checks if the requesting user is an admin.
+    Check if the requesting user is an admin.
 
     Parses the request body to extract `user_id`, hashes it, and verifies 
     its presence in the Admin table. Raises 403 if the user is not an admin.
@@ -31,7 +30,6 @@ async def admin_middleware(request: Request, session: AsyncSession = Depends(get
     Raises:
         HTTPException: 400 for invalid JSON, 403 for unauthorized access.
     """
-
     try:
         body_bytes = await request.body()
 

@@ -19,6 +19,7 @@ class CreateScreamResponse(BaseModel):
     Methods:
         __repr__(): Return a debug representation of the response.
     """
+
     status: str
     scream_id: int
 
@@ -36,6 +37,7 @@ class CreateAdminResponse(BaseModel):
     Methods:
         __repr__(): Return a debug representation of the response.
     """
+
     status: str
 
     def __repr__(self):
@@ -52,6 +54,7 @@ class GetMyIdResponse(BaseModel):
     Methods:
         __repr__(): Return a debug representation of the response.
     """
+
     user_id: str
 
     def __repr__(self):
@@ -68,6 +71,7 @@ class ReactionResponse(BaseModel):
     Methods:
         __repr__(): Return a debug representation of the response.
     """
+
     status: str
 
     def __repr__(self):
@@ -87,6 +91,7 @@ class TopScreamItem(BaseModel):
     Methods:
         __repr__(): Return a debug representation of the item.
     """
+
     id: int
     content: str
     votes: int
@@ -106,6 +111,7 @@ class TopScreamsResponse(BaseModel):
     Methods:
         __repr__(): Return a debug representation including post count.
     """
+
     posts: List[TopScreamItem]
 
     def __repr__(self):
@@ -119,7 +125,9 @@ class ArchivedWeeksResponse(BaseModel):
     Attributes:
         weeks (List[int]): Identifiers for archived weeks.
     """
+
     weeks: List[int]
+
 
 class UserStatsResponse(BaseModel):
     """
@@ -135,6 +143,7 @@ class UserStatsResponse(BaseModel):
     Methods:
         __repr__(): Return a debug representation including counts.
     """
+
     screams_posted: int
     reactions_given: int
     reactions_got: int
@@ -144,6 +153,7 @@ class UserStatsResponse(BaseModel):
     def __repr__(self):
         logger.debug(f"UserStatsResponse representation: screams={self.screams_posted}, reactions={self.reactions_got}")
         return f"<UserStatsResponse(screams={self.screams_posted}, reactions={self.reactions_got})>"
+
 
 class DeleteResponse(BaseModel):
     """
@@ -155,6 +165,7 @@ class DeleteResponse(BaseModel):
     Methods:
         __repr__(): Return a debug representation of the response.
     """
+
     status: str
 
     def __repr__(self):
@@ -171,6 +182,7 @@ class StressStatsResponse(BaseModel):
     Methods:
         __repr__(): Return a debug representation of the response.
     """
+
     chart_url: str
 
     def __repr__(self):
@@ -188,6 +200,7 @@ class ScreamResponse(BaseModel):
     Methods:
         __repr__(): Return a debug representation of the response.
     """
+
     scream_id: int
     content: str
 

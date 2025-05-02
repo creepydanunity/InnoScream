@@ -33,7 +33,6 @@ async def handle_delete(msg: types.Message, state: FSMContext):
         - Displays the first scream to the admin for review.
         - Sets the FSM state to reviewing.
     """
-
     screams = []
     try:
         screams = await get_all_screams_for_admin(str(msg.from_user.id))
@@ -82,7 +81,6 @@ async def process_callback_button_back(callback_query: CallbackQuery, state: FSM
         - Navigates to the previous scream.
         - Updates the message with the previous scream's content and options.
     """
-
     data = await state.get_data()
     scream_index = (data["index"] - 1) % len(data["screams"])
     screams = data["screams"]
@@ -110,7 +108,6 @@ async def handle_create_admin(msg: types.Message):
         - Calls the API to create a new admin.
         - Sends a success or error message based on the result.
     """
-
     try:
         args = msg.text.split()
         user_id = str(msg.from_user.id)
@@ -158,7 +155,6 @@ async def process_callback_button_delete(callback_query: CallbackQuery, state: F
         - Sends a request to delete the current scream.
         - Displays the next scream or ends the session if none are left.
     """
-
     try:
         data = await state.get_data()
         screams = data["screams"]
@@ -214,7 +210,6 @@ async def process_callback_button_confirm(callback_query: CallbackQuery, state: 
         - Sends a request to confirm the current scream.
         - Displays the next scream or ends the session if none are left.
     """
-
     try:
         data = await state.get_data()
         screams = data["screams"]
@@ -270,7 +265,6 @@ async def process_callback_button_next(callback_query: CallbackQuery, state: FSM
         - Moves to the next scream in the list.
         - Updates the message with the next scream's content and options.
     """
-
     try:
         data = await state.get_data()
         scream_index = (data["index"] + 1) % len(data["screams"])
@@ -302,7 +296,6 @@ async def process_callback_button_exit(callback_query: CallbackQuery, state: FSM
         - Clears the moderation session state.
         - Edits the current message to display an exit confirmation.
     """
-
     try:
         user_id = str(callback_query.from_user.id)
         logger.info(f"Admin {user_id} exited moderation mode")

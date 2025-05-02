@@ -31,7 +31,6 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-
     """
     Startup event handler for initializing the database and checking for the default admin.
 
@@ -42,7 +41,6 @@ async def startup():
     - Checks if an admin with the corresponding user hash already exists in the database.
     - If no admin exists, a new default admin is added to the database.
     """
-
     try:
         logger.info("Starting application initialization")
         
@@ -91,7 +89,6 @@ async def startup():
 app.include_router(endpoints.router)
 
 if __name__ == "__main__":
-
     """
     Main entry point for running the FastAPI app.
 
@@ -99,7 +96,6 @@ if __name__ == "__main__":
     - Initializes the database migration.
     - Runs the FastAPI app with uvicorn on host 0.0.0.0 and port 8000.
     """
-
     try:
         logger.info("Starting application")
         asyncio.run(init_db())

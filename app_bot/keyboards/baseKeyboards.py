@@ -15,7 +15,6 @@ def reaction_keyboard(scream_id: int):
             - A "Skip" button to skip the scream,
             - An "Exit" button to leave the feed.
     """
-
     emojis = ["💀", "🔥", "🤡"]
     buttons = [
         InlineKeyboardButton(text=emoji, callback_data=f"react:{scream_id}:{emoji}")
