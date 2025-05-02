@@ -1,9 +1,11 @@
 from typing import Optional
-from app_fastapi.models.base import Base
+from .base import Base
 from sqlalchemy import String, Boolean
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime, timezone
+import logging
 
+logger = logging.getLogger("app_fastapi.models")
 
 class Scream(Base):
     __tablename__ = "screams"
@@ -16,6 +18,12 @@ class Scream(Base):
     moderated: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     reactions = relationship("Reaction", back_populates="scream", cascade="all, delete-orphan")
+    archives = relationship("Archive", back_populates="scream", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<Scream(id={self.id}, content={self.content[:15]}..., user={self.user_hash})>"
+        logger.debug(f"Scream representation: id={self.id}, user_hash={self.user_hash[:5]}...")
+        return f"<Scream(id={self.id}, content={self.content[:15]}..., user={self.user_hash[:5]}...)>"
+
+    def __str__(self):
+        logger.debug(f"Scream string representation: id={self.id}")
+        return f"Scream(id={self.id})"
