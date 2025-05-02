@@ -38,7 +38,6 @@ async def main():
     Raises:
         Exception: If initialization or polling fails.
     """
-    
     try:
         logger.info("Initializing bot")
         bot = Bot(token=os.getenv("BOT_TOKEN"))
@@ -52,15 +51,13 @@ async def main():
         dp.include_router(idRouter)
         dp.include_router(startRouter)
         logger.info("All routers included")
-
-        
-
         logger.info("Starting polling")
         await dp.start_polling(bot, polling_timeout=120, skip_updates=False)
         
     except Exception as e:
         logger.critical(f"Bot failed to start: {str(e)}", exc_info=True)
         raise
+
 
 if __name__ == "__main__":
     try:

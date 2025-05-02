@@ -30,6 +30,7 @@ class Reaction(Base):
     Constraints:
         - Each user may react at most once per scream (enforced by unique constraint).
     """
+
     __tablename__ = "reactions"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -29,7 +29,6 @@ async def handle_history(msg: types.Message):
         - If no archives exist, notifies the user that the archive is empty.
         - On error, logs the issue and informs the user.
     """
-
     try:
         weeks = await get_history()
         if not weeks:
@@ -59,7 +58,6 @@ async def handle_week_selection(callback: CallbackQuery):
         - If no data is found for the selected week, informs the user.
         - Logs any errors and sends a generic failure message if needed.
     """
-    
     try:
         week_id = callback.data.split("_")[1]
         await callback.answer("⏳ Loading weekly top...")

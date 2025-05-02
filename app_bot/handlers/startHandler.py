@@ -20,7 +20,6 @@ async def handle_start(msg: types.Message):
         - Logs the new user ID.
         - Sends a welcome message explaining the bot's purpose and available commands.
     """
-    
     user_id = str(msg.from_user.id)
     logger.info(f"New user started: {user_id}")
     await msg.answer(

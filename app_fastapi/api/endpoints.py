@@ -72,6 +72,7 @@ async def create_scream(data: CreateScreamRequest, session: AsyncSession = Depen
         logger.error(f"Failed to create scream: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.post("/react", response_model=ReactionResponse)
 async def react(data: ReactionRequest, session: AsyncSession = Depends(get_session)):
     """
@@ -118,6 +119,7 @@ async def react(data: ReactionRequest, session: AsyncSession = Depends(get_sessi
         logger.error(f"Failed to process reaction: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.get("/top", response_model=TopScreamsResponse)
 async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_session)):
     """
@@ -136,7 +138,6 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
         - This endpoint returns a JSON response.
         - Meme URLs are generated asynchronously and saved back into the database.
     """
-
     try:
         logger.debug(f"Fetching top {n} screams")
         today_start, tomorrow = get_bounds()
@@ -193,6 +194,7 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
         logger.error(f"Failed to get top screams: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.get("/stats/{user_id}", response_model=UserStatsResponse)
 async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_session)):
     """
@@ -217,7 +219,6 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
         - Computes total number of screams, reactions given, and reactions received.
         - Generates a QuickChart URL for a pie chart of received reactions.
     """
-
     import urllib.parse
     from datetime import datetime, timezone, timedelta
 
@@ -319,7 +320,6 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
         - Aggregates the daily totals.
         - Creates a bar chart using QuickChart.io and returns the chart URL.
     """
-
     import urllib.parse
     from datetime import datetime, timezone, timedelta
 
@@ -352,9 +352,8 @@ async def create_admin(
     session: AsyncSession = Depends(get_session),  
     _: None = Depends(admin_middleware)
 ):
-
     """
-    Assigns admin privileges to a specified user.
+    Assign admin privileges to a specified user.
 
     This endpoint can only be accessed by an existing admin (validated via middleware).
     If the specified user is already an admin, returns status "already_admin".
@@ -368,7 +367,6 @@ async def create_admin(
     Returns:
         CreateAdminResponse: A response object with status "ok" or "already_admin".
     """
-
     user_to_admin_hash = hash_user_id(data.user_id_to_admin)
 
     result = await session.execute(select(Admin).where(Admin.user_hash == user_to_admin_hash))
@@ -391,9 +389,8 @@ async def delete_scream(
     session: AsyncSession = Depends(get_session),  
     _: None = Depends(admin_middleware)
 ):
-
     """
-    Deletes a scream by its ID. 
+    Delete a scream by its ID.
 
     This endpoint can only be accessed by users with admin privileges, 
     which are verified by the `admin_middleware`. If the scream with the 
@@ -408,7 +405,6 @@ async def delete_scream(
     Returns:
         DeleteResponse: A response object with status "deleted".
     """
-
     try:
         logger.info(f"Deleting scream: {data.scream_id}")
 
@@ -429,11 +425,11 @@ async def delete_scream(
         logger.error(f"Failed to delete scream: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.post("/my_id", response_model=GetMyIdResponse)
 async def get_my_id(data: GetIdRequest):
-
     """
-    Returns the user ID.
+    Retrieve the user ID.
 
     This endpoint simply echoes back the user ID sent by the client. 
 
@@ -443,7 +439,6 @@ async def get_my_id(data: GetIdRequest):
     Returns:
         GetMyIdResponse: A response object with the provided user ID.
     """
-
     user_id = data.user_id
 
     try:
@@ -460,6 +455,7 @@ async def get_my_id(data: GetIdRequest):
     except Exception as e:
         logger.error(f"Failed to get user ID: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
+
 
 @router.get("/feed/{user_id}", response_model=ScreamResponse)
 async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_session)):
@@ -480,7 +476,6 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
         - Retrieves the next scream from this week that the user has not reacted to.
         - Excludes the user's own screams.
     """
-
     from app_fastapi.models.scream import Scream
     from app_fastapi.models.reaction import Reaction
 
@@ -538,7 +533,6 @@ async def get_screams_admin(
         - Fetches all screams from the current week that haven't been moderated.
         - Returns a list of scream IDs and content.
     """
-
     try:
         logger.info(f"Getting screams for admin: {data.user_id[:5]}...")
         stmt = (
@@ -590,7 +584,6 @@ async def confirm_scream(
         - Marks the scream as moderated in the database.
         - Returns a confirmation status.
     """
-
     try:
         logger.info(f"Confirming scream: {data.scream_id}")
         scream = await session.get(Scream, data.scream_id)
@@ -609,7 +602,8 @@ async def confirm_scream(
     except Exception as e:
         logger.error(f"Failed to confirm scream: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
-    
+
+
 @router.get("/history", response_model=ArchivedWeeksResponse)
 async def get_history(session: AsyncSession = Depends(get_session)):
     """
@@ -622,7 +616,6 @@ async def get_history(session: AsyncSession = Depends(get_session)):
         - Queries the database for distinct archived week IDs.
         - Returns them in descending order.
     """
-
     try:        
         stmt = select(distinct(Archive.week_id)).order_by(Archive.week_id.desc())
         result = await session.execute(stmt)
@@ -637,7 +630,8 @@ async def get_history(session: AsyncSession = Depends(get_session)):
     except Exception as e:
         logger.error(f"Failed to load archives: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
-    
+
+
 @router.get("/history/{week_id}", response_model=TopScreamsResponse)
 async def get_historical_week(week_id: str, session: AsyncSession = Depends(get_session)):
     """
@@ -651,7 +645,6 @@ async def get_historical_week(week_id: str, session: AsyncSession = Depends(get_
         - Fetches archived screams for the given week ID.
         - Returns scream content, vote count, and meme URL.
     """
-
     try:
         logger.info(f"Getting historical week: {week_id}")
         
@@ -682,6 +675,7 @@ async def get_historical_week(week_id: str, session: AsyncSession = Depends(get_
         logger.error(f"Failed to get historical week: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.post("/history/{week_id}", dependencies=[Depends(admin_middleware)])
 async def archive_current_week(
     week_id: str,
@@ -701,7 +695,6 @@ async def archive_current_week(
         - Calculates top-voted screams of the current week.
         - Stores them in the archive table.
     """
-    
     try:
         logger.info(f"Archiving week as {week_id}")
         

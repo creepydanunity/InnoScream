@@ -26,7 +26,6 @@ async def handle_reaction(callback: types.CallbackQuery):
         - If the reaction fails (e.g., already reacted), informs the user.
         - Loads and sends the next scream after a successful reaction.
     """
-
     _, scream_id, emoji = callback.data.split(":")
     user_id = str(callback.from_user.id)
 
@@ -53,7 +52,6 @@ async def handle_exit_feed(callback: types.CallbackQuery):
     Behavior:
         - Edits the current message to display an exit confirmation.
     """
-
     user_id = str(callback.from_user.id)
     logger.info(f"User {user_id} exited feed")
     await callback.message.edit_text("👋 <i>You've exited the scream feed</i>", parse_mode="HTML")

@@ -44,7 +44,6 @@ def get_week_start():
     Returns:
         datetime: A timezone-aware datetime object (UTC) for the most recent Monday at midnight.
     """
-    
     now = datetime.now(timezone.utc)
     week_start = now - timedelta(days=now.weekday())
     return week_start.replace(hour=0, minute=0, second=0, microsecond=0)

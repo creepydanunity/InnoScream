@@ -9,7 +9,6 @@ from typing_extensions import Annotated
 logger = logging.getLogger("app_fastapi.schemas")
 
 class CreateScreamRequest(BaseModel):
-
     """
     Request model for creating a new scream.
 
@@ -26,7 +25,6 @@ class CreateScreamRequest(BaseModel):
         return f"<CreateScreamRequest(user={self.user_id[:5]}...)>"
 
 class CreateAdminRequest(BaseModel):
-
     """
     Request model for promoting a user to admin.
 
@@ -43,7 +41,6 @@ class CreateAdminRequest(BaseModel):
         return f"<CreateAdminRequest(from={self.user_id[:5]}..., to={self.user_id_to_admin[:5]}...)>"
 
 class GetIdRequest(BaseModel):
-
     """
     Request model for retrieving the current user's ID.
 
@@ -58,7 +55,6 @@ class GetIdRequest(BaseModel):
         return f"<GetIdRequest(user={self.user_id[:5]}...)>"
 
 class ReactionRequest(BaseModel):
-
     """
     Request model for reacting to a scream.
 
@@ -77,7 +73,6 @@ class ReactionRequest(BaseModel):
         return f"<ReactionRequest(user={self.user_id[:5]}..., scream={self.scream_id}, emoji={self.emoji})>"
 
 class DeleteRequest(BaseModel):
-
     """
     Request model for deleting a scream.
 
@@ -94,7 +89,6 @@ class DeleteRequest(BaseModel):
         return f"<DeleteRequest(user={self.user_id[:5]}..., scream={self.scream_id})>"
 
 class UserRequest(BaseModel):
-
     """
     Simple request model containing a user ID.
 

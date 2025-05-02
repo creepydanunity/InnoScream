@@ -31,6 +31,7 @@ class Scream(Base):
         __repr__(): Return a debug representation of the Scream instance.
         __str__(): Return a simple string identifier for the Scream instance.
     """
+
     __tablename__ = "screams"
 
     id: Mapped[int] = mapped_column(primary_key=True)

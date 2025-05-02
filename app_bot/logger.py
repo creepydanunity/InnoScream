@@ -17,7 +17,6 @@ def setup_bot_logger():
     Returns:
         logging.Logger: The configured logger instance.
     """
-    
     logger = logging.getLogger("app_bot")
     logger.setLevel(logging.DEBUG)
 

@@ -11,9 +11,8 @@ idRouter = Router()
 
 @idRouter.message(Command("my_id"))
 async def handle_my_id(msg: types.Message):
-
     """
-    Handles the '/my_id' command to retrieve and send the user's ID.
+    Handle the '/my_id' command to retrieve and send the user's ID.
 
     When the user sends the '/my_id' command, the bot will:
     - Extract the user ID from the message.
@@ -27,7 +26,6 @@ async def handle_my_id(msg: types.Message):
     Returns:
         None
     """
-
     user_id = str(msg.from_user.id) 
 
     try:
