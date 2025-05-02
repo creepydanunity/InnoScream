@@ -28,7 +28,9 @@ async def handle_start(msg: types.Message):
         "An anonymous place to let it all out. Here's what you can do:\n\n"
         "<b>😤 /scream [text]</b> — Post your scream anonymously\n"
         "<b>🔥 React to screams</b> — Vote with emojis\n"
-        "<b>📊 /my_stats</b> — See your scream count & stress trends\n"
+        "<b>📊 /stats</b> — See your scream & reactions count\n"
+        "<b>📈 /stress</b> — View weekly stress graphs\n"
+        "<b>📚 /history</b> — Browse top screams from past weeks\n"
         "<b>🏆 /top</b> — View the top scream of the day (with memes!)\n\n"
         "Let's scream it out. You in?",
         parse_mode="HTML"
