@@ -11,6 +11,19 @@ historyRouter = Router()
 
 @historyRouter.message(Command("history"))
 async def handle_history(msg: types.Message):
+    """
+    Handle the /history command to display available archived weeks.
+
+    Args:
+        msg (types.Message): Telegram message from the user invoking the command.
+
+    Behavior:
+        - Fetches a list of archived weeks from the backend.
+        - If archives exist, sends a message with an inline keyboard for week selection.
+        - If no archives exist, notifies the user that the archive is empty.
+        - On error, logs the issue and informs the user.
+    """
+
     try:
         weeks = await get_history()
         if not weeks:
@@ -27,6 +40,20 @@ async def handle_history(msg: types.Message):
 
 @historyRouter.callback_query(F.data.startswith("week_"))
 async def handle_week_selection(callback: CallbackQuery):
+    """
+    Handle a callback query for selecting a specific archived week.
+
+    Args:
+        callback (CallbackQuery): Telegram callback query triggered by week selection.
+
+    Behavior:
+        - Extracts the week ID from the callback data.
+        - Retrieves the top screams for that week.
+        - Formats and sends a message with the top 3 screams, including votes and meme links.
+        - If no data is found for the selected week, informs the user.
+        - Logs any errors and sends a generic failure message if needed.
+    """
+    
     try:
         week_id = callback.data.split("_")[1]
         await callback.answer("⏳ Loading weekly top...")

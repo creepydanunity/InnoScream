@@ -8,6 +8,19 @@ screamRouter = Router()
 
 @screamRouter.message(Command("scream"))
 async def handle_scream(msg: types.Message):
+    """
+    Handle the /scream command to post a new scream.
+
+    Args:
+        msg (types.Message): Telegram message containing the scream text.
+
+    Behavior:
+        - Extracts the scream content from the message.
+        - If the content is empty, prompts the user to type something.
+        - Sends the scream to the backend API using `post_scream()`.
+        - Notifies the user of success or failure.
+    """
+    
     user_id = str(msg.from_user.id)
     content = msg.text.replace("/scream", "").strip()
     

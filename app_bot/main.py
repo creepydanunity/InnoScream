@@ -11,6 +11,28 @@ from app_bot.handlers.historyHandler import historyRouter
 from app_bot.logger import logger
 
 async def main():
+    """
+    Initialize and start the Telegram bot.
+
+    Behavior:
+        - Loads the bot token from environment variables.
+        - Sets up the Dispatcher and registers all route handlers.
+        - Starts polling for new updates with a 120-second timeout.
+        - Logs the initialization process and any critical failures.
+
+    Routers included:
+        - historyRouter: Handles archive-related commands.
+        - reactionRouter: Manages user reactions to screams.
+        - screamRouter: Handles scream submission and feed browsing.
+        - statsRouter: Provides user statistics.
+        - adminRouter: Handles admin commands (delete, confirm, etc.).
+        - idRouter: Returns the user's ID.
+        - startRouter: Welcomes users and explains bot functionality.
+
+    Raises:
+        Exception: If initialization or polling fails.
+    """
+    
     try:
         logger.info("Initializing bot")
         bot = Bot(token=os.getenv("BOT_TOKEN"))
