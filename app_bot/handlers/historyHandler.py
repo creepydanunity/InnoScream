@@ -8,7 +8,7 @@ from aiogram.types import CallbackQuery
 
 # Local application
 from app_bot.api.api import get_history, get_historical_week
-from app_bot.keyboards.adminKeyboards import history_keyboard
+from app_bot.keyboards.historyKeyboards import history_keyboard
 
 
 logger = logging.getLogger("app_bot")
@@ -42,6 +42,7 @@ async def handle_history(msg: types.Message):
     except Exception as e:
         logger.error(f"History error: {str(e)}", exc_info=True)
         await msg.answer("❌ Error loading history")
+
 
 @historyRouter.callback_query(F.data.startswith("week_"))
 async def handle_week_selection(callback: CallbackQuery):

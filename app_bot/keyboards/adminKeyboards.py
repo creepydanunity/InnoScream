@@ -27,29 +27,4 @@ def deletion_keyboard_setup() -> InlineKeyboardMarkup:
         InlineKeyboardButton(text='🚪 Exit', callback_data='button_exit'),
     )
     
-
     return deletion_kb.adjust(4, 1).as_markup()
-
-
-def history_keyboard(weeks: list) -> InlineKeyboardMarkup:
-    """
-    Create an inline keyboard for selecting archived weeks.
-
-    Args:
-        weeks (list): A list of week identifiers in the format 'YYYY-WW'.
-
-    Returns:
-        InlineKeyboardMarkup: An inline keyboard with buttons for each available archive week.
-
-    Buttons:
-        🗓 WW-YYYY — where WW is the week number and YYYY is the year.
-    """
-    builder = InlineKeyboardBuilder()
-    for week in weeks:
-        year, week_num = week.split('-')
-        builder.add(InlineKeyboardButton(
-            text=f"🗓 {week_num}-{year}",
-            callback_data=f"week_{week}"
-        ))
-    builder.adjust(2)
-    return builder.as_markup()
