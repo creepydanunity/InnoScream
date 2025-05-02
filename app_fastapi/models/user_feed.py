@@ -1,6 +1,12 @@
-from sqlalchemy import Column, Integer, String
-from .base import Base
+# Standard library
 import logging
+
+# Third‑party
+from sqlalchemy import Column, Integer, String
+
+# Local application
+from .base import Base
+
 
 logger = logging.getLogger("app_fastapi.models")
 

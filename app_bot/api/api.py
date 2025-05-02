@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 import httpx
 from app_bot.logger import logger
 

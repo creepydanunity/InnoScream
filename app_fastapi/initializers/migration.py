@@ -1,6 +1,9 @@
+# Standard library
+import logging
+
+# Local application
 from app_fastapi.initializers.engine import engine
 from app_fastapi.models import Base
-import logging
 
 logger = logging.getLogger("app_fastapi")
 

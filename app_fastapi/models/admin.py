@@ -1,9 +1,13 @@
-from typing import Optional
-from .base import Base
-from sqlalchemy import String
-from sqlalchemy.orm import relationship, Mapped, mapped_column
-from datetime import datetime, timezone
+# Standard library
 import logging
+
+# Third‑party
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
+
+# Local application
+from .base import Base
+
 
 logger = logging.getLogger("app_fastapi.models")
 

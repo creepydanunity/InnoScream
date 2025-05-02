@@ -1,8 +1,12 @@
-from fastapi import HTTPException
+# Standard library
+import logging
 import os
 import random
+
+# Third‑party
 import httpx
-import logging
+from fastapi import HTTPException
+
 
 logger = logging.getLogger("app_fastapi.tools")
 

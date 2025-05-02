@@ -1,8 +1,11 @@
+# Standard library
+import logging
 from os import getenv
 from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+
+# Third‑party
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-import logging
 
 logger = logging.getLogger("app_fastapi")
 

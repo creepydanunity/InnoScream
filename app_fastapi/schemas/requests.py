@@ -1,6 +1,10 @@
+# Standard library
+import logging
+
+# Third‑party
 from pydantic import BaseModel, constr
 from typing_extensions import Annotated
-import logging
+
 
 logger = logging.getLogger("app_fastapi.schemas")
 
