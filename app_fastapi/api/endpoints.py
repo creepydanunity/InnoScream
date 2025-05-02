@@ -496,6 +496,19 @@ async def get_screams_admin(
     session: AsyncSession = Depends(get_session),  
     _: None = Depends(admin_middleware)
 ):
+    """
+    Retrieve all unmoderated screams for admin review.
+
+    Args:
+        data (UserRequest): Request data containing the admin's user ID.
+        session (AsyncSession): Database session dependency.
+        _ (None): Middleware dependency ensuring the user is an admin.
+
+    Behavior:
+        - Fetches all screams from the current week that haven't been moderated.
+        - Returns a list of scream IDs and content.
+    """
+
     try:
         logger.info(f"Getting screams for admin: {data.user_id[:5]}...")
         stmt = (
@@ -535,6 +548,19 @@ async def confirm_scream(
     session: AsyncSession = Depends(get_session),  
     _: None = Depends(admin_middleware)
 ):
+    """
+    Confirm a scream as reviewed.
+
+    Args:
+        data (DeleteRequest): Contains the scream ID to confirm.
+        session (AsyncSession): Database session dependency.
+        _ (None): Middleware dependency ensuring the user is an admin.
+
+    Behavior:
+        - Marks the scream as moderated in the database.
+        - Returns a confirmation status.
+    """
+
     try:
         logger.info(f"Confirming scream: {data.scream_id}")
         scream = await session.get(Scream, data.scream_id)
@@ -556,6 +582,17 @@ async def confirm_scream(
     
 @router.get("/history", response_model=ArchivedWeeksResponse)
 async def get_history(session: AsyncSession = Depends(get_session)):
+    """
+    Retrieve all archived week identifiers.
+
+    Args:
+        session (AsyncSession): Database session dependency.
+
+    Behavior:
+        - Queries the database for distinct archived week IDs.
+        - Returns them in descending order.
+    """
+
     try:        
         stmt = select(distinct(Archive.week_id)).order_by(Archive.week_id.desc())
         result = await session.execute(stmt)
@@ -577,6 +614,18 @@ async def get_history(session: AsyncSession = Depends(get_session)):
     
 @router.get("/history/{week_id}", response_model=TopScreamsResponse)
 async def get_historical_week(week_id: str, session: AsyncSession = Depends(get_session)):
+    """
+    Retrieve archived screams for a specific week.
+
+    Args:
+        week_id (str): The week identifier to retrieve data for.
+        session (AsyncSession): Database session dependency.
+
+    Behavior:
+        - Fetches archived screams for the given week ID.
+        - Returns scream content, vote count, and meme URL.
+    """
+
     try:
         logger.info(f"Getting historical week: {week_id}")
         
@@ -613,6 +662,20 @@ async def archive_current_week(
     session: AsyncSession = Depends(get_session),  
     _: None = Depends(admin_middleware)
 ):
+    """
+    Archive the top screams of the current week under a given ID.
+
+    Args:
+        week_id (str): The archive label (e.g., "2025-W18").
+        session (AsyncSession): Database session dependency.
+        _ (None): Middleware dependency ensuring the user is an admin.
+
+    Behavior:
+        - Validates the archive does not already exist.
+        - Calculates top-voted screams of the current week.
+        - Stores them in the archive table.
+    """
+    
     try:
         logger.info(f"Archiving week as {week_id}")
         

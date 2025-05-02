@@ -14,6 +14,19 @@ adminRouter = Router()
 
 @adminRouter.message(Command("delete"))
 async def handle_delete(msg: types.Message, state: FSMContext):
+    """
+    Handle the /delete command to start a moderation session.
+
+    Args:
+        msg (types.Message): Telegram message containing the delete command.
+        state (FSMContext): Finite State Machine context for tracking the moderation session.
+
+    Behavior:
+        - Retrieves unmoderated screams from the API.
+        - Displays the first scream to the admin for review.
+        - Sets the FSM state to reviewing.
+    """
+
     screams = []
     try:
         screams = await get_all_screams_for_admin(str(msg.from_user.id))
@@ -51,6 +64,18 @@ async def handle_delete(msg: types.Message, state: FSMContext):
 
 @adminRouter.callback_query(F.data.startswith('button_back'))
 async def process_callback_button_back(callback_query: CallbackQuery, state: FSMContext):
+    """
+    Handle the "button back" action in the scream moderation feed.
+
+    Args:
+        callback_query (CallbackQuery): Telegram callback query signaling a back navigation.
+        state (FSMContext): FSM context containing moderation state and scream list.
+
+    Behavior:
+        - Navigates to the previous scream.
+        - Updates the message with the previous scream's content and options.
+    """
+
     data = await state.get_data()
     scream_index = (data["index"] - 1) % len(data["screams"])
     screams = data["screams"]
@@ -67,6 +92,18 @@ async def process_callback_button_back(callback_query: CallbackQuery, state: FSM
 
 @adminRouter.message(Command("create_admin"))
 async def handle_create_admin(msg: types.Message):
+    """
+    Handle the /create_admin command to assign admin rights.
+
+    Args:
+        msg (types.Message): Telegram message containing the command and user ID.
+
+    Behavior:
+        - Validates the input format.
+        - Calls the API to create a new admin.
+        - Sends a success or error message based on the result.
+    """
+
     try:
         args = msg.text.split()
         user_id = str(msg.from_user.id)
@@ -103,6 +140,18 @@ async def handle_create_admin(msg: types.Message):
 
 @adminRouter.callback_query(F.data.startswith('button_delete'))
 async def process_callback_button_delete(callback_query: CallbackQuery, state: FSMContext):
+    """
+    Handle the "delete button" action for a scream in the moderation feed.
+
+    Args:
+        callback_query (CallbackQuery): Telegram callback query signaling a delete action.
+        state (FSMContext): FSM context containing moderation state and scream list.
+
+    Behavior:
+        - Sends a request to delete the current scream.
+        - Displays the next scream or ends the session if none are left.
+    """
+
     try:
         data = await state.get_data()
         screams = data["screams"]
@@ -147,6 +196,18 @@ async def process_callback_button_delete(callback_query: CallbackQuery, state: F
 
 @adminRouter.callback_query(F.data.startswith('button_confirm'))
 async def process_callback_button_confirm(callback_query: CallbackQuery, state: FSMContext):
+    """
+    Handle the "button confirm" action for a scream in the moderation feed.
+
+    Args:
+        callback_query (CallbackQuery): Telegram callback query signaling a confirm action.
+        state (FSMContext): FSM context containing moderation state and scream list.
+
+    Behavior:
+        - Sends a request to confirm the current scream.
+        - Displays the next scream or ends the session if none are left.
+    """
+
     try:
         data = await state.get_data()
         screams = data["screams"]
@@ -191,6 +252,18 @@ async def process_callback_button_confirm(callback_query: CallbackQuery, state: 
 
 @adminRouter.callback_query(F.data.startswith('button_next'))
 async def process_callback_button_next(callback_query: CallbackQuery, state: FSMContext):
+    """
+    Handle the 'button next" action in the scream moderation feed.
+
+    Args:
+        callback_query (CallbackQuery): Telegram callback query signaling a next action.
+        state (FSMContext): FSM context containing moderation state and scream list.
+
+    Behavior:
+        - Moves to the next scream in the list.
+        - Updates the message with the next scream's content and options.
+    """
+
     try:
         data = await state.get_data()
         scream_index = (data["index"] + 1) % len(data["screams"])
@@ -211,6 +284,18 @@ async def process_callback_button_next(callback_query: CallbackQuery, state: FSM
 
 @adminRouter.callback_query(F.data == 'button_exit')
 async def process_callback_button_exit(callback_query: CallbackQuery, state: FSMContext):
+    """
+    Handle the "exit button" action from the scream feed.
+
+    Args:
+        callback_query (CallbackQuery): Telegram callback query signaling the exit action.
+        state (FSMContext): FSM context to be cleared.
+
+    Behavior:
+        - Clears the moderation session state.
+        - Edits the current message to display an exit confirmation.
+    """
+
     try:
         user_id = str(callback_query.from_user.id)
         logger.info(f"Admin {user_id} exited moderation mode")
