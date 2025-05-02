@@ -8,6 +8,23 @@ import logging
 logger = logging.getLogger("app_fastapi")
 
 async def archive_top(session):
+    """
+    Archive the top 3 screams from the past week into the Archive table.
+
+    This function:
+      - Computes the current ISO week identifier in the format "YYYY-WW".
+      - Queries for the top 3 screams by positive reaction count (excluding ❌)
+        posted within the last 7 days.
+      - Creates Archive records for each top scream, assigning an ordinal place.
+      - Commits all new Archive entries to the database.
+
+    Args:
+        session (AsyncSession): An active SQLAlchemy asynchronous session.
+
+    Raises:
+        Exception: If any error occurs during querying or database commit;
+                   the exception is logged and re-raised.
+    """
     try:
         now = datetime.now(timezone.utc)
         year, week_num, _ = now.isocalendar()

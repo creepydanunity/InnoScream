@@ -5,6 +5,20 @@ import logging
 logger = logging.getLogger("app_fastapi")
 
 async def init_db():
+    """
+    Initialize the database by creating all tables defined in the SQLAlchemy models.
+
+    This function:
+      - Logs the start of the initialization process.
+      - Opens an asynchronous connection to the database engine.
+      - Executes the `Base.metadata.create_all` method within a transaction to create any
+        missing tables based on the model definitions.
+      - Logs success or failure of the operation.
+      - Propagates any exceptions encountered during setup.
+
+    Raises:
+        Exception: If table creation or database connection fails.
+    """
     try:
         logger.info("Initializing database")
         async with engine.begin() as conn:

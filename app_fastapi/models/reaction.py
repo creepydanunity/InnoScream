@@ -7,6 +7,23 @@ import logging
 logger = logging.getLogger("app_fastapi.models")
 
 class Reaction(Base):
+    """
+    Represents a user reaction (emoji) to a scream.
+
+    Attributes:
+        id (int): Primary key.
+        emoji (str): The emoji character used in the reaction.
+        timestamp (datetime): When the reaction was created.
+        scream_id (int): Foreign key to the associated scream.
+        user_hash (str): Hashed identifier of the reacting user.
+        
+    Methods:
+        __repr__(): Return a debug representation of the Reaction instance.
+        __str__(): Return a human-readable string for the Reaction instance.
+
+    Constraints:
+        - Each user may react at most once per scream (enforced by unique constraint).
+    """
     __tablename__ = "reactions"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -42,6 +42,19 @@ logger = logging.getLogger("app_fastapi")
 
 @router.post("/scream", response_model=CreateScreamResponse)
 async def create_scream(data: CreateScreamRequest, session: AsyncSession = Depends(get_session)):
+    """
+    Create a new scream for a user.
+
+    Args:
+        data (CreateScreamRequest): Request containing the user's external ID and scream content.
+        session (AsyncSession): Database session dependency.
+
+    Returns:
+        CreateScreamResponse: Status and generated scream ID on success.
+
+    Raises:
+        HTTPException: On internal server error.
+    """
     try:
         logger.debug(f"Creating scream for user: {data.user_id[:5]}...")
         user_hash = hash_user_id(data.user_id)
@@ -57,6 +70,19 @@ async def create_scream(data: CreateScreamRequest, session: AsyncSession = Depen
 
 @router.post("/react", response_model=ReactionResponse)
 async def react(data: ReactionRequest, session: AsyncSession = Depends(get_session)):
+    """
+    Record a reaction to a specific scream by a user.
+
+    Args:
+        data (ReactionRequest): Request containing the scream ID, user's external ID, and emoji.
+        session (AsyncSession): Database session dependency.
+
+    Returns:
+        ReactionResponse: Status "ok" on success.
+
+    Raises:
+        HTTPException: 404 if scream not found, 409 if user already reacted, 500 on server error.
+    """
     try:
         logger.debug(f"Processing reaction {data.emoji} for scream {data.scream_id} from user {data.user_id[:5]}...")
         

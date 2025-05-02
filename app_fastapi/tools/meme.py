@@ -7,6 +7,7 @@ import logging
 logger = logging.getLogger("app_fastapi.tools")
 
 IMGFLIP_API_URL = "https://api.imgflip.com/caption_image"
+
 IMGFLIP_TEMPLATE_IDS = ["181913649", "87743020", "112126428", "217743513", "124822590", "222403160", "131087935", 
                        "97984", "131940431", "252600902", "135256802", "438680", "322841258", "188390779", "102156234", 
                        "161865971", "247375501", "309868304", "91538330", "93895088", "79132341", "110163934", 
@@ -44,8 +45,6 @@ async def generate_meme_url(content: str) -> str:
         - Extracts and returns the meme image URL on success.
     """
     try:
-        logger.debug(f"Generating meme for user: {user[:5]}..., content: {content[:20]}...")
-
         async with httpx.AsyncClient() as client:
             content = content.replace(",.! ", "").strip().split()
             part_1, part_2 = content[:len(content)//2], content[len(content)//2:]

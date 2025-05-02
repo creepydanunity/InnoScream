@@ -2,6 +2,23 @@ import logging
 import sys
 
 def setup_fastapi_logger():
+    """
+    Configure and return a logger for the FastAPI application.
+
+    This function:
+      - Retrieves or creates a logger named "app_fastapi".
+      - Sets the overall log level to DEBUG.
+      - Defines a log message format including timestamp, logger name, level,
+        module, line number, and message.
+      - Adds two handlers:
+          1. Console handler (stdout) at INFO level.
+          2. File handler ("app_fastapi.log") at DEBUG level.
+      - Clears any existing handlers to avoid duplicate logs.
+      - Attaches the new handlers to the logger.
+    
+    Returns:
+        logging.Logger: Configured FastAPI application logger.
+    """
     logger = logging.getLogger("app_fastapi")
     logger.setLevel(logging.DEBUG)
 

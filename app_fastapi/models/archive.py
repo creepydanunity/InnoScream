@@ -8,6 +8,20 @@ import logging
 logger = logging.getLogger("app_fastapi.models")
 
 class Archive(Base):
+    """
+    Represents an archived top scream for a given week.
+
+    Attributes:
+        id (int): Primary key.
+        scream_id (int): Foreign key to the original scream.
+        week_id (int): Identifier for the week archive.
+        place (int): Rank or position in that week's top list.
+        scream (Scream): Relationship to the original scream object.
+    
+    Methods:
+        __repr__(): Returns a string representation of the Archive object, including
+                    its unique identifier and scream_id for future usage.
+    """
     __tablename__ = "archives"
 
     id: Mapped[int] = mapped_column(primary_key=True)

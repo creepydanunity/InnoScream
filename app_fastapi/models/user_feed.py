@@ -5,6 +5,16 @@ import logging
 logger = logging.getLogger("app_fastapi.models")
 
 class UserFeedProgress(Base):
+    """
+    Tracks the last-seen scream for each user, to serve a personalized feed.
+
+    Attributes:
+        user_hash (str): Primary key, hashed identifier of the user.
+        last_seen_id (int): ID of the most recently seen scream.
+
+    Methods:
+        __repr__(): Return a debug representation showing feed progress.
+    """
     __tablename__ = "user_feed_progress"
 
     user_hash = Column(String, primary_key=True)

@@ -8,6 +8,23 @@ import logging
 logger = logging.getLogger("app_fastapi.models")
 
 class Scream(Base):
+    """
+    Represents a user-submitted message ("scream").
+
+    Attributes:
+        id (int): Primary key.
+        content (str): The text content of the scream.
+        timestamp (datetime): When the scream was posted (UTC).
+        user_hash (str): Hashed identifier of the posting user.
+        meme_url (Optional[str]): URL to a generated meme image.
+        moderated (bool): Whether the scream has been reviewed by an admin.
+        reactions (List[Reaction]): All reactions on this scream.
+        archives (List[Archive]): Archive entries if this scream made a top list.
+
+    Methods:
+        __repr__(): Return a debug representation of the Scream instance.
+        __str__(): Return a simple string identifier for the Scream instance.
+    """
     __tablename__ = "screams"
 
     id: Mapped[int] = mapped_column(primary_key=True)
