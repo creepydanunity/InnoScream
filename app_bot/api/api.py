@@ -6,6 +6,20 @@ from app_bot.logger import logger
 API_URL = os.getenv("API_URL")
 
 async def post_scream(content: str, user_id: str):
+    """
+    Submit a new scream to the backend.
+
+    Args:
+        content (str): The textual content of the scream.
+        user_id (str): The ID of the user posting the scream.
+
+    Returns:
+        dict: Response JSON containing the scream ID and status.
+
+    Raises:
+        Exception: On request failure or server error.
+    """
+
     try:
         logger.debug(f"Posting scream from user {user_id}")
         async with httpx.AsyncClient() as client:
@@ -109,6 +123,20 @@ async def delete_scream(scream_id: int, user_id: str):
         raise
     
 async def confirm_scream(scream_id: int, user_id: str):
+    """
+    Confirm a scream as reviewed.
+
+    Args:
+        scream_id (int): The ID of the scream to confirm.
+        user_id (str): The ID of the admin confirming the scream.
+
+    Returns:
+        dict: Response JSON indicating success.
+
+    Raises:
+        Exception: On failure to complete the request.
+    """
+
     try:
         logger.debug(f"Confirming scream {scream_id} by user {user_id}")
         async with httpx.AsyncClient() as client:
@@ -182,6 +210,19 @@ async def get_next_scream(user_id: str):
         raise
     
 async def get_all_screams_for_admin(user_id: str):
+    """
+    Retrieve all unmoderated screams for the admin.
+
+    Args:
+        user_id (str): The admin's user ID.
+
+    Returns:
+        dict: List of unmoderated screams with content and IDs.
+
+    Raises:
+        Exception: On failure to fetch data.
+    """
+
     try:
         logger.debug(f"Getting all screams for admin {user_id}")
         async with httpx.AsyncClient() as client:
@@ -275,6 +316,16 @@ async def get_top_screams(n: int = 3):
         raise
 
 async def get_history():
+    """
+    Retrieve the list of archived week identifiers.
+
+    Returns:
+        list: A list of strings representing archived weeks.
+
+    Raises:
+        Exception: On API or connection error.
+    """
+
     try:
         logger.debug("Fetching available historical weeks")
         async with httpx.AsyncClient() as client:
@@ -287,6 +338,20 @@ async def get_history():
         raise
 
 async def get_historical_week(week_id: str):
+    """
+    Fetch top screams from a specific archived week.
+
+    Args:
+        week_id (str): The identifier for the archived week.
+
+    Returns:
+        list: A list of the top 3 scream posts from that week.
+
+    Raises:
+        ValueError: If the archive for the given week doesn't exist.
+        Exception: For all other failures.
+    """
+
     try:
         logger.debug(f"Fetching historical week {week_id}")
         async with httpx.AsyncClient() as client:
@@ -308,6 +373,21 @@ async def get_historical_week(week_id: str):
         raise
 
 async def archive_current_week(week_id: str, user_id: str):
+    """
+    Archive the current week's top screams.
+
+    Args:
+        week_id (str): The archive identifier for the week.
+        user_id (str): The admin user ID initiating the archive.
+
+    Returns:
+        dict: Confirmation of archive status and number of archived screams.
+
+    Raises:
+        ValueError: If the archive already exists.
+        Exception: On failure to store archive.
+    """
+    
     try:
         logger.debug(f"Archiving week as {week_id}")
         async with httpx.AsyncClient() as client:

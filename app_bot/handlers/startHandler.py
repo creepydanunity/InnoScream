@@ -6,6 +6,17 @@ startRouter = Router()
 
 @startRouter.message(Command("start"))
 async def handle_start(msg: types.Message):
+    """
+    Handle the /start command to greet new users and introduce bot features.
+
+    Args:
+        msg (types.Message): Telegram message that triggered the /start command.
+
+    Behavior:
+        - Logs the new user ID.
+        - Sends a welcome message explaining the bot's purpose and available commands.
+    """
+    
     user_id = str(msg.from_user.id)
     logger.info(f"New user started: {user_id}")
     await msg.answer(
