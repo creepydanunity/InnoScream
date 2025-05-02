@@ -1,5 +1,7 @@
+# Standard library
 import logging
 import sys
+
 
 def setup_fastapi_logger():
     """

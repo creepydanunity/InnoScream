@@ -1,40 +1,45 @@
-from typing import List
-from datetime import timedelta
-from app_fastapi.models.archive import Archive
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy import func, select, update, distinct
-from sqlalchemy.ext.asyncio import AsyncSession
+# Standard library
 import logging
+from datetime import timedelta
+from typing import List
 
-from app_fastapi.tools.meme import generate_meme_url
-from app_fastapi.tools.time import get_bounds, get_week_start
+# Third‑party
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import distinct, func, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
+# Local application
 from app_fastapi.initializers.engine import get_session
-from app_fastapi.tools.crypt import hash_user_id
-from app_fastapi.models.scream import Scream
-from app_fastapi.models.reaction import Reaction
-from app_fastapi.models.admin import Admin
 from app_fastapi.middlewares.admin import admin_middleware
+from app_fastapi.models.admin import Admin
+from app_fastapi.models.archive import Archive
+from app_fastapi.models.reaction import Reaction
+from app_fastapi.models.scream import Scream
+from app_fastapi.schemas.requests import (
+    CreateAdminRequest,
+    CreateScreamRequest,
+    DeleteRequest,
+    GetIdRequest,
+    ReactionRequest,
+    UserRequest,
+)
 from app_fastapi.schemas.responses import (
     ArchivedWeeksResponse,
+    CreateAdminResponse,
     CreateScreamResponse,
+    DeleteResponse,
+    GetMyIdResponse,
     ReactionResponse,
+    ScreamResponse,
     StressStatsResponse,
     TopScreamItem,
     TopScreamsResponse,
     UserStatsResponse,
-    DeleteResponse,
-    ScreamResponse,
-    CreateAdminResponse,
-    GetMyIdResponse
 )
-from app_fastapi.schemas.requests import (
-    CreateScreamRequest,
-    ReactionRequest,
-    DeleteRequest,
-    UserRequest,
-    CreateAdminRequest,
-    GetIdRequest
-)
+from app_fastapi.tools.crypt import hash_user_id
+from app_fastapi.tools.meme import generate_meme_url
+from app_fastapi.tools.time import get_bounds, get_week_start
+
 
 router = APIRouter()
 logger = logging.getLogger("app_fastapi")

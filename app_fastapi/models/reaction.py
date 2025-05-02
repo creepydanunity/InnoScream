@@ -1,8 +1,14 @@
-from .base import Base
-from sqlalchemy import String, ForeignKey, UniqueConstraint
-from sqlalchemy.orm import relationship, Mapped, mapped_column
-from datetime import datetime
+# Standard library
 import logging
+from datetime import datetime
+
+# Third‑party
+from sqlalchemy import ForeignKey, String, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+# Local application
+from .base import Base
+
 
 logger = logging.getLogger("app_fastapi.models")
 
@@ -16,7 +22,7 @@ class Reaction(Base):
         timestamp (datetime): When the reaction was created.
         scream_id (int): Foreign key to the associated scream.
         user_hash (str): Hashed identifier of the reacting user.
-        
+
     Methods:
         __repr__(): Return a debug representation of the Reaction instance.
         __str__(): Return a human-readable string for the Reaction instance.

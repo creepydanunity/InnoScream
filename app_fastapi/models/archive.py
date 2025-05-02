@@ -1,7 +1,13 @@
-from .base import Base
-from sqlalchemy import Integer, ForeignKey
-from sqlalchemy.orm import relationship, Mapped, mapped_column
+# Standard library
 import logging
+
+# Third‑party
+from sqlalchemy import ForeignKey, Integer
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+# Local application
+from .base import Base
+
 
 logger = logging.getLogger("app_fastapi.models")
 

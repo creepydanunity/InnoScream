@@ -1,6 +1,10 @@
-from pydantic import BaseModel
-from typing import List
+# Standard library
 import logging
+from typing import List
+
+# Third‑party
+from pydantic import BaseModel
+
 
 logger = logging.getLogger("app_fastapi.schemas")
 
