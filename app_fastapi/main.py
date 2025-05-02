@@ -14,7 +14,8 @@ from app_fastapi.api import endpoints
 from app_fastapi.initializers.engine import get_session
 from app_fastapi.initializers.migration import init_db
 from app_fastapi.models.admin import Admin
-from app_fastapi.tools import archive_top, hash_user_id
+from app_fastapi.tools.archive_top import archive_top_job
+from app_fastapi.tools.crypt import hash_user_id
 from sqlalchemy import select
 
 
@@ -69,7 +70,7 @@ async def startup():
         
         scheduler = AsyncIOScheduler()
         scheduler.add_job(
-            archive_top,
+            archive_top_job,
             'cron',
             day_of_week='sun', 
             hour=23,
