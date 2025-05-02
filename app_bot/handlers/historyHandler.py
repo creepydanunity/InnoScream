@@ -66,7 +66,7 @@ async def handle_week_selection(callback: CallbackQuery):
             return
 
         response = [
-            f"🏆 Топ-3 за неделю {week_id}:",
+            f"🏆 Week {week_id} top:",
             *[
                 f"{i}. {scream['content']}\n"
                 f"❤️ Reactions: {scream['votes']}\n"
