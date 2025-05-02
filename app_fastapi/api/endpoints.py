@@ -5,7 +5,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy import func, select, update, distinct
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging
-import urllib.parse
 
 from app_fastapi.tools.meme import generate_meme_url
 from app_fastapi.tools.time import get_bounds, get_week_start

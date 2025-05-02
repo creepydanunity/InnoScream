@@ -1,8 +1,6 @@
-from typing import Optional
 from .base import Base
-from sqlalchemy import String, Boolean, Integer, ForeignKey
+from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
-from datetime import datetime, timezone
 import logging
 
 logger = logging.getLogger("app_fastapi.models")
