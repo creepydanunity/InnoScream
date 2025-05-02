@@ -1,14 +1,21 @@
+# Third‑party
 import httpx
 from aiogram import Router, types, F
-from aiogram.types import CallbackQuery
-from app_bot.FSM.admin import AdminScreamReview
-from app_bot.api.api import confirm_scream, delete_scream, get_all_screams_for_admin
-from app_bot.keyboards.adminKeyboards import deletion_keyboard_setup
-from aiogram.types import CallbackQuery
-from app_bot.api.api import create_admin, delete_scream
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery
+
+# Local application
+from app_bot.api.api import (
+    confirm_scream,
+    create_admin,
+    delete_scream,
+    get_all_screams_for_admin,
+)
+from app_bot.FSM.admin import AdminScreamReview
+from app_bot.keyboards.adminKeyboards import deletion_keyboard_setup
 from app_bot.logger import logger
+
 
 adminRouter = Router()
 

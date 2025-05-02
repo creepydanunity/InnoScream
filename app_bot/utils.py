@@ -1,7 +1,11 @@
+# Third‑party
 from aiogram import types
+
+# Local application
 from app_bot.api.api import get_next_scream
 from app_bot.keyboards.baseKeyboards import reaction_keyboard
 from app_bot.logger import logger
+
 
 async def send_next_scream(user_id: str, message: types.Message):
     """

@@ -1,7 +1,11 @@
+# Third‑party
 from aiogram import Router, types
-from app_bot.api.api import get_stress_stats, get_user_stats
 from aiogram.filters import Command
+
+# Local application
+from app_bot.api.api import get_stress_stats, get_user_stats
 from app_bot.logger import logger
+
 
 statsRouter = Router()
 

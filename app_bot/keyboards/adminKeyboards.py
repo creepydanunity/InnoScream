@@ -1,5 +1,7 @@
+# Third‑party
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 
 def deletion_keyboard_setup() -> InlineKeyboardMarkup:
     """

@@ -1,6 +1,10 @@
+# Third‑party
 from aiogram import Router, types
 from aiogram.filters import Command
+
+# Local application
 from app_bot.logger import logger
+
 
 startRouter = Router()
 

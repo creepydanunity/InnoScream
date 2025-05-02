@@ -1,14 +1,20 @@
-import os
+# Standard library
 import asyncio
+import os
+
+# Third‑party
 from aiogram import Bot, Dispatcher
-from app_bot.handlers.reactionHandler import reactionRouter
-from app_bot.handlers.statsHandler import statsRouter
-from app_bot.handlers.screamHandler import screamRouter
+
+# Local application
 from app_bot.handlers.adminHandler import adminRouter
 from app_bot.handlers.getIdHandler import idRouter
-from app_bot.handlers.startHandler import startRouter
 from app_bot.handlers.historyHandler import historyRouter
+from app_bot.handlers.reactionHandler import reactionRouter
+from app_bot.handlers.startHandler import startRouter
+from app_bot.handlers.screamHandler import screamRouter
+from app_bot.handlers.statsHandler import statsRouter
 from app_bot.logger import logger
+
 
 async def main():
     """

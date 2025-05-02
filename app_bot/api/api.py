@@ -1,6 +1,12 @@
+# Standard library
 import os
+
+# Third‑party
 import httpx
+
+# Local application
 from app_bot.logger import logger
+
 
 API_URL = os.getenv("API_URL")
 

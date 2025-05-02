@@ -1,7 +1,11 @@
+# Third‑party
 from aiogram import Router, types
 from aiogram.filters import Command
+
+# Local application
 from app_bot.api.api import get_my_id
 from app_bot.logger import logger
+
 
 idRouter = Router()
 

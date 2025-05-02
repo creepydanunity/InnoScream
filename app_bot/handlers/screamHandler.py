@@ -1,8 +1,12 @@
+# Third‑party
 from aiogram import Router, types
-from app_bot.api.api import post_scream, get_top_screams
 from aiogram.filters import Command
-from app_bot.utils import send_next_scream
+
+# Local application
+from app_bot.api.api import get_top_screams, post_scream
 from app_bot.logger import logger
+from app_bot.utils import send_next_scream
+
 
 screamRouter = Router()
 

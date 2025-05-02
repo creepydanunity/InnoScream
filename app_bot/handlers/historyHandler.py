@@ -1,9 +1,15 @@
+# Standard library
+import logging
+
+# Third‑party
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery
+
+# Local application
 from app_bot.api.api import get_history, get_historical_week
 from app_bot.keyboards.adminKeyboards import history_keyboard
-import logging
+
 
 logger = logging.getLogger("app_bot")
 
