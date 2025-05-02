@@ -2,6 +2,20 @@ import logging
 import sys
 
 def setup_bot_logger():
+    """
+    Configure and return a logger for the bot application.
+
+    Behavior:
+        - Sets up a logger named "app_bot" with DEBUG level.
+        - Logs INFO-level messages to stdout using a stream handler.
+        - Logs DEBUG-level messages to a file named "app_bot.log".
+        - Clears any existing handlers to avoid duplicate logs.
+        - Applies a consistent log message format.
+
+    Returns:
+        logging.Logger: The configured logger instance.
+    """
+    
     logger = logging.getLogger("app_bot")
     logger.setLevel(logging.DEBUG)
 
