@@ -34,6 +34,7 @@ async def post_scream(content: str, user_id: str):
         logger.error(f"Failed to post scream: {str(e)}", exc_info=True)
         raise
 
+
 async def create_admin(user_id: str, user_id_to_admin: str):
     """
     Create an admin user by sending a POST request to the API.
@@ -48,10 +49,6 @@ async def create_admin(user_id: str, user_id_to_admin: str):
     Raises:
         httpx.HTTPStatusError: If the API responds with a non-2xx status code.
     """
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(f"{API_URL}/create_admin", json={"user_id_to_admin": user_id_to_admin, "user_id": user_id})
-        resp.raise_for_status()
-        return resp.json()
     try:
         logger.debug(f"Creating admin from {user_id} for {user_id_to_admin}")
         async with httpx.AsyncClient() as client:
@@ -74,11 +71,6 @@ async def get_my_id(user_id: str):
     Returns:
         dict: The response JSON from the API containing user ID.
     """
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(f"{API_URL}/my_id", json={"user_id": user_id})
-        return resp.json()
-
-
     try:
         logger.debug(f"Getting ID for user {user_id}")
         async with httpx.AsyncClient() as client:
@@ -104,16 +96,10 @@ async def delete_scream(scream_id: int, user_id: str):
     Raises:
         httpx.HTTPStatusError: If the API responds with a non-2xx status code.
     """
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
-        resp.raise_for_status()
-        return resp.json()
-
-  
     try:
         logger.debug(f"Deleting scream {scream_id} by user {user_id}")
         async with httpx.AsyncClient() as client:
-            resp = await client.delete(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
+            resp = await client.post(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
             resp.raise_for_status()
             logger.info("Scream deleted successfully")
             return resp.json()
@@ -192,11 +178,6 @@ async def get_next_scream(user_id: str):
     Raises:
         httpx.HTTPStatusError: If the backend API returns an error.
     """
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(f"{API_URL}/feed/{user_id}")
-        resp.raise_for_status()
-        return resp.json()
-
     try:
         logger.debug(f"Getting next scream for user {user_id}")
         async with httpx.AsyncClient() as client:
@@ -249,10 +230,6 @@ async def get_user_stats(user_id: str):
     Raises:
         httpx.HTTPStatusError: If the backend API responds with an error status.
     """
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(f"{API_URL}/stats/{user_id}")
-        resp.raise_for_status()
-        return resp.json()
     try:
         logger.debug(f"Getting stats for user {user_id}")
         async with httpx.AsyncClient() as client:
@@ -275,15 +252,12 @@ async def get_stress_stats():
     Raises:
         httpx.HTTPStatusError: If the backend API responds with an error status.
     """
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(f"{API_URL}/stress")
-        resp.raise_for_status()
-        return resp.json()
     try:
         logger.debug("Getting weekly stress stats")
         async with httpx.AsyncClient() as client:
-            resp = await client.get(f"{API_URL}/stats/weekly")
+            resp = await client.get(f"{API_URL}/stress")
             logger.info("Stress stats retrieved successfully")
+            resp.raise_for_status()
             return resp.json()
     except Exception as e:
         logger.error(f"Failed to get stress stats: {str(e)}", exc_info=True)
@@ -300,9 +274,6 @@ async def get_top_screams(n: int = 3):
     Returns:
         dict: The JSON response from the API containing the top screams.
     """
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(f"{API_URL}/top")
-        return resp.json()
     try:
         logger.debug(f"Getting top {n} screams")
         async with httpx.AsyncClient() as client:
