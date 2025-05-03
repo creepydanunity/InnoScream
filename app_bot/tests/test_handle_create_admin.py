@@ -143,3 +143,25 @@ async def test_handle_create_admin_exception():
             mock_msg.answer.assert_awaited_with("Failed to assign admin rights.")
 
             mock_logger.error.assert_any_call("Failed to assign admin rights: Unexpected error", exc_info=True)
+
+@pytest.mark.asyncio
+async def test_handle_create_admin_unknown_response():
+    """
+    Test that the handle_create_admin function handles an unknown response from the create_admin function and sends the correct message.
+    """
+
+    mock_response = {"status": "unknown_status"} 
+    
+    mock_msg = mock.Mock(spec=types.Message)
+    mock_msg.text = "/create_admin 12345"
+    mock_msg.from_user = mock.Mock()
+    mock_msg.from_user.id = 67890
+    mock_msg.answer = AsyncMock()
+
+    with patch("app_bot.handlers.adminHandler.logger") as mock_logger:
+        with patch("app_bot.handlers.adminHandler.create_admin", return_value=mock_response):
+            await handle_create_admin(mock_msg)
+
+        mock_msg.answer.assert_awaited_with("Something went wrong.")
+        
+        mock_logger.warning.assert_any_call("Unknown response when creating admin: {'status': 'unknown_status'}")

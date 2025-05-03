@@ -58,3 +58,16 @@ async def test_get_historical_week_error():
     ):
         with pytest.raises(httpx.HTTPStatusError):
             await get_historical_week("2023-01")
+
+@pytest.mark.asyncio
+async def test_get_historical_week_general_exception():
+    """
+    Test that the get_historical_week function raises an exception and logs an error
+    when an unexpected exception occurs (e.g., network error, unexpected failure).
+    """
+    with patch.object(httpx.AsyncClient, "get", side_effect=Exception("Unexpected error")):
+        with patch("app_bot.api.api.logger") as mock_logger:  
+            with pytest.raises(Exception, match="Unexpected error"):
+                await get_historical_week("2023-01")
+            
+            mock_logger.error.assert_any_call("Failed to get historical week: Unexpected error", exc_info=True)
