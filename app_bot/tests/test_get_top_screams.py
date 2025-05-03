@@ -1,12 +1,9 @@
 import pytest
-import os
 import httpx
 from unittest.mock import AsyncMock, MagicMock
 
 from app_bot.api.api import get_top_screams
 
-
-API_URL = os.getenv("API_URL")
 
 @pytest.mark.asyncio
 async def test_get_top_screams_success(monkeypatch):
@@ -26,9 +23,10 @@ async def test_get_top_screams_success(monkeypatch):
     fake_client.__aenter__.return_value = fake_client
     fake_client.__aexit__.return_value = None
     monkeypatch.setattr(httpx, "AsyncClient", lambda **kwargs: fake_client)
+    monkeypatch.setattr("app_bot.api.api.API_URL", "http://mockserver")
     result = await get_top_screams()
     assert result == expected
-    fake_client.get.assert_awaited_once_with(f"{API_URL}/top")
+    fake_client.get.assert_awaited_once_with("http://mockserver/top")
 
 
 @pytest.mark.asyncio

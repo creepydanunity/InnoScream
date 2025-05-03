@@ -25,13 +25,13 @@ async def post_scream(content: str, user_id: str):
         Exception: On request failure or server error.
     """
     try:
-        logger.debug(f"Posting scream from user {user_id}")
+        logger.debug(f"Posting scream from user {user_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.post(f"{API_URL}/scream", json={"content": content, "user_id": user_id})
-            logger.info(f"Scream posted successfully, response: {resp.json()}")
+            logger.info(f"Scream posted successfully, response: {resp.json()}") # pragma: no mutate
             return resp.json()
     except Exception as e:
-        logger.error(f"Failed to post scream: {str(e)}", exc_info=True)
+        logger.error(f"Failed to post scream: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -151,17 +151,17 @@ async def react_to_scream(scream_id: int, emoji: str, user_id: str):
         - Returns the parsed JSON response from the backend API.
     """
     try:
-        logger.debug(f"Reacting to scream {scream_id} with {emoji} by user {user_id}")
+        logger.debug(f"Reacting to scream {scream_id} with {emoji} by user {user_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.post(f"{API_URL}/react", json={
                 "scream_id": scream_id,
                 "emoji": emoji,
                 "user_id": user_id
             })
-            logger.info(f"Reaction recorded: {resp.json()}")
+            logger.info(f"Reaction recorded: {resp.json()}") # pragma: no mutate
             return resp.json()
     except Exception as e:
-        logger.error(f"Reaction failed: {str(e)}", exc_info=True)
+        logger.error(f"Reaction failed: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -179,14 +179,14 @@ async def get_next_scream(user_id: str):
         httpx.HTTPStatusError: If the backend API returns an error.
     """
     try:
-        logger.debug(f"Getting next scream for user {user_id}")
+        logger.debug(f"Getting next scream for user {user_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.get(f"{API_URL}/feed/{user_id}")
             resp.raise_for_status()
-            logger.info("Scream retrieved successfully")
+            logger.info("Scream retrieved successfully") # pragma: no mutate
             return resp.json()
     except Exception as e:
-        logger.error(f"Failed to get scream: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get scream: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
    
@@ -231,14 +231,14 @@ async def get_user_stats(user_id: str):
         httpx.HTTPStatusError: If the backend API responds with an error status.
     """
     try:
-        logger.debug(f"Getting stats for user {user_id}")
+        logger.debug(f"Getting stats for user {user_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.get(f"{API_URL}/stats/{user_id}")
             resp.raise_for_status()
-            logger.info("User stats retrieved successfully")
+            logger.info("User stats retrieved successfully") # pragma: no mutate
             return resp.json()
     except Exception as e:
-        logger.error(f"Failed to get user stats: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get user stats: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -275,13 +275,13 @@ async def get_top_screams(n: int = 3):
         dict: The JSON response from the API containing the top screams.
     """
     try:
-        logger.debug(f"Getting top {n} screams")
+        logger.debug(f"Getting top {n} screams") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.get(f"{API_URL}/top")
-            logger.info("Top screams retrieved successfully")
+            logger.info("Top screams retrieved successfully") # pragma: no mutate
             return resp.json()
     except Exception as e:
-        logger.error(f"Failed to get top screams: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get top screams: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 

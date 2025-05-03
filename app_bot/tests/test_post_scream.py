@@ -17,11 +17,12 @@ async def test_post_scream_success(monkeypatch):
     fake_client.__aexit__.return_value = None
 
     monkeypatch.setattr(httpx, "AsyncClient", lambda **kwargs: fake_client)
+    monkeypatch.setattr("app_bot.api.api.API_URL", "http://mockserver")
     result = await post_scream("Hello", "u1")
 
     assert result == expected
     fake_client.post.assert_awaited_once_with(
-        f"{fake_client.post.call_args.args[0]}",
+        "http://mockserver/scream",
         json={"content": "Hello", "user_id": "u1"}
     )
 

@@ -20,10 +20,12 @@ async def test_get_user_stats_success(monkeypatch, caplog):
     fake_client.__aexit__.return_value = None
 
     monkeypatch.setattr(httpx, "AsyncClient", lambda **kwargs: fake_client)
+    monkeypatch.setattr("app_bot.api.api.API_URL", "http://mockserver")
     with caplog.at_level("DEBUG"):
         result = await get_user_stats("u99")
 
     assert result == expected
+    fake_client.get.assert_awaited_once_with("http://mockserver/stats/u99")
     assert "Getting stats for user u99" in caplog.text or "User stats retrieved successfully" in caplog.text
 
 

@@ -20,9 +20,11 @@ async def test_get_next_scream_success(monkeypatch):
     fake_client.__aexit__.return_value = None
 
     monkeypatch.setattr(httpx, "AsyncClient", lambda **kwargs: fake_client)
+    monkeypatch.setattr("app_bot.api.api.API_URL", "http://mockserver")
     result = await get_next_scream("user123")
 
     assert result == expected
+    fake_client.get.assert_awaited_once_with("http://mockserver/feed/user123")
 
 
 @pytest.mark.asyncio
