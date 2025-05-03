@@ -8,6 +8,10 @@ from app_bot.logger import logger
 
 @pytest.mark.asyncio
 async def test_handle_create_admin_success():
+    """
+    Test that the handle_create_admin function correctly assigns admin rights when the API call is successful.
+    """
+
     mock_response = {"status": "ok"}
     
     mock_msg = mock.Mock(spec=types.Message)
@@ -28,6 +32,10 @@ async def test_handle_create_admin_success():
 
 @pytest.mark.asyncio
 async def test_handle_create_admin_already_admin():
+    """
+    Test that the handle_create_admin function handles the case when the user is already an admin.
+    """
+
     mock_response = {"status": "already_admin"}
     
     mock_msg = mock.Mock(spec=types.Message)
@@ -47,6 +55,10 @@ async def test_handle_create_admin_already_admin():
 
 @pytest.mark.asyncio
 async def test_handle_create_admin_invalid_format():
+    """
+    Test that the handle_create_admin function handles invalid command formats, such as missing user ID.
+    """
+
     mock_msg = mock.Mock(spec=types.Message)
     mock_msg.text = "/create_admin"
     mock_msg.from_user = mock.Mock
@@ -66,6 +78,10 @@ async def test_handle_create_admin_invalid_format():
 
 @pytest.mark.asyncio
 async def test_handle_create_admin_permission_denied():
+    """
+    Test that the handle_create_admin function handles permission denial for non-admin users trying to assign admin rights.
+    """
+
     mock_response = mock.Mock(status_code=403)
     
     mock_msg = mock.Mock(spec=types.Message)
@@ -86,6 +102,10 @@ async def test_handle_create_admin_permission_denied():
 
 @pytest.mark.asyncio
 async def test_handle_create_admin_server_error():
+    """
+    Test that the handle_create_admin function handles server errors.
+    """
+
     mock_response = mock.Mock(status_code=500)
     
     mock_msg = mock.Mock(spec=types.Message)
@@ -105,6 +125,10 @@ async def test_handle_create_admin_server_error():
 
 @pytest.mark.asyncio
 async def test_handle_create_admin_exception():
+    """
+    Test that the handle_create_admin function handles unexpected exceptions during the admin creation process.
+    """
+
     mock_msg = mock.Mock(spec=types.Message)
     mock_msg.text = "/create_admin 12345"
     mock_msg.from_user = mock.Mock

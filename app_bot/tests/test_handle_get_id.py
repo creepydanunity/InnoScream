@@ -8,6 +8,10 @@ from app_bot.handlers.getIdHandler import handle_my_id
 
 @pytest.mark.asyncio
 async def test_handle_my_id_success():
+    """
+    Test that the handle_my_id function returns the correct user ID when the API call is successful.
+    """
+
     mock_msg = mock.Mock(spec=types.Message)
     mock_msg.from_user = mock.Mock()
     mock_msg.from_user.id = 123456789
@@ -20,6 +24,10 @@ async def test_handle_my_id_success():
 
 @pytest.mark.asyncio
 async def test_handle_my_id_failure():
+    """
+    Test that the handle_my_id function handles failure when the API call raises an exception.
+    """
+
     mock_msg = mock.Mock(spec=types.Message)
     mock_msg.from_user = mock.Mock()
     mock_msg.from_user.id = 123456789
