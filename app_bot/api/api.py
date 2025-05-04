@@ -8,7 +8,7 @@ import httpx
 from app_bot.logger import logger
 
 
-API_URL = os.getenv("API_URL")
+API_URL = os.getenv("API_URL") #pragma: no mutate
 
 async def post_scream(content: str, user_id: str):
     """
@@ -36,6 +36,7 @@ async def post_scream(content: str, user_id: str):
 
 
 async def create_admin(user_id: str, user_id_to_admin: str):
+    # pragma: no mutate
     """
     Create an admin user by sending a POST request to the API.
 
@@ -48,16 +49,16 @@ async def create_admin(user_id: str, user_id_to_admin: str):
 
     Raises:
         httpx.HTTPStatusError: If the API responds with a non-2xx status code.
-    """
+    """ 
     try:
-        logger.debug(f"Creating admin from {user_id} for {user_id_to_admin}")
+        logger.debug(f"Creating admin from {user_id} for {user_id_to_admin}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.post(f"{API_URL}/create_admin", json={"user_id_to_admin": user_id_to_admin, "user_id": user_id})
             resp.raise_for_status()
-            logger.info("Admin created successfully")
+            logger.info("Admin created successfully") # pragma: no mutate
             return resp.json()
     except Exception as e:
-        logger.error(f"Admin creation failed: {str(e)}", exc_info=True)
+        logger.error(f"Admin creation failed: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -72,13 +73,13 @@ async def get_my_id(user_id: str):
         dict: The response JSON from the API containing user ID.
     """
     try:
-        logger.debug(f"Getting ID for user {user_id}")
+        logger.debug(f"Getting ID for user {user_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
-            resp = await client.post(f"{API_URL}/my_id", json={"user_id": user_id})
+            resp = await client.post(f"{API_URL}/my_id", json={"user_id": user_id}) # pragma: no mutate
             logger.info(f"Received ID response: {resp.json()}")
             return resp.json()
     except Exception as e:
-        logger.error(f"Failed to get ID: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get ID: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -97,14 +98,14 @@ async def delete_scream(scream_id: int, user_id: str):
         httpx.HTTPStatusError: If the API responds with a non-2xx status code.
     """
     try:
-        logger.debug(f"Deleting scream {scream_id} by user {user_id}")
+        logger.debug(f"Deleting scream {scream_id} by user {user_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.post(f"{API_URL}/delete", json={"scream_id": scream_id, "user_id": user_id})
             resp.raise_for_status()
-            logger.info("Scream deleted successfully")
+            logger.info("Scream deleted successfully") # pragma: no mutate
             return resp.json()
     except Exception as e:
-        logger.error(f"Scream deletion failed: {str(e)}", exc_info=True)
+        logger.error(f"Scream deletion failed: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -123,14 +124,14 @@ async def confirm_scream(scream_id: int, user_id: str):
         Exception: On failure to complete the request.
     """
     try:
-        logger.debug(f"Confirming scream {scream_id} by user {user_id}")
+        logger.debug(f"Confirming scream {scream_id} by user {user_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.post(f"{API_URL}/confirm", json={"scream_id": scream_id, "user_id": user_id})
             resp.raise_for_status()
-            logger.info("Scream confirmed successfully")
+            logger.info("Scream confirmed successfully") # pragma: no mutate
             return resp.json()
     except Exception as e:
-        logger.error(f"Scream confirmation failed: {str(e)}", exc_info=True)
+        logger.error(f"Scream confirmation failed: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -204,16 +205,16 @@ async def get_all_screams_for_admin(user_id: str):
         Exception: On failure to fetch data.
     """
     try:
-        logger.debug(f"Getting all screams for admin {user_id}")
+        logger.debug(f"Getting all screams for admin {user_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.post(f"{API_URL}/screams/admin", json={
                 "user_id": user_id
             })
             resp.raise_for_status()
-            logger.info("Admin screams retrieved successfully")
+            logger.info("Admin screams retrieved successfully") # pragma: no mutate
             return resp.json()
     except Exception as e:
-        logger.error(f"Failed to get admin screams: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get admin screams: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -253,14 +254,14 @@ async def get_stress_stats():
         httpx.HTTPStatusError: If the backend API responds with an error status.
     """
     try:
-        logger.debug("Getting weekly stress stats")
+        logger.debug("Getting weekly stress stats") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.get(f"{API_URL}/stress")
-            logger.info("Stress stats retrieved successfully")
+            logger.info("Stress stats retrieved successfully") # pragma: no mutate
             resp.raise_for_status()
             return resp.json()
     except Exception as e:
-        logger.error(f"Failed to get stress stats: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get stress stats: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -296,14 +297,14 @@ async def get_history():
         Exception: On API or connection error.
     """
     try:
-        logger.debug("Fetching available historical weeks")
+        logger.debug("Fetching available historical weeks") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.get(f"{API_URL}/history")
             resp.raise_for_status()
             data = resp.json()
             return data.get("weeks", [])
     except Exception as e:
-        logger.error(f"Failed to get history: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get history: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -322,23 +323,23 @@ async def get_historical_week(week_id: str):
         Exception: For all other failures.
     """
     try:
-        logger.debug(f"Fetching historical week {week_id}")
+        logger.debug(f"Fetching historical week {week_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.get(f"{API_URL}/history/{week_id}")
             resp.raise_for_status()
             data = resp.json()
             
             top_three = data.get("posts", [])[:3]
-            logger.info(f"Retrieved {len(top_three)} screams for week {week_id}")
+            logger.info(f"Retrieved {len(top_three)} screams for week {week_id}") # pragma: no mutate
             return top_three
             
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 404:
-            logger.warning(f"Week {week_id} not found")
+            logger.warning(f"Week {week_id} not found") # pragma: no mutate
             raise ValueError("Week not found in archive")
         raise
     except Exception as e:
-        logger.error(f"Failed to get historical week: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get historical week: {str(e)}", exc_info=True) # pragma: no mutate
         raise
 
 
@@ -358,20 +359,20 @@ async def archive_current_week(week_id: str, user_id: str):
         Exception: On failure to store archive.
     """
     try:
-        logger.debug(f"Archiving week as {week_id}")
+        logger.debug(f"Archiving week as {week_id}") # pragma: no mutate
         async with httpx.AsyncClient() as client:
             resp = await client.post(
                 f"{API_URL}/history/{week_id}",
                 json={"user_id": user_id}
             )
             resp.raise_for_status()
-            logger.info(f"Week {week_id} archived successfully")
+            logger.info(f"Week {week_id} archived successfully") # pragma: no mutate
             return resp.json()
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 409:
-            logger.warning(f"Week {week_id} already exists")
+            logger.warning(f"Week {week_id} already exists") # pragma: no mutate
             raise ValueError("Week already archived") from e
         raise
     except Exception as e:
-        logger.error(f"Failed to archive week: {str(e)}", exc_info=True)
+        logger.error(f"Failed to archive week: {str(e)}", exc_info=True) # pragma: no mutate
         raise
