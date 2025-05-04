@@ -2,7 +2,7 @@
 import logging
 
 # Third‑party
-from sqlalchemy import ForeignKey, Integer
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # Local application
@@ -31,7 +31,7 @@ class Archive(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     scream_id: Mapped[int] = mapped_column(ForeignKey("screams.id", ondelete="CASCADE"))
-    week_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    week_id: Mapped[str] = mapped_column(String, nullable=False)
     place: Mapped[int] = mapped_column(Integer, nullable=False)
 
     scream = relationship("Scream", back_populates="archives")
