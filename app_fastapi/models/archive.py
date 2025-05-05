@@ -2,7 +2,7 @@
 import logging
 
 # Third‑party
-from sqlalchemy import ForeignKey, Integer
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 # Local application
@@ -18,7 +18,7 @@ class Archive(Base):
     Attributes:
         id (int): Primary key.
         scream_id (int): Foreign key to the original scream.
-        week_id (int): Identifier for the week archive.
+        week_id (int): Identifier for the week archive in format.
         place (int): Rank or position in that week's top list.
         scream (Scream): Relationship to the original scream object.
     

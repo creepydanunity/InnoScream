@@ -40,7 +40,7 @@ def archive_top_job():
             try:
                 now = datetime.now(timezone.utc)
                 year, week_num, _ = now.isocalendar()
-                week_id = f"{year}-{week_num:02d}"
+                week_id = int(f"{year}{week_num:02d}")
                 
                 stmt = (
                     select(Scream.id, func.count(Reaction.id).label("votes"))
