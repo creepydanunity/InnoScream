@@ -28,7 +28,7 @@ def hash_user_id(user_id: int) -> str:
         Exception: If any error occurs during hashing, it is logged and re-raised.
     """
     try:
-        logger.debug(f"Hashing user ID: {user_id}")
+        logger.debug(f"Hashing user ID: {user_id[:6]}")
 
         if not USER_ID_SALT:
             raise ValueError("USER_ID_SALT not found in environment variables")

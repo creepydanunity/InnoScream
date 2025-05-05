@@ -101,7 +101,7 @@ if __name__ == "__main__":
         asyncio.run(init_db())
         uvicorn.run(
             "app_fastapi.main:app", 
-            host="0.0.0.0", 
+            host="0.0.0.0", # TODO: Change to 127.0.0.1 on PRODUCTION
             port=8000, 
             reload=True,
             log_config=None  
