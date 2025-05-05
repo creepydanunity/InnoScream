@@ -18,7 +18,7 @@ class Archive(Base):
     Attributes:
         id (int): Primary key.
         scream_id (int): Foreign key to the original scream.
-        week_id (int): Identifier for the week archive.
+        week_id (int): Identifier for the week archive in format.
         place (int): Rank or position in that week's top list.
         scream (Scream): Relationship to the original scream object.
     
@@ -31,7 +31,7 @@ class Archive(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     scream_id: Mapped[int] = mapped_column(ForeignKey("screams.id", ondelete="CASCADE"))
-    week_id: Mapped[str] = mapped_column(String, nullable=False)
+    week_id: Mapped[int] = mapped_column(Integer, nullable=False)
     place: Mapped[int] = mapped_column(Integer, nullable=False)
 
     scream = relationship("Scream", back_populates="archives")

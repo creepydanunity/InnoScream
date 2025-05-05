@@ -32,29 +32,25 @@ async def admin_middleware(request: Request, session: AsyncSession = Depends(get
     """
     try:
         body_bytes = await request.body()
-
-        try:
-            json_data = json.loads(body_bytes)
-        except Exception as e:
-            logger.warning(f"Invalid JSON in request: {str(e)}")
-            raise HTTPException(status_code=400, detail="Invalid JSON")
+        json_data = json.loads(body_bytes)
 
         user_id = json_data.get("user_id")
         if not user_id:
             logger.warning("Missing user_id in request")
             raise HTTPException(status_code=400, detail="Missing user_id")
 
-        logger.debug(f"Checking admin rights for user: {user_id[:5]}...")
+        logger.debug(f"Checking admin rights for user: {user_id}...")
+
         user_hash = hash_user_id(user_id)
 
         result = await session.execute(select(Admin).where(Admin.user_hash == user_hash))
         admin = result.scalar_one_or_none()
 
         if admin is None:
-            logger.warning(f"Unauthorized admin access attempt by user: {user_id[:5]}...")
+            logger.warning(f"Unauthorized admin access attempt by user: {user_id}...")
             raise HTTPException(status_code=403, detail="Unauthorized: not an admin")
 
-        logger.debug(f"Admin access granted for user: {user_id[:5]}...")
+        logger.debug(f"Admin access granted for user: {user_id}...")
         
         async def receive():
             return {"type": "http.request", "body": body_bytes}
