@@ -28,18 +28,18 @@ async def handle_scream(msg: types.Message):
     content = msg.text.replace("/scream", "").strip()
     
     if not content:
-        logger.warning(f"Empty scream from user {user_id}")
+        logger.warning(f"Empty scream from user {user_id}") # pragma: no mutate
         await msg.reply("😶 <i>What do you want to scream?</i>", parse_mode="HTML")
         return
 
     try:
-        logger.info(f"Processing scream from user {user_id}")
+        logger.info(f"Processing scream from user {user_id}") # pragma: no mutate
         result = await post_scream(content, user_id)
         scream_id = result["scream_id"]
-        logger.info(f"Scream {scream_id} posted by user {user_id}")
+        logger.info(f"Scream {scream_id} posted by user {user_id}") # pragma: no mutate
         await msg.answer("😤 <b>Your scream has been unleashed into the void!</b>", parse_mode="HTML")
     except Exception as e:
-        logger.error(f"Failed to post scream: {str(e)}", exc_info=True)
+        logger.error(f"Failed to post scream: {str(e)}", exc_info=True) # pragma: no mutate
         await msg.answer("❌ Failed to post your scream")
 
 @screamRouter.message(Command("feed"))
@@ -56,7 +56,7 @@ async def handle_feed(msg: types.Message):
           passing the user's Telegram ID and the loading message for context.
     """
     user_id = str(msg.from_user.id)
-    logger.info(f"User {user_id} requested feed")
+    logger.info(f"User {user_id} requested feed") # pragma: no mutate
     dummy_msg = await msg.answer("⏳ Loading your scream...")
     await send_next_scream(user_id, dummy_msg)
 
@@ -75,16 +75,16 @@ async def handle_top(msg: types.Message):
         - If an error occurs, notifies the user about the failure.
     """
     try:
-        logger.info("Processing top screams request")
+        logger.info("Processing top screams request") # pragma: no mutate
         top = await get_top_screams()
         posts = top.get("posts", [])
         
         if not posts:
-            logger.info("No top screams available")
+            logger.info("No top screams available") # pragma: no mutate
             await msg.answer("😴 No top screams today...")
             return
 
-        logger.debug(f"Showing {len(posts)} top screams")
+        logger.debug(f"Showing {len(posts)} top screams") # pragma: no mutate
         for i, scream in enumerate(posts, start=1):
             content = scream["content"]
             votes = scream["votes"]
@@ -105,5 +105,5 @@ async def handle_top(msg: types.Message):
                 await msg.answer(caption, parse_mode="HTML")
 
     except Exception as e:
-        logger.error(f"Failed to get top screams: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get top screams: {str(e)}", exc_info=True) # pragma: no mutate
         await msg.answer("😴 There was an error getting top screams((")
