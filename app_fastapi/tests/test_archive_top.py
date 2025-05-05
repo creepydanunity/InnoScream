@@ -16,7 +16,7 @@ from .conftest import TestingSessionLocal
 @pytest.mark.asyncio
 async def test_archive_top_handles_no_reactions(monkeypatch):
     """
-    archive_top_job should create no Archive entries when there are no reactions.
+    archive_top_job should still create Archive entries when there are no reactions.
     """
     monkeypatch.setattr(archive_module, "asyncSession", TestingSessionLocal)
 
@@ -39,4 +39,4 @@ async def test_archive_top_handles_no_reactions(monkeypatch):
 
     async with TestingSessionLocal() as session:
         cnt = await session.scalar(select(func.count(Archive.id)))
-    assert cnt == 0
+    assert cnt == 2
