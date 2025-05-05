@@ -38,7 +38,7 @@ async def test_handle_history_no_archives():
         
         await handle_history(msg)
 
-        msg.answer.assert_called_once_with("❌ There is no archived tops yet")
+        msg.answer.assert_called_once_with("❌ There is no archived top yet")
 
 
 @pytest.mark.asyncio
