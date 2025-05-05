@@ -33,7 +33,7 @@ def test_hash_output_length_and_type():
     h = hash_user_id("user123")
     assert isinstance(h, str)
     assert len(h) == 64
-    # Ensure it's valid hex
+
     int(h, 16)
 
 def test_hash_consistency():
