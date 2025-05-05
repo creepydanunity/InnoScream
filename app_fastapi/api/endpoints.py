@@ -44,13 +44,16 @@ from app_fastapi.tools.time import get_bounds, get_week_start
 router = APIRouter()
 logger = logging.getLogger("app_fastapi")
 
+
 @router.post("/scream", response_model=CreateScreamResponse)
-async def create_scream(data: CreateScreamRequest, session: AsyncSession = Depends(get_session)):
+async def create_scream(data: CreateScreamRequest,
+                        session: AsyncSession = Depends(get_session)):
     """
     Create a new scream for a user.
 
     Args:
-        data (CreateScreamRequest): Request containing the user's external ID and scream content.
+        data (CreateScreamRequest):
+        Request containing the user's external ID and scream content.
         session (AsyncSession): Database session dependency.
 
     Returns:
@@ -65,7 +68,7 @@ async def create_scream(data: CreateScreamRequest, session: AsyncSession = Depen
         scream = Scream(content=data.content, user_hash=user_hash)
         session.add(scream)
         await session.commit()
-        
+
         logger.info(f"Scream created successfully. ID: {scream.id}")
         return {"status": "ok", "scream_id": scream.id}
     except Exception as e:
@@ -74,23 +77,30 @@ async def create_scream(data: CreateScreamRequest, session: AsyncSession = Depen
 
 
 @router.post("/react", response_model=ReactionResponse)
-async def react(data: ReactionRequest, session: AsyncSession = Depends(get_session)):
+async def react(data: ReactionRequest,
+                session: AsyncSession = Depends(get_session)):
     """
     Record a reaction to a specific scream by a user.
 
     Args:
-        data (ReactionRequest): Request containing the scream ID, user's external ID, and emoji.
+        data (ReactionRequest):
+        Request containing the scream ID, user's external ID, and emoji.
         session (AsyncSession): Database session dependency.
 
     Returns:
         ReactionResponse: Status "ok" on success.
 
     Raises:
-        HTTPException: 404 if scream not found, 409 if user already reacted, 500 on server error.
+        HTTPException:
+        404 if scream not found,
+        409 if user already reacted,
+        500 on server error.
     """
     try:
-        logger.debug(f"Processing reaction {data.emoji} for scream {data.scream_id} from user {data.user_id[:5]}...")
-        
+        logger.debug(f"Processing reaction {data.emoji} "
+                     f"for scream {data.scream_id} "
+                     f"from user {data.user_id[:5]}...")
+
         scream = await session.get(Scream, data.scream_id)
         if not scream:
             logger.warning(f"Scream not found: {data.scream_id}")
@@ -106,11 +116,11 @@ async def react(data: ReactionRequest, session: AsyncSession = Depends(get_sessi
         if exists:
             logger.warning(f"User already reacted to scream {data.scream_id}")
             raise HTTPException(status_code=409, detail="Already reacted")
-        
-        reaction = Reaction(emoji=data.emoji, scream_id=data.scream_id, user_hash=user_hash)
+        reaction = Reaction(emoji=data.emoji,
+                            scream_id=data.scream_id,
+                            user_hash=user_hash)
         session.add(reaction)
         await session.commit()
-        
         logger.info(f"Reaction {data.emoji} added to scream {data.scream_id}")
         return {"status": "ok"}
     except HTTPException:
@@ -121,22 +131,27 @@ async def react(data: ReactionRequest, session: AsyncSession = Depends(get_sessi
 
 
 @router.get("/top", response_model=TopScreamsResponse)
-async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_session)):
+async def get_top_screams(n: int = 3,
+                          session: AsyncSession = Depends(get_session)):
     """
     Retrieve the top N screams based on the number of positive reactions.
 
     Args:
-        n (int, optional): The number of top screams to retrieve. Defaults to 3.
+        n (int, optional):
+        The number of top screams to retrieve. Defaults to 3.
         session (AsyncSession, optional): Database session dependency.
 
     Returns:
-        dict: A dictionary with a list of top screams, each containing the scream ID,
-              content, vote count, and meme URL. If no screams are found, returns an
-              empty list under "posts".
+        dict:
+            A dictionary with a list of top screams,
+            each containing the scream ID, content, vote count,
+            and meme URL. If no screams are found, returns
+            an empty list under "posts".
 
     Notes:
         - This endpoint returns a JSON response.
-        - Meme URLs are generated asynchronously and saved back into the database.
+        - Meme URLs are generated asynchronously
+            Saved back into the database.
     """
     try:
         logger.debug(f"Fetching top {n} screams")
@@ -146,7 +161,7 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
             select(Scream, func.count(Reaction.id).label("votes"))
             .join(Reaction, Scream.id == Reaction.scream_id)
             .where(
-                Scream.timestamp >= today_start, 
+                Scream.timestamp >= today_start,
                 Scream.timestamp < tomorrow,
                 Reaction.emoji != "❌"
                 )
@@ -176,9 +191,9 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
                     await session.commit()
                     logger.debug(f"Generated meme for scream {scream.id}")
                 except Exception as e:
-                    logger.warning(f"Failed to generate meme for scream {scream.id}: {str(e)}")
+                    logger.warning(f"Failed to generate meme for scream "
+                                   f"{scream.id}: {str(e)}")
                     continue
-            
             posts.append(
                 TopScreamItem(
                     id=scream.id,
@@ -196,9 +211,11 @@ async def get_top_screams(n: int = 3, session: AsyncSession = Depends(get_sessio
 
 
 @router.get("/stats/{user_id}", response_model=UserStatsResponse)
-async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_session)):
+async def get_user_stats(user_id: str,
+                         session: AsyncSession = Depends(get_session)):
     """
-    Retrieve statistics for a specific user, including post and reaction counts and activity charts.
+    Retrieve statistics for a specific user
+    including post and reaction counts and activity charts.
 
     Args:
         user_id (str): The external user ID (to be hashed internally).
@@ -207,25 +224,31 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
     Returns:
         dict: A dictionary containing:
             - screams_posted (int): Total number of screams posted by the user.
-            - reactions_given (int): Total number of reactions the user has given.
-            - reactions_got (int): Total number of reactions received on the user's screams.
-            - chart_url (str): URL to a bar chart showing daily post counts over the past 7 days.
-            - reaction_chart_url (str): URL to a pie chart showing distribution of received reaction emojis.
+            - reactions_given (int):
+                Total number of reactions the user has given.
+            - reactions_got (int):
+                Total number of reactions received on the user's screams.
+            - chart_url (str):
+                URL to a bar chart showing daily post counts over the week.
+            - reaction_chart_url (str):
+                URL to a pie chart showing distribution
+                This distribution received reaction emojis.
 
     Behavior:
         - Hashes the `user_id` to match internal database storage.
         - Computes the number of posts made each day in the last 7 days.
         - Generates a QuickChart URL for a bar chart of daily posts.
-        - Computes total number of screams, reactions given, and reactions received.
+        - Computes total number of screams,
+            reactions given, and reactions received.
         - Generates a QuickChart URL for a pie chart of received reactions.
     """
     import urllib.parse
     from datetime import datetime, timezone, timedelta
 
     user_hash = hash_user_id(user_id)
-    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0,
+                                               second=0, microsecond=0)
     week_ago = today - timedelta(days=6)
-    
     try:
         logger.debug(f"Getting stats for user: {user_id[:5]}...")
         user_hash = hash_user_id(user_id)
@@ -245,12 +268,15 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             if 0 <= index < 7:
                 daily_counts[index] += 1
 
-        labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
+        labels = [(week_ago + timedelta(days=i)).strftime(
+            '%a'
+            ) for i in range(7)]
         chart_url = urllib.parse.quote(
-            f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}",
+            f"https://quickchart.io/chart?c="
+            f"{{type:'bar',data:{{labels:{labels},"
+            f"datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}",
             safe=':/?=&'
         )
-        
         total_posts = await session.scalar(
             select(func.count(Scream.id)).where(Scream.user_hash == user_hash)
         )
@@ -268,7 +294,6 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
                 Reaction.emoji != "❌"
             )
         )
-        
         reaction_counts = await session.execute(
             select(Reaction.emoji, func.count())
             .join(Scream, Scream.id == Reaction.scream_id)
@@ -279,7 +304,6 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             .group_by(Reaction.emoji)
         )
         emoji_data = reaction_counts.all()
-        
         if emoji_data:
             labels = [emoji for emoji, _ in emoji_data]
             values = [count for _, count in emoji_data]
@@ -287,7 +311,11 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
             labels = ["No reactions"]
             values = [1]
 
-        chart = f"https://quickchart.io/chart?c={{type:'pie',data:{{labels:{labels},datasets:[{{data:{values}}}]}}}}"
+        chart = (
+            f"https://quickchart.io/chart?c="
+            f"{{type:'pie',data:{{labels:{labels},"
+            f"datasets:[{{data:{values}}}]}}}}"
+        )
         reaction_chart_url = urllib.parse.quote(chart, safe=':/?=&')
 
         logger.info(f"Successfully retrieved stats for user: {user_id[:5]}...")
@@ -304,16 +332,20 @@ async def get_user_stats(user_id: str, session: AsyncSession = Depends(get_sessi
 
 
 @router.get("/stress", response_model=StressStatsResponse)
-async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_session)):
+async def get_weekly_stress_graph_all(
+    session: AsyncSession = Depends(get_session)
+):
     """
-    Generate a weekly stress graph showing the number of screams posted each day.
+    Generate a weekly stress graph showing the number of screams.
+    Screams posted each day
 
     Args:
         session (AsyncSession, optional): Database session dependency.
 
     Returns:
         dict: A dictionary containing:
-            - chart_url (str): A URL to a bar chart visualizing the daily scream counts over the past 7 days.
+            - chart_url (str): A URL to a bar chart visualizing
+            The daily scream counts over the past 7 days.
 
     Behavior:
         - Counts all screams posted in the last 7 days (UTC time).
@@ -323,7 +355,8 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
     import urllib.parse
     from datetime import datetime, timezone, timedelta
 
-    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0,
+                                               second=0, microsecond=0)
     week_ago = today - timedelta(days=6)
 
     daily_counts = [0] * 7
@@ -340,36 +373,43 @@ async def get_weekly_stress_graph_all(session: AsyncSession = Depends(get_sessio
 
     labels = [(week_ago + timedelta(days=i)).strftime('%a') for i in range(7)]
 
-    chart_url = urllib.parse.quote(f"https://quickchart.io/chart?c={{type:'bar',data:{{labels:{labels},datasets:[{{label:'Screams',data:{daily_counts}}}]}}}}", safe=':/?=&')
-
-    
+    chart_url = urllib.parse.quote(f"https://quickchart.io/chart?c="
+                                   f"{{type:'bar',data:{{labels:{labels},"
+                                   f"datasets:[{{label:'Screams',"
+                                   f"data:{daily_counts}}}]}}}}",
+                                   safe=':/?=&')
     return {"chart_url": chart_url}
 
 
 @router.post("/create_admin", response_model=CreateAdminResponse)
 async def create_admin(
     data: CreateAdminRequest,
-    session: AsyncSession = Depends(get_session),  
+    session: AsyncSession = Depends(get_session),
     _: None = Depends(admin_middleware)
 ):
     """
     Assign admin privileges to a specified user.
 
-    This endpoint can only be accessed by an existing admin (validated via middleware).
+    This endpoint can only be accessed by an existing admin
+    (validated via middleware).
     If the specified user is already an admin, returns status "already_admin".
     Otherwise, adds the user to the admin table and returns status "ok".
 
     Args:
-        data (CreateAdminRequest): Contains the ID of the requester and ID of the user to be promoted.
+        data (CreateAdminRequest):
+        Contains the ID of the requester and ID of the user to be promoted.
         session (AsyncSession): Database session, injected via dependency.
         _ (None): Result of admin_middleware; ensures the requester is admin.
 
     Returns:
-        CreateAdminResponse: A response object with status "ok" or "already_admin".
+        CreateAdminResponse:
+        A response object with status "ok" or "already_admin".
     """
     user_to_admin_hash = hash_user_id(data.user_id_to_admin)
 
-    result = await session.execute(select(Admin).where(Admin.user_hash == user_to_admin_hash))
+    result = await session.execute(select(Admin).where(
+        Admin.user_hash == user_to_admin_hash
+        ))
     existing_admin = result.scalar_one_or_none()
     if existing_admin:
         logger.warning(f"User already admin: {data.user_id_to_admin[:5]}...")
@@ -378,28 +418,29 @@ async def create_admin(
     admin = Admin(user_hash=user_to_admin_hash)
     session.add(admin)
     await session.commit()
-    
     logger.info(f"Successfully created admin: {data.user_id_to_admin[:5]}...")
     return {"status": "ok"}
 
 
-@router.post("/delete", response_model=DeleteResponse, dependencies=[Depends(admin_middleware)])
+@router.post("/delete", response_model=DeleteResponse,
+             dependencies=[Depends(admin_middleware)])
 async def delete_scream(
-    data: DeleteRequest, 
-    session: AsyncSession = Depends(get_session),  
+    data: DeleteRequest,
+    session: AsyncSession = Depends(get_session),
     _: None = Depends(admin_middleware)
 ):
     """
     Delete a scream by its ID.
 
-    This endpoint can only be accessed by users with admin privileges, 
-    which are verified by the `admin_middleware`. If the scream with the 
+    This endpoint can only be accessed by users with admin privileges,
+    which are verified by the `admin_middleware`. If the scream with the
     specified ID does not exist, a 404 error is returned.
 
     Args:
-        data (DeleteRequest): Contains the ID of the scream to be deleted and 
+        data (DeleteRequest): Contains the ID of the scream to be deleted and
             the user ID of the requester.
-        session (AsyncSession): Database session provided via dependency injection.
+        session (AsyncSession):
+            Database session provided via dependency injection.
         _ (None): Result of admin_middleware; ensures the requester is admin.
 
     Returns:
@@ -416,7 +457,7 @@ async def delete_scream(
 
         await session.delete(scream)
         await session.commit()
-        
+
         logger.info(f"Successfully deleted scream: {data.scream_id}")
         return {"status": "deleted"}
     except HTTPException:
@@ -431,7 +472,7 @@ async def get_my_id(data: GetIdRequest):
     """
     Retrieve the user ID.
 
-    This endpoint simply echoes back the user ID sent by the client. 
+    This endpoint simply echoes back the user ID sent by the client.
 
     Args:
         data (GetIdRequest): Contains the user ID to return.
@@ -458,9 +499,11 @@ async def get_my_id(data: GetIdRequest):
 
 
 @router.get("/feed/{user_id}", response_model=ScreamResponse)
-async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_session)):
+async def get_next_scream(user_id: str,
+                          session: AsyncSession = Depends(get_session)):
     """
-    Retrieve the next unseen scream for a given user from the current week's feed.
+    Retrieve the next unseen scream
+    for a given user from the current week's feed.
 
     Args:
         user_id (str): The external user ID used to determine reaction history.
@@ -473,7 +516,8 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
 
     Behavior:
         - Hashes the `user_id` to compare against stored data.
-        - Retrieves the next scream from this week that the user has not reacted to.
+        - Retrieves the next scream
+        from this week that the user has not reacted to.
         - Excludes the user's own screams.
     """
     from app_fastapi.models.scream import Scream
@@ -482,10 +526,11 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
     try:
         logger.debug(f"Getting next scream for user: {user_id[:5]}...")
         user_hash = hash_user_id(user_id)
-        
+
         stmt = (
             select(Scream)
-            .outerjoin(Reaction, (Reaction.scream_id == Scream.id) & (Reaction.user_hash == user_hash))
+            .outerjoin(Reaction, (Reaction.scream_id == Scream.id) &
+                       (Reaction.user_hash == user_hash))
             .where(
                 Scream.user_hash != user_hash,
                 Reaction.id.is_(None),
@@ -515,10 +560,11 @@ async def get_next_scream(user_id: str, session: AsyncSession = Depends(get_sess
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.post("/screams/admin", response_model=List[ScreamResponse], dependencies=[Depends(admin_middleware)])
+@router.post("/screams/admin", response_model=List[ScreamResponse],
+             dependencies=[Depends(admin_middleware)])
 async def get_screams_admin(
-    data: UserRequest, 
-    session: AsyncSession = Depends(get_session),  
+    data: UserRequest,
+    session: AsyncSession = Depends(get_session),
     _: None = Depends(admin_middleware)
 ):
     """
@@ -530,7 +576,8 @@ async def get_screams_admin(
         _ (None): Middleware dependency ensuring the user is an admin.
 
     Behavior:
-        - Fetches all screams from the current week that haven't been moderated.
+        - Fetches all screams from the current week
+        that haven't been moderated.
         - Returns a list of scream IDs and content.
     """
     try:
@@ -538,8 +585,8 @@ async def get_screams_admin(
         stmt = (
             select(Scream)
             .where(
-                Scream.timestamp >= get_week_start(), 
-                Scream.moderated == False
+                Scream.timestamp >= get_week_start(),
+                Scream.moderated.is_(False)
             )
             .order_by(Scream.timestamp.asc())
         )
@@ -562,14 +609,15 @@ async def get_screams_admin(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get screams for admin: {str(e)}", exc_info=True)
+        logger.error(f"Failed to get screams for admin: "
+                     f"{str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error!")
 
 
 @router.post("/confirm", dependencies=[Depends(admin_middleware)])
 async def confirm_scream(
-    data: DeleteRequest, 
-    session: AsyncSession = Depends(get_session),  
+    data: DeleteRequest,
+    session: AsyncSession = Depends(get_session),
     _: None = Depends(admin_middleware)
 ):
     """
@@ -594,7 +642,6 @@ async def confirm_scream(
 
         scream.moderated = True
         await session.commit()
-        
         logger.info(f"Successfully confirmed scream: {data.scream_id}")
         return {"status": "confirmed"}
     except HTTPException:
@@ -616,15 +663,16 @@ async def get_history(session: AsyncSession = Depends(get_session)):
         - Queries the database for distinct archived week IDs.
         - Returns them in descending order.
     """
-    try:        
-        stmt = select(distinct(Archive.week_id)).order_by(Archive.week_id.desc())
+    try:
+        stmt = select(distinct(Archive.week_id)).order_by(
+            Archive.week_id.desc()
+            )
         result = await session.execute(stmt)
         weeks = result.scalars().all()
 
         return {
             "weeks": weeks
         }
-    
     except HTTPException:
         raise
     except Exception as e:
@@ -633,7 +681,8 @@ async def get_history(session: AsyncSession = Depends(get_session)):
 
 
 @router.get("/history/{week_id}", response_model=TopScreamsResponse)
-async def get_historical_week(week_id: str, session: AsyncSession = Depends(get_session)):
+async def get_historical_week(week_id: str,
+                              session: AsyncSession = Depends(get_session)):
     """
     Retrieve archived screams for a specific week.
 
@@ -647,14 +696,16 @@ async def get_historical_week(week_id: str, session: AsyncSession = Depends(get_
     """
     try:
         logger.info(f"Getting historical week: {week_id}")
-        
-        stmt = select(Archive).where(Archive.week_id == week_id).order_by(Archive.votes.desc())
+        stmt = select(Archive).where(Archive.week_id == week_id).order_by(
+            Archive.votes.desc()
+            )
         result = await session.execute(stmt)
         archives = result.scalars().all()
 
         if not archives:
             logger.warning(f"Archive not found for week: {week_id}")
-            raise HTTPException(status_code=404, detail="Week not found in archive")
+            raise HTTPException(status_code=404,
+                                detail="Week not found in archive")
 
         posts = [
             TopScreamItem(
@@ -668,7 +719,6 @@ async def get_historical_week(week_id: str, session: AsyncSession = Depends(get_
 
         logger.info(f"Returned {len(posts)} screams for week {week_id}")
         return {"posts": posts}
-    
     except HTTPException:
         raise
     except Exception as e:
@@ -679,7 +729,7 @@ async def get_historical_week(week_id: str, session: AsyncSession = Depends(get_
 @router.post("/history/{week_id}", dependencies=[Depends(admin_middleware)])
 async def archive_current_week(
     week_id: str,
-    session: AsyncSession = Depends(get_session),  
+    session: AsyncSession = Depends(get_session),
     _: None = Depends(admin_middleware)
 ):
     """
@@ -697,8 +747,9 @@ async def archive_current_week(
     """
     try:
         logger.info(f"Archiving week as {week_id}")
-        
-        existing = await session.scalar(select(Archive).where(Archive.week_id == week_id).limit(1))
+        existing = await session.scalar(select(Archive).where(
+            Archive.week_id == week_id).limit(1)
+            )
         if existing:
             logger.warning(f"Week {week_id} already archived")
             raise HTTPException(status_code=409, detail="Week already exists")
@@ -730,11 +781,9 @@ async def archive_current_week(
                 votes=votes
             )
             session.add(archive)
-        
         await session.commit()
         logger.info(f"Week {week_id} archived with {len(top_screams)} screams")
         return {"status": "archived", "count": len(top_screams)}
-    
     except HTTPException:
         raise
     except Exception as e:

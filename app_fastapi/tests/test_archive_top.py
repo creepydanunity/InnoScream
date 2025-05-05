@@ -13,14 +13,17 @@ from app_fastapi.models.scream import Scream
 from app_fastapi.models.archive import Archive
 from .conftest import TestingSessionLocal
 
+
 @pytest.mark.asyncio
 async def test_archive_top_handles_no_reactions(monkeypatch):
     """
-    archive_top_job should still create Archive entries when there are no reactions.
+    archive_top_job should still create Archive entries
+    There are no reactions.
     """
     monkeypatch.setattr(archive_module, "asyncSession", TestingSessionLocal)
 
     fixed_now = datetime(2025, 5, 10, tzinfo=timezone.utc)
+
     class FakeDateTime(datetime):
         @classmethod
         def now(cls, tz=None):
@@ -32,7 +35,9 @@ async def test_archive_top_handles_no_reactions(monkeypatch):
         await session.commit()
 
     inner_tasks = []
-    monkeypatch.setattr(asyncio, "create_task", lambda coro: inner_tasks.append(coro) or coro)
+    monkeypatch.setattr(asyncio,
+                        "create_task",
+                        lambda coro: inner_tasks.append(coro) or coro)
 
     archive_top_job()
     await inner_tasks[0]

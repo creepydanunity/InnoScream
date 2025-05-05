@@ -15,11 +15,13 @@ from app_fastapi.tools.crypt import hash_user_id
 
 logger = logging.getLogger("app_fastapi")
 
-async def admin_middleware(request: Request, session: AsyncSession = Depends(get_session),):
+
+async def admin_middleware(request: Request,
+                           session: AsyncSession = Depends(get_session),):
     """
     Check if the requesting user is an admin.
 
-    Parses the request body to extract `user_id`, hashes it, and verifies 
+    Parses the request body to extract `user_id`, hashes it, and verifies
     its presence in the Admin table. Raises 403 if the user is not an admin.
     Also restores the request body for reuse after reading.
 
@@ -43,15 +45,19 @@ async def admin_middleware(request: Request, session: AsyncSession = Depends(get
 
         user_hash = hash_user_id(user_id)
 
-        result = await session.execute(select(Admin).where(Admin.user_hash == user_hash))
+        result = await session.execute(select(Admin).where(
+            Admin.user_hash == user_hash)
+            )
         admin = result.scalar_one_or_none()
 
         if admin is None:
-            logger.warning(f"Unauthorized admin access attempt by user: {user_id}...")
-            raise HTTPException(status_code=403, detail="Unauthorized: not an admin")
+            logger.warning(f"Unauthorized admin access "
+                           f"attempt by user: {user_id}...")
+            raise HTTPException(status_code=403,
+                                detail="Unauthorized: not an admin")
 
         logger.debug(f"Admin access granted for user: {user_id}...")
-        
+
         async def receive():
             return {"type": "http.request", "body": body_bytes}
         request._receive = receive

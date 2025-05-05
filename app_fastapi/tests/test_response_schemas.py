@@ -74,7 +74,10 @@ def test_top_screams_response_and_repr(caplog):
     TopScreamsResponse repr shows number of posts.
     """
     caplog.set_level("DEBUG", logger="app_fastapi.schemas")
-    items = [TopScreamItem(id=i, content="", votes=0, meme_url="") for i in range(3)]
+    items = [TopScreamItem(id=i,
+                           content="",
+                           votes=0,
+                           meme_url="") for i in range(3)]
     resp = TopScreamsResponse(posts=items)
     assert repr(resp) == "<TopScreamsResponse(posts=3)>"
 

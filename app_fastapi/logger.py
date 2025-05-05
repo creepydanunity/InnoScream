@@ -17,7 +17,6 @@ def setup_fastapi_logger():
           2. File handler ("app_fastapi.log") at DEBUG level.
       - Clears any existing handlers to avoid duplicate logs.
       - Attaches the new handlers to the logger.
-    
     Returns:
         logging.Logger: Configured FastAPI application logger.
     """
@@ -25,7 +24,8 @@ def setup_fastapi_logger():
     logger.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter(
-        "%(asctime)s | %(name)s | %(levelname)s | %(module)s:%(lineno)d | %(message)s"
+        "%(asctime)s | %(name)s | %(levelname)s "
+        "| %(module)s:%(lineno)d | %(message)s"
     )
 
     console_handler = logging.StreamHandler(sys.stdout)
@@ -41,7 +41,7 @@ def setup_fastapi_logger():
 
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
-    
     return logger
+
 
 logger = setup_fastapi_logger()

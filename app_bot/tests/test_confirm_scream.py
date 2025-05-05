@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 import httpx
 from app_bot.api.api import confirm_scream
 
+
 @pytest.mark.asyncio
 async def test_confirm_scream_success():
     """
@@ -11,12 +12,14 @@ async def test_confirm_scream_success():
     mock_response = {"status": "confirmed"}
 
     with patch.object(
-        httpx.AsyncClient, "post", return_value=MagicMock(status_code=200, json=lambda: mock_response)
+        httpx.AsyncClient, "post",
+        return_value=MagicMock(status_code=200, json=lambda: mock_response)
     ):
         result = await confirm_scream(101, "admin_001")
 
         assert result == mock_response
         assert result["status"] == "confirmed"
+
 
 @pytest.mark.asyncio
 async def test_confirm_scream_failure():
@@ -27,8 +30,12 @@ async def test_confirm_scream_failure():
     mock_request = MagicMock()
 
     with patch.object(
-        httpx.AsyncClient, "post",
-        side_effect=httpx.HTTPStatusError("Request failed", request=mock_request, response=mock_response)
+        httpx.AsyncClient,
+        "post",
+        side_effect=httpx.HTTPStatusError(
+            "Request failed",
+            request=mock_request,
+            response=mock_response)
     ):
         with pytest.raises(httpx.HTTPStatusError):
             await confirm_scream(101, "admin_001")

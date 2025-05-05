@@ -1,4 +1,3 @@
-from app_fastapi.main import app
 from app_fastapi.models.admin import Admin
 from app_fastapi.tools.crypt import hash_user_id
 from unittest.mock import patch
@@ -31,7 +30,8 @@ async def test_admin_middleware_missing_user_id(client):
 
 
 async def test_admin_middleware_non_admin(client):
-    json_data = {"user_id": "non_admin12345", "user_id_to_admin": "newadmin12345"}
+    json_data = {"user_id": "non_admin12345",
+                 "user_id_to_admin": "newadmin12345"}
     response = client.post("/create_admin", json=json_data)
 
     assert response.status_code == 403
@@ -39,13 +39,15 @@ async def test_admin_middleware_non_admin(client):
 
 
 async def test_create_admin_already_admin(client):
-    json_data = {"user_id": "admin12345", "user_id_to_admin": "existingadmin12345"}
+    json_data = {"user_id": "admin12345",
+                 "user_id_to_admin": "existingadmin12345"}
     response = client.post("/create_admin", json=json_data)
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
-    json_data = {"user_id": "admin12345", "user_id_to_admin": "existingadmin12345"}
+    json_data = {"user_id": "admin12345",
+                 "user_id_to_admin": "existingadmin12345"}
     response = client.post("/create_admin", json=json_data)
 
     assert response.status_code == 200
@@ -53,8 +55,10 @@ async def test_create_admin_already_admin(client):
 
 
 async def test_admin_middleware_general_error(client):
-    with patch("app_fastapi.middlewares.admin.hash_user_id", side_effect=Exception("Unexpected Error")):
-        json_data = {"user_id": "admin12345", "user_id_to_admin": "newadmin12345"}
+    with patch("app_fastapi.middlewares.admin.hash_user_id",
+               side_effect=Exception("Unexpected Error")):
+        json_data = {"user_id": "admin12345",
+                     "user_id_to_admin": "newadmin12345"}
         response = client.post("/create_admin", json=json_data)
 
     assert response.status_code == 500

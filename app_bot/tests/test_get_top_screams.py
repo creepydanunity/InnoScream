@@ -38,7 +38,9 @@ async def test_get_top_screams_http_error(monkeypatch):
     - Mocks httpx.AsyncClient.get to raise HTTPStatusError.
     - Asserts that get_top_screams propagates the exception as expected.
     """
-    err = httpx.HTTPStatusError("Oops", request=None, response=MagicMock(status_code=500))
+    err = httpx.HTTPStatusError(
+        "Oops", request=None, response=MagicMock(status_code=500)
+        )
     fake_client = AsyncMock()
     fake_client.get.side_effect = err
     fake_client.__aenter__.return_value = fake_client

@@ -7,7 +7,9 @@ from app_bot.handlers.reactionHandler import handle_exit_feed
 
 @pytest.mark.asyncio
 async def test_handle_feed(monkeypatch):
-    """Test that /feed command triggers a loading message and sends the next scream."""
+    """
+    Test that /feed command triggers a loading message, sends the next scream.
+    """
     msg = MagicMock()
     msg.answer = AsyncMock(return_value=MagicMock())
     msg.from_user.id = 42
@@ -26,7 +28,9 @@ async def test_handle_feed(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_handle_exit_feed():
-    """Test that the exit_feed callback edits the message and sends confirmation."""
+    """
+    Test that the exit_feed callback edits the message and sends confirmation.
+    """
     callback = MagicMock()
     callback.from_user.id = 123
     callback.answer = AsyncMock()

@@ -9,6 +9,7 @@ from app_bot.logger import logger
 
 idRouter = Router()
 
+
 @idRouter.message(Command("my_id"))
 async def handle_my_id(msg: types.Message):
     """
@@ -21,12 +22,13 @@ async def handle_my_id(msg: types.Message):
     - If there is an error, respond with a failure message.
 
     Args:
-        msg (types.Message): The message object containing the user's message and information.
+        msg (types.Message):
+            The message object containing the user's message and information.
 
     Returns:
         None
     """
-    user_id = str(msg.from_user.id) 
+    user_id = str(msg.from_user.id)
 
     try:
         logger.debug(f"Getting ID for user {user_id}")

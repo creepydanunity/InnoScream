@@ -39,7 +39,8 @@ def test_create_admin_request_and_repr(caplog):
     CreateAdminRequest should store both IDs and its repr abbreviates them.
     """
     caplog.set_level("DEBUG", logger="app_fastapi.schemas")
-    req = CreateAdminRequest(user_id="requester123", user_id_to_admin="target456")
+    req = CreateAdminRequest(user_id="requester123",
+                             user_id_to_admin="target456")
     assert req.user_id == "requester123"
     assert req.user_id_to_admin == "target456"
     r = repr(req)
@@ -59,7 +60,8 @@ def test_get_id_request_and_missing(caplog):
 
 def test_reaction_request_and_repr(caplog):
     """
-    ReactionRequest should require scream_id, emoji, user_id; repr abbreviates user_id.
+    ReactionRequest should require scream_id, emoji, user_id;
+    repr abbreviates user_id.
     """
     caplog.set_level("DEBUG", logger="app_fastapi.schemas")
     req = ReactionRequest(scream_id=5, emoji="👍", user_id="reactorXYZ")
@@ -70,7 +72,8 @@ def test_reaction_request_and_repr(caplog):
 
 def test_delete_request_and_repr(caplog):
     """
-    DeleteRequest should require scream_id and user_id; repr abbreviates user_id.
+    DeleteRequest should require scream_id and user_id;
+    repr abbreviates user_id.
     """
     caplog.set_level("DEBUG", logger="app_fastapi.schemas")
     req = DeleteRequest(scream_id=42, user_id="deleterABC")

@@ -30,7 +30,9 @@ async def test_get_next_scream_success(monkeypatch):
 @pytest.mark.asyncio
 async def test_get_next_scream_error(monkeypatch):
     """Test get_next_scream raises on backend HTTP error."""
-    err = httpx.HTTPStatusError("boom", request=None, response=MagicMock(status_code=404))
+    err = httpx.HTTPStatusError("boom", request=None, response=MagicMock(
+        status_code=404
+        ))
 
     fake_client = AsyncMock()
     fake_client.get.side_effect = err
