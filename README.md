@@ -5,7 +5,7 @@
 
 ---
 
-### ⚙️ Tech stack
+## ⚙️ Tech stack
 
 - **Bot:** Python 3.11, aiogram (Telegram), httpx, asyncio
 - **Backend:** Python 3.11, FastAPI, SQLAlchemy (Async)
@@ -58,6 +58,7 @@ MIT License — feel free to use and modify.
 
 ---
 # Functionality
+---
 ## 📦 System architecture
 
 The project is composed of two isolated services:
@@ -97,6 +98,7 @@ Three new features were added to scale team participation and improve platform u
 > All changes were reviewed and approved by the PM.
 ---
 # Quality
+---
 ## 1. Maintainability
 ---
 ##  Flake8
@@ -470,7 +472,6 @@ Files skipped (0):
 ```
 
 `Bandit` results of **Bot API**:
-Results:
 - 0 Vulnerabilities: No issues were identified during the Bandit scan.
 - Implications:
   - The codebase adheres to secure coding practices, with no use of deprecated or risky functions (unsafe deserialization, shell injections).
