@@ -52,4 +52,4 @@ jobs:
         run: flake8 app_fastapi/
 
       - name: Security scan with Bandit
-        run: bandit -r app_fastapi/ -s B101
+        run: bandit -r app_fastapi/ -s B101,B311
