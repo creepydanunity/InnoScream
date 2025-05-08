@@ -6,6 +6,8 @@ from app_fastapi.models.base import Base
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
+
+
 os.environ["DB_FILENAME"] = ":memory:"
 
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"
@@ -17,10 +19,12 @@ TestingSessionLocal = sessionmaker(bind=engine,
 
 async def override_get_session():
     """
-    Provide a database session override for FastAPI dependency injection during testing.
+    Provide a database session override for FastAPI
+        dependency injection during testing.
 
     Yields:
-        AsyncSession: A SQLAlchemy asynchronous session connected to the in-memory test database.
+        AsyncSession: A SQLAlchemy asynchronous session
+            connected to the in-memory test database.
     """
     async with TestingSessionLocal() as session:
         yield session
@@ -47,7 +51,8 @@ def client():
     """
     Provide a test client for making HTTP requests to the FastAPI app.
 
-    Overrides the real database session dependency with an in-memory test session.
+    Overrides the real database session dependency with an in-memory test
+        session.
     Yields:
         TestClient: A FastAPI test client instance configured for testing.
     """

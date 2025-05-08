@@ -7,7 +7,6 @@ import os
 logger = logging.getLogger("app_fastapi.tools")
 
 
-
 def hash_user_id(user_id: int) -> str:
     """
     Compute a salted SHA-256 hash of the given user ID.
