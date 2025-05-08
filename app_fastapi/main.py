@@ -36,15 +36,16 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup():
     """
-    Startup event handler for initializing the database
-    Checking for the default admin.
+    Application startup event handler.
+
+    Used for initializing the database and checking for the default admin.
 
     This function:
     - Initializes the database by calling init_db().
     - Retrieves the `DEFAULT_ADMIN_ID` from environment variables.
     - Hashes the `DEFAULT_ADMIN_ID` using hash_user_id().
     - Checks if an admin with the corresponding user
-        hash already exists in the database.
+      hash already exists in the database.
     - If no admin exists, a new default admin is added to the database.
     """
     try:

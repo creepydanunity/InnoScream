@@ -10,7 +10,8 @@ logger = logging.getLogger("app_fastapi")
 
 async def init_db():
     """
-    Initialize the database
+    Initialize the database.
+
     Creating all tables defined in the SQLAlchemy models.
 
     This function:

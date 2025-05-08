@@ -19,8 +19,9 @@ TestingSessionLocal = sessionmaker(bind=engine,
 
 async def override_get_session():
     """
-    Provide a database session override for FastAPI
-        dependency injection during testing.
+    Provide a database session override.
+
+    Used for FastAPI dependency injection during testing.
 
     Yields:
         AsyncSession: A SQLAlchemy asynchronous session

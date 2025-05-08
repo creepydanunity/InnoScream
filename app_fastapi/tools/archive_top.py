@@ -17,7 +17,9 @@ logger = logging.getLogger("app_fastapi")
 
 
 def archive_top_job():
-    """Archive top 3 screams from past week into Archive table.
+    """
+    Archive top 3 screams from past week into Archive table.
+
     This function:
     - Computes current ISO week identifier in format "YYYY-WW"
     - Queries top 3 screams by positive reaction count (excluding ❌)
@@ -27,7 +29,7 @@ def archive_top_job():
         Exception: If any error occurs during database operations
     """
     async def _inner():
-        """Fetch AsyncSession and run async archive_top logic"""
+        # Fetch AsyncSession and run async archive_top logic.
         async with asyncSession() as session:
             try:
                 now = datetime.now(timezone.utc)

@@ -41,7 +41,9 @@ def get_bounds(days=1, addition=True):
 
 
 def get_week_start():
-    """Get UTC datetime for start of current week (Monday 00:00:00).
+    """
+    Get UTC datetime for start of current week (Monday 00:00:00).
+
     Returns:
         datetime:
             Timezone-aware datetime (UTC) for most recent Monday midnight.

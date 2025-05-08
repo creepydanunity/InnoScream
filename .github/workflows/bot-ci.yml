@@ -9,7 +9,7 @@ on:
       - 'app_bot/**'
 
 jobs:
-  app_api_ci:
+  app_bot_ci:
     name: Test & Lint app_bot
     runs-on: ubuntu-latest
     environment: app_api_env
@@ -18,16 +18,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Python & install deps
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - run: |
+      
+      - name: Install project & dev-deps
+        run: |
           python -m pip install --upgrade pip
           pip install poetry
-          poetry config virtualenvs.create false
+          poetry config virtualenvs.create true
           poetry install --no-interaction --no-ansi
-          pip install pytest flake8 bandit
 
       - name: Generate .env for app_bot
         run: |
@@ -39,14 +40,30 @@ jobs:
       - name: Run pytest with coverage
         working-directory: app_bot
         run: |
-          pytest \
+          poetry run pytest \
             --cov=. \
             --cov-report=term-missing \
             --cov-fail-under=60 \
             .
 
+      - name: Check code complexity (radon)
+        working-directory: app_bot
+        run: |
+          echo "Checking cyclomatic complexity ≤ 10"
+          failures=$(poetry run radon cc . -n C)
+          if [ -n "$failures" ]; then
+            echo "Complexity violations (Rank > B):" >&2
+            echo "$failures" >&2
+            exit 1
+          fi
+          echo "All code blocks have CC ≤ 10"
+
       - name: Lint with flake8
-        run: flake8 app_bot/
+        run: poetry run flake8 app_bot/
 
       - name: Security scan with Bandit
-        run: bandit -r app_bot/ -s B101,B311
+        run: poetry run bandit -r app_bot/ -s B101,B311
+
+      - name: Check docstrings (pydocstyle)
+        working-directory: app_bot
+        run: poetry run pydocstyle .

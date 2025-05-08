@@ -24,6 +24,7 @@ async def test_handle_start():
         "An anonymous place to let it all out. Here's what you can do:\n\n"
         "<b>😤 /scream [text]</b> — Post your scream anonymously\n"
         "<b>🔥 React to screams</b> — Vote with emojis\n"
+        "<b>📰 /feed</b> — Browse recent screams in a user-friendly view\n"
         "<b>📊 /stats</b> — See your scream & reactions count\n"
         "<b>📈 /stress</b> — View weekly stress graphs\n"
         "<b>📚 /history</b> — Browse top screams from past weeks\n"

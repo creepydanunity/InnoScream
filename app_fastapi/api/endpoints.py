@@ -214,8 +214,17 @@ async def get_top_screams(n: int = 3,
 async def get_user_stats(user_id: str,
                          session: AsyncSession = Depends(get_session)):
     """
-    Retrieve statistics for a specific user
+    Get user stats.
+
+    Retrieve statistics for a specific user,
     including post and reaction counts and activity charts.
+
+    This function:
+    - Hashes the `user_id` to match internal database storage.
+    - Computes the number of posts made each day in the last 7 days.
+    - Generates a QuickChart URL for a bar chart of daily posts.
+    - Computes total number of screams reactions given, and reactions received.
+    - Generates a QuickChart URL for a pie chart of received reactions.
 
     Args:
         user_id (str): The external user ID (to be hashed internally).
@@ -223,24 +232,16 @@ async def get_user_stats(user_id: str,
 
     Returns:
         dict: A dictionary containing:
-            - screams_posted (int): Total number of screams posted by the user.
-            - reactions_given (int):
-                Total number of reactions the user has given.
-            - reactions_got (int):
-                Total number of reactions received on the user's screams.
-            - chart_url (str):
-                URL to a bar chart showing daily post counts over the week.
-            - reaction_chart_url (str):
-                URL to a pie chart showing distribution
-                This distribution received reaction emojis.
-
-    Behavior:
-        - Hashes the `user_id` to match internal database storage.
-        - Computes the number of posts made each day in the last 7 days.
-        - Generates a QuickChart URL for a bar chart of daily posts.
-        - Computes total number of screams,
-            reactions given, and reactions received.
-        - Generates a QuickChart URL for a pie chart of received reactions.
+            - screams_posted (int): Total number of
+                screams posted by the user.
+            - reactions_given (int): Total number of
+                reactions the user has given.
+            - reactions_got (int): Total number of
+                reactions received on the user's screams.
+            - chart_url (str): URL to a bar chart
+                showing daily post counts over the week.
+            - reaction_chart_url (str): URL to a
+                pie chart showing distribution of reaction emojis.
     """
     import urllib.parse
     from datetime import datetime, timezone, timedelta
@@ -337,7 +338,8 @@ async def get_weekly_stress_graph_all(
 ):
     """
     Generate a weekly stress graph showing the number of screams.
-    Screams posted each day
+
+    Uses quickchart.io API for graph generation.
 
     Args:
         session (AsyncSession, optional): Database session dependency.
@@ -502,8 +504,10 @@ async def get_my_id(data: GetIdRequest):
 async def get_next_scream(user_id: str,
                           session: AsyncSession = Depends(get_session)):
     """
-    Retrieve the next unseen scream
-    for a given user from the current week's feed.
+    Retrieve user feed.
+
+    Retrieve the next unseen scream for a given user
+    from the current week's feed.
 
     Args:
         user_id (str): The external user ID used to determine reaction history.
