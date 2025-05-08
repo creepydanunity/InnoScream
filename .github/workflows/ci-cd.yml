@@ -1,4 +1,4 @@
-name: Ci/CD
+name: CI/CD
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   
 jobs:
   app_bot_ci:
-    name: Test & Lint app_bot
+    name: 🧩 Test, Lint & Coverage app_bot
     runs-on: ubuntu-latest
     environment: app_api_env
 
@@ -65,7 +65,7 @@ jobs:
         run: poetry run pydocstyle .
   
   app_api_ci:
-    name: Test, Lint & Coverage app_fastapi
+    name: 🧩 Test, Lint & Coverage app_fastapi
     runs-on: ubuntu-latest
     environment: app_bot_env
 
