@@ -37,7 +37,9 @@ IMGFLIP_PASSWORD = os.getenv("IMGFLIP_API_PASSWORD")
 
 
 async def generate_meme_url(content: str) -> str:
-    """Generate meme URL using Imgflip API with provided content.
+    """
+    Generate meme URL using Imgflip API with provided content.
+
     Args:
         content (str): Text content for meme generation
     Returns:

@@ -59,11 +59,11 @@ jobs:
           echo "All code blocks have CC ≤ 10"
 
       - name: Lint with flake8
-        run: flake8 app_bot/
+        run: poetry run flake8 app_bot/
 
       - name: Security scan with Bandit
-        run: bandit -r app_bot/ -s B101,B311
+        run: poetry run bandit -r app_bot/ -s B101,B311
 
       - name: Check docstrings (pydocstyle)
         working-directory: app_bot
-        run: poetry run pydocstyle --select=D102,D103 .
+        run: poetry run pydocstyle .

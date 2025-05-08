@@ -21,7 +21,7 @@ async def main():
     Initialize and start the Telegram bot.
 
     Behavior:
-        - Loads the bot token from environment variables.
+        - Loads the bot token from environment variable.
         - Sets up the Dispatcher and registers all route handlers.
         - Starts polling for new updates with a 120-second timeout.
         - Logs the initialization process and any critical failures.

@@ -69,4 +69,4 @@ jobs:
       
       - name: Check docstrings (pydocstyle)
         working-directory: app_fastapi
-        run: poetry run pydocstyle --select=D102,D103 .
+        run: poetry run pydocstyle .
