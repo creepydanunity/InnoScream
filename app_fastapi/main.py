@@ -44,7 +44,7 @@ async def startup():
     - Retrieves the `DEFAULT_ADMIN_ID` from environment variables.
     - Hashes the `DEFAULT_ADMIN_ID` using hash_user_id().
     - Checks if an admin with the corresponding user
-        hash already exist in the database.
+        hash already exists in the database.
     - If no admin exists, a new default admin is added to the database.
     """
     try:
