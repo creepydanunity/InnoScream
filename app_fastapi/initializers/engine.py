@@ -9,7 +9,10 @@ from sqlalchemy.orm import sessionmaker
 
 logger = logging.getLogger("app_fastapi")
 
-databaseUrl = "sqlite+aiosqlite:///" + getenv("DB_FILENAME")
+db_url = getenv("DB_FILENAME") if getenv("DB_FILENAME") else ":memory:"
+
+databaseUrl = "sqlite+aiosqlite:///" + db_url
+
 engine = create_async_engine(databaseUrl, echo=True)
 asyncSession = sessionmaker(bind=engine, expire_on_commit=False,
                             class_=AsyncSession)

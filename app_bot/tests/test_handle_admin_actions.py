@@ -103,7 +103,7 @@ async def test_handle_delete_permission_denied(monkeypatch):
 
     await handle_delete(msg, state)
     msg.answer.assert_awaited_once_with(
-        "You do not have permission — only admins can perform this action."
+        "You don`t have permission - only admins can perform this action."
     )
 
 

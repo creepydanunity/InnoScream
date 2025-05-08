@@ -53,7 +53,10 @@ class GetMyIdResponse(BaseModel):
     user_id: str
 
     def __repr__(self):
-        logger.debug(f"GetMyIdResponse user={self.user_id[:5]}...")
+        logger.debug(
+            f"GetMyIdResponse representation: "
+            f"user={self.user_id[:5]}..."
+        )
         return f"<GetMyIdResponse({self.user_id[:5]}...)>"
 
 
