@@ -181,3 +181,6 @@ poetry.lock
 
 # Volume
 db/
+
+# macos
+.DS_Store

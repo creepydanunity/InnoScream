@@ -17,10 +17,15 @@ services:
     env_file: ./app_fastapi/.env
     working_dir: /app
     volumes:
-      - ./db/innoscream.db:/app/app_fastapi/innoscream.db
+      - innoscream-data:/app/db
+    ports:
+      - "8000:8000"
     networks:
       - app-network
 
+volumes:
+  innoscream-data:
+  
 networks:
   app-network:
     driver: bridge
