@@ -1,0 +1,54 @@
+name: API-CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'app_fastapi/**'
+
+jobs:
+  app_bot_ci:
+    name: Test & Lint app_fastapi
+    runs-on: ubuntu-latest
+    environment: app_bot_env
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python & install deps
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry config virtualenvs.create false
+          poetry install --no-interaction --no-ansi
+          pip install pytest flake8 bandit
+
+      - name: Generate .env for app_bot
+        run: |
+          cat <<EOF > app_fastapi/.env
+          DB_FILENAME=${{ secrets.DB_FILENAME }}
+          DEFAULT_ADMIN_ID=${{ secrets.DEFAULT_ADMIN_ID }}
+          IMGFLIP_API_PASSWORD=${{ secrets.IMGFLIP_API_PASSWORD }}
+          IMGFLIP_API_USERNAME=${{ secrets.IMGFLIP_API_USERNAME }}
+          USER_ID_SALT=${{ secrets.USER_ID_SALT }}
+          EOF
+
+      - name: Run pytest with coverage
+        run: |
+          pytest \
+            --cov=app_bot \
+            --cov-report=term-missing \
+            --cov-fail-under=60 \
+            app_bot/
+
+      - name: Lint with flake8
+        run: flake8 app_bot/
+
+      - name: Security scan with Bandit
+        run: bandit -r app_bot/ -s B101
