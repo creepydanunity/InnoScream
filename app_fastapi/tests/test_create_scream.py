@@ -6,11 +6,12 @@ from sqlalchemy import select
 
 # Local application
 from app_fastapi.models.scream import Scream
-from .conftest import TestingSessionLocal  
+from .conftest import TestingSessionLocal
+
 
 def test_create_scream_success(client):
     """
-    Test that posting to /scream returns status "ok" and the scream is persisted.
+    Test that posting to /scream returns status "ok", scream is persisted.
 
     This test:
       - Sends a POST request to create a new scream.
@@ -26,7 +27,8 @@ def test_create_scream_success(client):
 
     async def get_record():
         async with TestingSessionLocal() as session:
-            result = await session.execute(select(Scream).where(Scream.id == scream_id))
+            result = await session.execute(select(Scream).
+                                           where(Scream.id == scream_id))
             return result.scalar_one_or_none()
 
     scream = asyncio.get_event_loop().run_until_complete(get_record())

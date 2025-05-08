@@ -12,6 +12,7 @@ from .base import Base
 
 logger = logging.getLogger("app_fastapi.models")
 
+
 class Reaction(Base):
     """
     Represents a user reaction (emoji) to a scream.
@@ -28,7 +29,8 @@ class Reaction(Base):
         __str__(): Return a human-readable string for the Reaction instance.
 
     Constraints:
-        - Each user may react at most once per scream (enforced by unique constraint).
+        - Each user may react at most once per scream
+        (enforced by unique constraint).
     """
 
     __tablename__ = "reactions"
@@ -36,18 +38,20 @@ class Reaction(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     emoji: Mapped[str] = mapped_column(String, nullable=False)
     timestamp: Mapped[datetime] = mapped_column(default=datetime.utcnow)
-    
-    scream_id: Mapped[int] = mapped_column(ForeignKey("screams.id", ondelete="CASCADE"))
+    scream_id: Mapped[int] = mapped_column(ForeignKey("screams.id",
+                                                      ondelete="CASCADE"))
     user_hash: Mapped[str] = mapped_column(String, nullable=False)
 
     scream = relationship("Scream", back_populates="reactions")
 
     __table_args__ = (
-        UniqueConstraint("scream_id", "user_hash", name="one_reaction_per_user_per_post"),
+        UniqueConstraint("scream_id", "user_hash",
+                         name="one_reaction_per_user_per_post"),
     )
 
     def __repr__(self):
-        logger.debug(f"Reaction representation: id={self.id}, emoji={self.emoji}, scream_id={self.scream_id}")
+        logger.debug(f"Reaction representation: id={self.id}, "
+                     f"emoji={self.emoji}, scream_id={self.scream_id}")
         return f"<Reaction({self.emoji}) on Scream {self.scream_id}>"
 
     def __str__(self):

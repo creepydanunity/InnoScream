@@ -93,5 +93,7 @@ async def test_handle_top_raises(monkeypatch, caplog):
     )
 
     await handle_top(msg)
-    msg.answer.assert_awaited_with("😴 There was an error getting top screams((")
+    msg.answer.assert_awaited_with(
+        "😴 There was an error getting top screams(("
+        )
     assert "Failed to get top screams: nope" in caplog.text

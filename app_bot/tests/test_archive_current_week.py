@@ -1,8 +1,9 @@
 import pytest
 import httpx
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 from app_bot.api.api import archive_current_week
+
 
 @pytest.mark.asyncio
 async def test_archive_current_week_success():
@@ -22,6 +23,7 @@ async def test_archive_current_week_success():
         result = await archive_current_week(week_id, user_id)
         assert result == mock_json
 
+
 @pytest.mark.asyncio
 async def test_archive_current_week_already_exists():
     """
@@ -32,11 +34,15 @@ async def test_archive_current_week_already_exists():
 
     mock_response = MagicMock(status_code=409)
     mock_request = MagicMock()
-    exception = httpx.HTTPStatusError("Conflict", request=mock_request, response=mock_response)
+    exception = httpx.HTTPStatusError(
+        "Conflict",
+        request=mock_request,
+        response=mock_response)
 
     with patch.object(httpx.AsyncClient, 'post', side_effect=exception):
         with pytest.raises(ValueError, match="Week already archived"):
             await archive_current_week(week_id, user_id)
+
 
 @pytest.mark.asyncio
 async def test_archive_current_week_other_http_error():
@@ -48,11 +54,15 @@ async def test_archive_current_week_other_http_error():
 
     mock_response = MagicMock(status_code=500)
     mock_request = MagicMock()
-    exception = httpx.HTTPStatusError("Server Error", request=mock_request, response=mock_response)
+    exception = httpx.HTTPStatusError(
+        "Server Error",
+        request=mock_request,
+        response=mock_response)
 
     with patch.object(httpx.AsyncClient, 'post', side_effect=exception):
         with pytest.raises(httpx.HTTPStatusError):
             await archive_current_week(week_id, user_id)
+
 
 @pytest.mark.asyncio
 async def test_archive_current_week_generic_exception():
@@ -62,6 +72,10 @@ async def test_archive_current_week_generic_exception():
     week_id = "2025-18"
     user_id = "admin123"
 
-    with patch.object(httpx.AsyncClient, 'post', side_effect=Exception("unexpected error")):
+    with patch.object(
+        httpx.AsyncClient,
+        'post',
+        side_effect=Exception("unexpected error")
+    ):
         with pytest.raises(Exception, match="unexpected error"):
             await archive_current_week(week_id, user_id)

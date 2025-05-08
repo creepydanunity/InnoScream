@@ -37,7 +37,7 @@ def setup_bot_logger():
 
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
-    
     return logger
+
 
 logger = setup_bot_logger()

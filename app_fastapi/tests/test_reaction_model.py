@@ -7,6 +7,7 @@ import pytest
 # Local application
 from app_fastapi.models.reaction import Reaction
 
+
 @pytest.fixture
 def example_reaction():
     """
@@ -17,6 +18,7 @@ def example_reaction():
     r.timestamp = datetime(2025, 1, 1, tzinfo=timezone.utc)
     return r
 
+
 def test_repr_includes_emoji_and_scream_id(example_reaction, caplog):
     """
     __repr__ should show the emoji and the scream_id.
@@ -25,6 +27,7 @@ def test_repr_includes_emoji_and_scream_id(example_reaction, caplog):
 
     s = repr(example_reaction)
     assert s == "<Reaction(🔥) on Scream 7>"
+
 
 def test_str_shows_id_and_emoji(example_reaction, caplog):
     """

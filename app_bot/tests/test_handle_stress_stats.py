@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, MagicMock
 from aiogram import types
 from app_bot.handlers.statsHandler import handle_stress
 
@@ -14,9 +14,10 @@ async def test_handle_stress_success(monkeypatch):
     msg.from_user.id = 123
     msg.answer_photo = AsyncMock()
 
-    monkeypatch.setattr("app_bot.handlers.statsHandler.get_stress_stats", AsyncMock(return_value={
-        "chart_url": "https://example.com/chart.png"
-    }))
+    monkeypatch.setattr(
+        "app_bot.handlers.statsHandler.get_stress_stats",
+        AsyncMock(return_value={"chart_url": "https://example.com/chart.png"})
+    )
 
     await handle_stress(msg)
 
@@ -37,7 +38,8 @@ async def test_handle_stress_failure(monkeypatch):
     msg.from_user.id = 456
     msg.answer = AsyncMock()
 
-    monkeypatch.setattr("app_bot.handlers.statsHandler.get_stress_stats", AsyncMock(side_effect=Exception("API down")))
+    monkeypatch.setattr("app_bot.handlers.statsHandler.get_stress_stats",
+                        AsyncMock(side_effect=Exception("API down")))
 
     await handle_stress(msg)
 

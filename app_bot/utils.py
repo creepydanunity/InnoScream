@@ -13,12 +13,15 @@ async def send_next_scream(user_id: str, message: types.Message):
 
     Args:
         user_id (str): The Telegram user's ID.
-        message (types.Message): The Telegram message to edit with the next scream content.
+        message (types.Message):
+        The Telegram message to edit with the next scream content.
 
     Behavior:
         - Retrieves the next unseen scream via the backend API.
-        - Edits the given message to display the scream content with inline reaction buttons.
-        - If no screams are available or an error occurs, shows a fallback message.
+        - Edits the given message to display the scream content
+        with inline reaction buttons.
+        - If no screams are available or an error occurs,
+        shows a fallback message.
     """
     try:
         logger.debug(f"Sending next scream for user {user_id}")
@@ -35,4 +38,7 @@ async def send_next_scream(user_id: str, message: types.Message):
         logger.info(f"Scream {scream['scream_id']} sent to user {user_id}")
     except Exception as e:
         logger.warning(f"No screams available for user {user_id}: {str(e)}")
-        await message.edit_text("😴 <i>No more screams in the feed for now...</i>", parse_mode="HTML")
+        await message.edit_text(
+            "😴 <i>No more screams in the feed for now...</i>",
+            parse_mode="HTML"
+            )

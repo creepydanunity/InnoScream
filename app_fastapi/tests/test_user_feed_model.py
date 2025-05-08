@@ -14,4 +14,7 @@ def test_user_feed_custom_last_seen(caplog):
     caplog.set_level("DEBUG", logger="app_fastapi.models")
     u = UserFeedProgress(user_hash="xyz", last_seen_id=42)
     assert u.last_seen_id == 42
-    assert repr(u) == "<UserFeedProgress(user=xyz.., last_seen=42)>".replace("..", "...")
+    assert repr(u) == (
+        "<UserFeedProgress(user=xyz.., "
+        "last_seen=42)>"
+    ).replace("..", "...")

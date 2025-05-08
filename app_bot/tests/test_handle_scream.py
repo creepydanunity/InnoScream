@@ -6,13 +6,15 @@ from app_bot.handlers.screamHandler import handle_scream
 
 @pytest.mark.asyncio
 async def test_handle_scream_empty_content():
-    """Test that the bot replies with a prompt when no scream content is provided."""
+    """Test that the bot replies with a prompt
+    when no scream content is provided."""
     msg = MagicMock()
     msg.text = "/scream"
     msg.reply = AsyncMock()
     msg.from_user.id = 123
     await handle_scream(msg)
-    msg.reply.assert_awaited_with("😶 <i>What do you want to scream?</i>", parse_mode="HTML")
+    msg.reply.assert_awaited_with("😶 <i>What do you want to scream?</i>",
+                                  parse_mode="HTML")
 
 
 @pytest.mark.asyncio

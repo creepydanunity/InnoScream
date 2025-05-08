@@ -25,7 +25,8 @@ def hash_user_id(user_id: int) -> str:
         str: Hexadecimal salted SHA-256 hash of the input user ID.
 
     Raises:
-        Exception: If any error occurs during hashing, it is logged and re-raised.
+        Exception: If any error occurs during hashing,
+        it is logged and re-raised.
     """
     USER_ID_SALT = os.getenv("USER_ID_SALT")
     try:
@@ -33,12 +34,13 @@ def hash_user_id(user_id: int) -> str:
 
         if not USER_ID_SALT:
             raise ValueError("USER_ID_SALT not found in environment variables")
-        
         salted_user_id = f"{USER_ID_SALT}{user_id}"
 
         hashed = hashlib.sha256(salted_user_id.encode()).hexdigest()
-        
-        logger.debug(f"Hashed result: {salted_user_id[:10]}..., Hashed result: {hashed[:5]}...")
+        logger.debug(
+            f"Hashed result: {salted_user_id[:10]}..., "
+            f"Hashed result: {hashed[:5]}..."
+        )
 
         return hashed
     except Exception as e:

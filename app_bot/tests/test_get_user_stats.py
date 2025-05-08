@@ -26,13 +26,18 @@ async def test_get_user_stats_success(monkeypatch, caplog):
 
     assert result == expected
     fake_client.get.assert_awaited_once_with("http://mockserver/stats/u99")
-    assert "Getting stats for user u99" in caplog.text or "User stats retrieved successfully" in caplog.text
+    assert (
+        "Getting stats for user u99" in caplog.text
+        or "User stats retrieved successfully" in caplog.text
+    )
 
 
 @pytest.mark.asyncio
 async def test_get_user_stats_failure(monkeypatch):
     """Test that get_user_stats raises HTTP error on 404 or server issue."""
-    err = httpx.HTTPStatusError("not found", request=None, response=MagicMock(status_code=404))
+    err = httpx.HTTPStatusError(
+        "not found", request=None, response=MagicMock(status_code=404)
+        )
 
     fake_client = AsyncMock()
     fake_client.get.side_effect = err

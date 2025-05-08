@@ -8,6 +8,7 @@ import pytest
 import app_fastapi.tools.time as time_module
 from app_fastapi.tools.time import get_bounds, get_week_start
 
+
 class FakeDateTime(real_datetime):
     """
     Subclass of datetime.datetime to override now().
@@ -16,8 +17,10 @@ class FakeDateTime(real_datetime):
     def now(cls, tz=None):
         return cls._fixed_now
 
+
 _original_module_datetime = time_module.datetime
 _original_fake_now = FakeDateTime.now
+
 
 @pytest.fixture(autouse=True)
 def reset_module_datetime(monkeypatch):
@@ -28,9 +31,11 @@ def reset_module_datetime(monkeypatch):
     monkeypatch.setattr(time_module, "datetime", _original_module_datetime)
     FakeDateTime.now = _original_fake_now
 
+
 def test_get_bounds_addition_true(monkeypatch):
     """
-    get_bounds should return today’s midnight and midnight plus days when addition=True.
+    get_bounds should return today’s
+    midnight and midnight plus days when addition=True.
     """
     fixed = real_datetime(2025, 5, 3, 15, 30, tzinfo=timezone.utc)
     FakeDateTime._fixed_now = fixed
@@ -42,9 +47,11 @@ def test_get_bounds_addition_true(monkeypatch):
     assert start == expected_start
     assert end == expected_end
 
+
 def test_get_bounds_addition_false(monkeypatch):
     """
-    get_bounds should return today’s midnight and midnight minus days when addition=False.
+    get_bounds should return today’s
+    midnight and midnight minus days when addition=False.
     """
     fixed = real_datetime(2025, 5, 3, 9, 0, tzinfo=timezone.utc)
     FakeDateTime._fixed_now = fixed
@@ -55,6 +62,7 @@ def test_get_bounds_addition_false(monkeypatch):
     expected_end = expected_start - timedelta(days=5)
     assert start == expected_start
     assert end == expected_end
+
 
 def test_get_bounds_exception(monkeypatch, caplog):
     """
@@ -75,6 +83,7 @@ def test_get_bounds_exception(monkeypatch, caplog):
 
     assert "Failed to calculate time bounds" in caplog.text
 
+
 def test_get_week_start_monday(monkeypatch):
     """
     get_week_start should return Monday midnight when today is mid‑week.
@@ -85,6 +94,7 @@ def test_get_week_start_monday(monkeypatch):
 
     ws = get_week_start()
     assert ws == real_datetime(2025, 5, 5, 0, 0, tzinfo=timezone.utc)
+
 
 @pytest.mark.parametrize("weekday, expected_date", [
     (0, "2025-05-05"),

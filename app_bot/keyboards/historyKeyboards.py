@@ -11,7 +11,8 @@ def history_keyboard(weeks: list) -> InlineKeyboardMarkup:
         weeks (list): A list of week identifiers in the format 'YYYY-WW'.
 
     Returns:
-        InlineKeyboardMarkup: An inline keyboard with buttons for each available archive week.
+        InlineKeyboardMarkup:
+            An inline keyboard with buttons for each available archive week.
 
     Buttons:
         🗓 WW-YYYY — where WW is the week number and YYYY is the year.

@@ -8,7 +8,8 @@ def deletion_keyboard_setup() -> InlineKeyboardMarkup:
     Create an inline keyboard for admin scream moderation actions.
 
     Returns:
-        InlineKeyboardMarkup: An inline keyboard with buttons for navigating and moderating screams.
+        InlineKeyboardMarkup:
+            An inline keyboard with buttons for navigating, moderating screams.
 
     Buttons:
         ⬅️ - Navigate to the previous scream.
@@ -26,5 +27,4 @@ def deletion_keyboard_setup() -> InlineKeyboardMarkup:
         InlineKeyboardButton(text='➡️', callback_data='button_next'),
         InlineKeyboardButton(text='🚪 Exit', callback_data='button_exit'),
     )
-    
     return deletion_kb.adjust(4, 1).as_markup()

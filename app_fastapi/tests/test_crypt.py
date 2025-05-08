@@ -8,6 +8,7 @@ import pytest
 # Local application
 from app_fastapi.tools.crypt import hash_user_id
 
+
 def test_hash_raises_and_logs(monkeypatch, caplog):
     """
     If hashlib.sha256 throws, our function should log an error and re-raise.
@@ -26,6 +27,7 @@ def test_hash_raises_and_logs(monkeypatch, caplog):
 
     assert "Failed to hash user ID" in caplog.text
 
+
 def test_hash_output_length_and_type():
     """
     The hash of any input should be a 64-character hexadecimal string.
@@ -36,16 +38,19 @@ def test_hash_output_length_and_type():
 
     int(h, 16)
 
+
 def test_hash_consistency():
     """
-    The same input should always produce the same hash, different inputs differ.
+    The same input should always produce the same hash
+    different inputs differ.
     """
     assert hash_user_id("same") == hash_user_id("same")
     assert hash_user_id("diff1") != hash_user_id("diff2")
 
+
 def test_hash_empty_string():
     """
-    Hashing an empty string should still return a valid 64-character hex string.
+    Hashing an empty string should still return 64-character hex string.
     """
     h = hash_user_id("")
     assert isinstance(h, str)

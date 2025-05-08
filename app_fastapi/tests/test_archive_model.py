@@ -4,6 +4,7 @@ from app_fastapi.models.archive import Archive
 from app_fastapi.models.scream import Scream
 from app_fastapi.tests.conftest import TestingSessionLocal
 
+
 @pytest.fixture
 async def archive_and_scream():
     async with TestingSessionLocal() as session:
@@ -17,8 +18,8 @@ async def archive_and_scream():
 
         stmt = select(Archive).where(Archive.id == archive.id)
         db_archive = await session.execute(stmt)
-        
         return db_archive.scalars().first()
+
 
 async def test_create_archive(archive_and_scream):
     db_archive = archive_and_scream
@@ -28,6 +29,7 @@ async def test_create_archive(archive_and_scream):
     assert db_archive.week_id == 202501
     assert db_archive.place == 1
 
+
 async def test_archive_repr(archive_and_scream):
     db_archive = archive_and_scream
 
@@ -36,4 +38,3 @@ async def test_archive_repr(archive_and_scream):
     assert "scream_id=2" in repr_str
     assert "week=202501" in repr_str
     assert "place=1" in repr_str
-
