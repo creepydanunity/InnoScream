@@ -52,18 +52,14 @@ jobs:
       - name: Check code complexity (radon)
         working-directory: app_fastapi
         run: |
-          echo "Checking cyclomatic complexity ≤ 10 for all code blocks…"
-          failures=$(
-            poetry run radon cc . -s | \
-            awk '/\([0-9]+\)$/{ gsub(/[()]/,"",$NF); if ($NF > 10) print }'
-          )
+          echo "Checking cyclomatic complexity ≤ 10"
+          failures=$(poetry run radon cc . -n C)
           if [ -n "$failures" ]; then
-            echo "Cyclomatic complexity threshold exceeded in:" >&2
+            echo "Complexity violations (Rank > B):" >&2
             echo "$failures" >&2
             exit 1
           fi
-          echo "All code blocks have complexity ≤ 10"
-
+          echo "All code blocks have CC ≤ 10"
 
       - name: Lint with flake8
         run: poetry run flake8 app_fastapi/
