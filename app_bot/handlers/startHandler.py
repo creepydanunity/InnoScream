@@ -29,6 +29,7 @@ async def handle_start(msg: types.Message):
         "🗯️ <b>Welcome to InnoScreamBot</b>\n\n"
         "An anonymous place to let it all out. Here's what you can do:\n\n"
         "<b>😤 /scream [text]</b> — Post your scream anonymously\n"
+        "<b>📰 /feed</b> — Browse recent screams in a user-friendly view\n\n"
         "<b>🔥 React to screams</b> — Vote with emojis\n"
         "<b>📊 /stats</b> — See your scream & reactions count\n"
         "<b>📈 /stress</b> — View weekly stress graphs\n"
