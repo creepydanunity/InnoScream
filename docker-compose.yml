@@ -9,6 +9,7 @@ services:
       - app-network
     depends_on:
       - api
+    restart: on-failure:5
 
   api:
     build:
@@ -22,6 +23,7 @@ services:
       - "8000:8000"
     networks:
       - app-network
+    restart: unless-stopped
 
 volumes:
   innoscream-data:
