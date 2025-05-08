@@ -37,12 +37,13 @@ jobs:
           EOF
 
       - name: Run pytest with coverage
+        working-directory: app_bot
         run: |
           pytest \
-            --cov=app_bot \
+            --cov=. \
             --cov-report=term-missing \
             --cov-fail-under=60 \
-            app_bot/
+            .
 
       - name: Lint with flake8
         run: flake8 app_bot/

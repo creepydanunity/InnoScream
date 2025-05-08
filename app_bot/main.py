@@ -30,7 +30,7 @@ async def main():
         - historyRouter: Handles archive-related commands.
         - reactionRouter: Manages user reactions to screams.
         - screamRouter: Handles scream submission and feed browsing.
-        - statsRouter: Provides user statistics.
+        - statsRouter: Provides user statistic.
         - adminRouter: Handles admin commands (delete, confirm, etc.).
         - idRouter: Returns the user's ID.
         - startRouter: Welcomes users and explains bot functionality.
