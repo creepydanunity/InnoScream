@@ -1,0 +1,50 @@
+name: CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to prod
+    runs-on: ubuntu-latest
+    needs: 
+      - app_bot_ci
+      - app_api_ci
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+
+          script: |
+            cd /var/www/InnoScream
+
+            git pull origin main
+
+            cat <<EOF > app_fastapi/.env
+            DB_FILENAME=${{ secrets.DB_FILENAME }}
+            DEFAULT_ADMIN_ID=${{ secrets.DEFAULT_ADMIN_ID }}
+            IMGFLIP_API_PASSWORD=${{ secrets.IMGFLIP_API_PASSWORD }}
+            IMGFLIP_API_USERNAME=${{ secrets.IMGFLIP_API_USERNAME }}
+            USER_ID_SALT=${{ secrets.USER_ID_SALT }}
+            EOF
+
+            cat <<EOF > app_bot/.env
+            BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+            API_URL=${{ secrets.API_URL }}
+            EOF
+
+            docker-compose build
+            docker-compose up -d
+
+            echo "✅ Deployment finished!"

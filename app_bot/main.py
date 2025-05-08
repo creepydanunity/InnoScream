@@ -33,7 +33,7 @@ async def main():
         - statsRouter: Provides user statistics.
         - adminRouter: Handles admin commands (delete, confirm, etc.).
         - idRouter: Returns the user's ID.
-        - startRouter: Welcomes users and explains bot functionality.
+        - startRouter: Welcome users and explains bot functionality.
 
     Raises:
         Exception: If initialization or polling fails.
