@@ -46,7 +46,7 @@ async def startup():
     - Hashes the `DEFAULT_ADMIN_ID` using hash_user_id().
     - Checks if an admin with the corresponding user
       hash already exists in the database.
-    - If no admin exists, a new default admin is added to the database.
+    - If no admin exist, a new default admin is added to the database.
     """
     try:
         logger.info("Starting application initialization")
